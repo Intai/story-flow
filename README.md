@@ -43,7 +43,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 4. 🤖 **Analyze task dependencies** \
    Prompt: `/analyze-tasks @path/to/story.md` starting from **plan mode**. \
-   This identifies tasks that can be executed in parallel.
+   This identifies tasks that can be executed in parallel and updates the story markdown accordingly.
 
 5. 🧠 **Create an initial pull request** \
    Discuss story requirements, planned tasks, and execution plan with the team.
