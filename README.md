@@ -35,7 +35,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    ```
 
 2. 🤖 **Review the story markdown** \
-   Prompt Claude Code: `/review-story INDY-123 @path/to/story.md` in **plan mode**. \
+   Prompt Claude Code: `/review-story JIRA-123 @path/to/story.md` in **plan mode**. \
    This checks the story markdown against the Jira story.
 
 3. 🧠 **Update the story markdown** \
