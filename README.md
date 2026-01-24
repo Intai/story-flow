@@ -77,3 +77,7 @@ Each skill must follow the exact naming convention so the agent can discover and
 Example:
 - `.claude/skills/execute-bdd-scenario/SKILL.md`
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
+
+### Knowledge Sharing
+
+If you discover skill improvements broadly useful to others, please share via pull requests. When submitting, please include context and examples so others can understand and apply your improvement. Thank you.
