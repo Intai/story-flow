@@ -15,6 +15,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    **Important:**
    - Include a QA task to plan BDD scenarios.
    - Do not specify task dependencies at this stage; they will be analyzed later.
+   - Think first, code later. Handcrafting the story ensures the technical design exists before a single line of code is written. This reduces rework and enables smooth parallel development.
 
    Example:
    ```markdown
