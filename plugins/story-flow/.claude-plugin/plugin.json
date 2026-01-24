@@ -2,5 +2,23 @@
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
   "version": "1.0.0",
-  "keywords": ["development-workflow", "development", "workflow", "productivity"]
+  "keywords": ["development-workflow", "development", "workflow", "productivity"],
+  "mcpServers": {
+    "atlassian": {
+      "url": "https://mcp.atlassian.com/v1/sse",
+      "type": "sse"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--browser=chromium", "--isolated", "--no-sandbox"]
+    },
+    "appium-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "appium-mcp-server@latest"]
+    }
+  }
 }
