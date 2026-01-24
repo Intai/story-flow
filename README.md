@@ -68,3 +68,12 @@ This workflow leverages Claude Code to automate and streamline software developm
 10. 🤖 **Optional: Generate a Playwright script** \
    Prompt: `/execute-scenario all @path/to/file.feature --record` with accept-edits on. \
    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
+
+### Extension
+
+Extend the workflow with your own domain knowledge by adding custom skills. \
+Each skill must follow the exact naming convention so the agent can discover and use it.
+
+Example:
+- `.claude/skills/execute-bdd-scenario/SKILL.md`
+- `.claude/skills/plan-bdd-scenarios/SKILL.md`
