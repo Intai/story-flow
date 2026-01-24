@@ -4,7 +4,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Prerequisite
 
-- Jira story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria should be clearly defined.
+- Jira story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
 - Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
 - Login to Atlassian MCP.
 
