@@ -59,7 +59,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Full BDD coverage (positive, negative, edge cases)
 
 8. 🤖🧠 **Execute BDD scenarios** \
-   Prompt: `/execute-scenario SCENARIO-01 @path/to/file.feature` with accept-edits on. \
+   Prompt: `/execute-scenario SCN-01 @path/to/file.feature` with accept-edits on. \
    Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass.
 
 9. 🧠 **Create the final pull request** \
