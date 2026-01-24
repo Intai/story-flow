@@ -66,5 +66,5 @@ This workflow leverages Claude Code to automate and streamline software developm
    Discuss the fully tested implementation with the team.
 
 10. 🤖 **Optional: Generate a Playwright script** \
-   Prompt: `/execute-scenario SCENARIO-01 @path/to/file.feature --record` with accept-edits on. \
-   Generates a Playwright test script that can be run efficiently without Claude.
+   Prompt: `/execute-scenario all @path/to/file.feature --record` with accept-edits on. \
+   Generates a Playwright test script that can be run efficiently without Claude for regression testing.
