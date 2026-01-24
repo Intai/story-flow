@@ -1,0 +1,14 @@
+{
+  "name": "intai",
+  "owner": {
+    "name": "Intai",
+    "email": "intai.hg@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "story-flow",
+      "source": "./plugins/story-flow",
+      "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation"
+    }
+  ]
+}
