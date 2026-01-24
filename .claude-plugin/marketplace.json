@@ -10,5 +10,8 @@
       "source": "./plugins/story-flow",
       "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation"
     }
-  ]
+  ],
+  "metadata": {
+    "description": "🤖🧠 Agentic development workflow for AI–HI (Human Intelligence) collaboration"
+  }
 }
