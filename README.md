@@ -11,7 +11,8 @@ This workflow leverages Claude Code to automate and streamline software developm
 ### Steps
 
 1. 🧠 **Handcraft the technical story markdown** \
-   Create a markdown file with requirements and tasks according to a Jira story, e.g. `src/onboarding/docs/onboarding-story.md` \
+   Create a markdown file with requirements and tasks according to a Jira story, e.g. `src/onboarding/docs/onboarding-story.md`
+
    **Important:**
    - Include a QA task to plan BDD scenarios.
    - Do not specify task dependencies at this stage; they will be analyzed later.
