@@ -8,7 +8,8 @@
     {
       "name": "story-flow",
       "source": "./plugins/story-flow",
-      "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation"
+      "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
+      "category": "productivity"
     }
   ],
   "metadata": {

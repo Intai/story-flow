@@ -2,9 +2,17 @@
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
   "version": "1.0.0",
+  "author": {
+    "name": "Intai",
+    "email": "intai.hg@gmail.com"
+  },
   "homepage": "https://github.com/Intai/story-flow/blob/main/README.md",
   "repository": "https://github.com/Intai/story-flow",
-  "keywords": ["development-workflow", "development", "workflow", "productivity"],
+  "keywords": [
+    "development-workflow",
+    "development",
+    "workflow"
+  ],
   "mcpServers": {
     "atlassian": {
       "url": "https://mcp.atlassian.com/v1/sse",
