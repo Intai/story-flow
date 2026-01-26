@@ -680,25 +680,51 @@ await page.waitForLoadState("networkidle");
 
 ### Locator Strategies
 
+**NEVER fabricate or assume selectors.** Always discover actual selectors from the page snapshot or via JavaScript evaluation before recording.
+
+#### Web (Playwright)
+
 Use Playwright's preferred locator strategies in order of preference:
 1. `page.getByTestId('OnboardingPrimaryColor')` - **ALWAYS check for data-testid first**
 2. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
-3. `page.getByLabel('Name')` - for form fields
+3. `page.getByLabel('App Name')` - for form fields
 4. `page.getByPlaceholder('Enter name')` - for placeholder text
 5. `page.getByText('Error message')` - for text content
 6. `page.locator('.class-name')` - fallback for CSS selectors
 
-**NEVER fabricate or assume selectors.** Always discover actual selectors from the page snapshot or via JavaScript evaluation before recording.
-
 **Anti-pattern (DO NOT):**
-Feature file says: "click the delete button on image1"
-Recording assumes: data-testid="delete-image1"  ← WRONG if not verified
+Feature file says: "click the delete button on ios69-screenshot1"
+Recording assumes: data-testid="delete-ios69-screenshot1"  ← WRONG if not verified
 
 **Correct pattern:**
-Feature file says: "click the delete button on image1"
+Feature file says: "click the delete button on ios69-screenshot1"
 → Take snapshot
-→ Find actual element: [S42] button "delete" (data-testid="DeleteButton")
-→ Record: page.locator('[data-testid="DeleteButton"]').first()
+→ Find actual element: [S42] button "delete" (data-testid="AppScreenshotDeleteButton")
+→ Record: page.locator('[data-testid="AppScreenshotDeleteButton"]').first()
+
+#### Mobile (Appium/WebDriverIO)
+
+The `~accessibilityId` selector (e.g., `driver.$('~Save on Fuel')`) is cross-platform but **only works if the app sets accessibility attributes**:
+| Platform | Required Attribute |
+|----------|-------------------|
+| Android | `content-description` |
+| iOS | `accessibilityIdentifier` or `label` |
+
+**Common issue:** An element may have `text="Save on Fuel"` but no `content-description`, causing `~Save on Fuel` to fail.
+
+**Cross-platform pattern**:
+```typescript
+const isAndroid = driver.isAndroid;
+const element = isAndroid
+  ? await driver.$('android=new UiSelector().text("Save on Fuel")')
+  : await driver.$('-ios predicate string:label == "Save on Fuel"');
+```
+
+**Locator strategy priority:**
+1. `~accessibilityId` - if app has proper accessibility attributes (preferred, cross-platform)
+2. `id=resource-id` - Android resource IDs (e.g., `id=com.app:id/buttonSubmit`)
+3. `android=UiSelector()` / `-ios predicate string:` - platform-specific text/attribute matching
+4. XPath - last resort, fragile
 
 ### Generating the Spec File
 
