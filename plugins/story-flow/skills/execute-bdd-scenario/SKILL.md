@@ -687,37 +687,37 @@ await page.waitForLoadState("networkidle");
 Use Playwright's preferred locator strategies in order of preference:
 1. `page.getByTestId('OnboardingPrimaryColor')` - **ALWAYS check for data-testid first**
 2. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
-3. `page.getByLabel('App Name')` - for form fields
+3. `page.getByLabel('Name')` - for form fields
 4. `page.getByPlaceholder('Enter name')` - for placeholder text
 5. `page.getByText('Error message')` - for text content
 6. `page.locator('.class-name')` - fallback for CSS selectors
 
 **Anti-pattern (DO NOT):**
-Feature file says: "click the delete button on ios69-screenshot1"
-Recording assumes: data-testid="delete-ios69-screenshot1"  ← WRONG if not verified
+Feature file says: "click the delete button on image1"
+Recording assumes: data-testid="delete-image1"  ← WRONG if not verified
 
 **Correct pattern:**
-Feature file says: "click the delete button on ios69-screenshot1"
+Feature file says: "click the delete button on image1"
 → Take snapshot
-→ Find actual element: [S42] button "delete" (data-testid="AppScreenshotDeleteButton")
-→ Record: page.locator('[data-testid="AppScreenshotDeleteButton"]').first()
+→ Find actual element: [S42] button "delete" (data-testid="DeleteButton")
+→ Record: page.locator('[data-testid="DeleteButton"]').first()
 
 #### Mobile (Appium/WebDriverIO)
 
-The `~accessibilityId` selector (e.g., `driver.$('~Save on Fuel')`) is cross-platform but **only works if the app sets accessibility attributes**:
+The `~accessibilityId` selector (e.g., `driver.$('~Sign in')`) is cross-platform but **only works if the app sets accessibility attributes**:
 | Platform | Required Attribute |
 |----------|-------------------|
 | Android | `content-description` |
 | iOS | `accessibilityIdentifier` or `label` |
 
-**Common issue:** An element may have `text="Save on Fuel"` but no `content-description`, causing `~Save on Fuel` to fail.
+**Common issue:** An element may have `text="Sign in"` but no `content-description`, causing `~Sign in` to fail.
 
 **Cross-platform pattern**:
 ```typescript
 const isAndroid = driver.isAndroid;
 const element = isAndroid
-  ? await driver.$('android=new UiSelector().text("Save on Fuel")')
-  : await driver.$('-ios predicate string:label == "Save on Fuel"');
+  ? await driver.$('android=new UiSelector().text("Sign in")')
+  : await driver.$('-ios predicate string:label == "Sign in"');
 ```
 
 **Locator strategy priority:**
