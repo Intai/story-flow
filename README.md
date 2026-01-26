@@ -79,7 +79,7 @@ Example:
 - `.claude/skills/execute-bdd-scenario/SKILL.md`
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
 
-## Installation
+### Installation
 
 Add this marketplace to Claude Code:
 ```
