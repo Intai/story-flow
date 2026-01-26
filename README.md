@@ -79,6 +79,16 @@ Example:
 - `.claude/skills/execute-bdd-scenario/SKILL.md`
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
 
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` |
+| `APPIUM_APP_PACKAGE` | Local app package unique identifier | - |
+| `BROWSERSTACK_USERNAME` | BrowserStack username | - |
+| `BROWSERSTACK_ACCESS_KEY` | BrowserStack access key | - |
+| `BROWSERSTACK_APP_ID` | Uploaded app ID (`bs://...`) | - |
+
 ### Knowledge Sharing
 
 If you discover skill improvements broadly useful to others, please share via pull requests. When submitting, please include context and examples so others can understand and apply your improvement. Thank you.
