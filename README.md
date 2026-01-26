@@ -67,8 +67,19 @@ This workflow leverages Claude Code to automate and streamline software developm
    Discuss the fully tested implementation with the team.
 
 10. 🤖 **Optional: Generate a Playwright script** \
-   Prompt: `/execute-scenario all @path/to/file.feature --record` with accept-edits on. \
-   Generates a Playwright test script that can be run efficiently without Claude for regression testing.
+    Prompt: `/execute-scenario all @path/to/file.feature --record` with accept-edits on. \
+    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
+
+    **Troubleshoot Recording Issues** \
+    If the recording produces unreliable or incomplete Playwright tests, try the following (in order):
+    1. Make BDD steps more specific \
+       Clarify intent and expected outcomes so Claude doesn’t need to infer behavior.
+    2. Add stable UI selectors \
+       Prefer explicit identifiers such as accessibilityId, data-testid, or similar attributes on key elements.
+    3. Add domain knowledge to Claude skills (last resort) \
+       If ambiguity remains, extend Claude with relevant domain context via custom skills.
+
+    After applying any of the above, simply regenerate the Playwright test cases.
 
 ### Extension
 
