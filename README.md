@@ -79,6 +79,18 @@ Example:
 - `.claude/skills/execute-bdd-scenario/SKILL.md`
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
 
+## Installation
+
+Add this marketplace to Claude Code:
+```
+/plugin marketplace add Intai/story-flow
+```
+
+Browse and install plugins:
+```
+/plugin
+```
+
 ### Environment Variables
 
 | Variable | Description | Default |
