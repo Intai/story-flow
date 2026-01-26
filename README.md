@@ -77,7 +77,7 @@ This workflow leverages Claude Code to automate and streamline software developm
     2. Add stable UI selectors \
        Prefer explicit identifiers such as accessibilityId, data-testid, or similar attributes on key elements.
     3. Add domain knowledge to Claude skills (last resort) \
-       If ambiguity remains, extend Claude with relevant domain context via custom skills.
+       If ambiguity remains, extend Claude with relevant domain context via [custom skills](#extension).
 
     After applying any of the above, simply regenerate the Playwright test cases.
 
