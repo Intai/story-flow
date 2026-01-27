@@ -591,6 +591,61 @@ value: "networkidle"
 
 **DO NOT use `waitForTimeout`** - if you find yourself needing a hardcoded wait, use `waitForLoadState('networkidle')` or wait for a specific element/assertion instead.
 
+### Recording Polling Assertions
+
+For steps that require waiting for eventual consistency (S3 state, API responses), use Playwright's `expect.poll()`:
+
+**When to use polling:**
+- S3 bucket state verification after async operations
+- API state changes with eventual consistency
+- Backend operations that don't complete immediately
+
+**Recording annotation:**
+```
+[RECORD_POLL]
+step: "And I wait until \"name\" is \"John\" in S3"
+command: AWS_ACCESS_KEY_ID=minioadmin ... s3 cp s3://apps/${appId}/user.json -
+key: name
+assertion: toBe
+value: "John"
+[/RECORD_POLL]
+```
+
+**Annotation fields:**
+- `step`: The exact Gherkin step text
+- `command`: The shell command to execute (should return JSON)
+- `key`: JSON property to check (supports dot notation, e.g., `user.name`)
+- `assertion`: The Playwright assertion method
+- `value`: The expected value
+
+**Generated Playwright code:**
+```javascript
+// Helper function (add to helpers section if not present)
+function getS3User(appId: string): Record<string, unknown> {
+  try {
+    const output = execSync(
+      `AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 cp s3://apps/${appId}/user.json - 2>/dev/null`,
+      { encoding: "utf-8" }
+    );
+    return JSON.parse(output);
+  } catch {
+    return {};
+  }
+}
+
+// In test - check specific key
+await expect.poll(() => getS3User(appId).name).toBe("John");
+```
+
+**Supported polling assertions:**
+
+| assertion | Generated Code |
+|-----------|----------------|
+| `toBe` | `await expect.poll(() => getS3User(appId).key).toBe(value)` |
+| `toEqual` | `await expect.poll(() => getS3User(appId).key).toEqual(value)` |
+| `toContain` | `await expect.poll(() => getS3User(appId).key).toContain(value)` |
+| `toMatch` | `await expect.poll(() => getS3User(appId).key).toMatch(pattern)` |
+
 ### MUI Component Handling
 
 **MUI Select/Combobox:**
