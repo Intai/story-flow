@@ -101,7 +101,7 @@ WebdriverIO options:
   path: "/wd/hub",
   waitforTimeout: 30000,
   waitforInterval: 500,
-  connectionRetryTimeout: 30000,
+  connectionRetryTimeout: 60000,
   connectionRetryCount: 3,
   capabilities: {
     "bstack:options": {
