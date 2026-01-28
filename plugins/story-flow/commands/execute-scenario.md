@@ -3,4 +3,8 @@ argument-hint: [ST-01 or all, @path/to/file.feature (use * for wildcard), ..., -
 description: Execute BDD test scenarios in a .feature file using browser automation. Use --record to generate a Playwright .spec.ts file.
 ---
 
-Use `story-flow:execute-bdd-scenario` and `execute-bdd-scenario` skills using the Skill tool to execute BDD scenario $1 in $2 $3 $4 $5 $6.
+Load BOTH skills in this order using the Skill tool:
+1. First: `story-flow:execute-bdd-scenario` (plugin - general BDD framework)
+2. Then: `execute-bdd-scenario` (project-level - overrides/extends the plugin)
+
+Execute BDD scenario $1 in $2 $3 $4 $5 $6.
