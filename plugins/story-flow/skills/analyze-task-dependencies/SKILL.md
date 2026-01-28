@@ -96,8 +96,8 @@ Proposed format:
 ❌ **Over-sequential (incorrect approach):**
 ```
 Sequential tasks 1-3:
-1. Add config value `auth.tenantId`
-2. Add config value `aws.s3.tenantBucket`
+1. Add config value `auth.userId`
+2. Add config value `aws.s3.bucket`
 3. Implement server action that uses both config values
 ```
 This creates unnecessary waiting - task 3 can be written assuming configs will exist.
@@ -105,8 +105,8 @@ This creates unnecessary waiting - task 3 can be written assuming configs will e
 ✅ **Properly parallel (correct approach):**
 ```
 Sequential tasks 1-2:
-1. Add config value `auth.tenantId`
-2. Add config value `aws.s3.tenantBucket`
+1. Add config value `auth.userId`
+2. Add config value `aws.s3.bucket`
 
 Parallel tasks 3-4:
 3. Implement server action that uses both config values
