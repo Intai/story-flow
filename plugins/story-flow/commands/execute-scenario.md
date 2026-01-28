@@ -7,4 +7,6 @@ Load BOTH skills in this order using the Skill tool:
 1. First: `story-flow:execute-bdd-scenario` (plugin - general BDD framework)
 2. Then: `execute-bdd-scenario` (project-level - overrides/extends the plugin)
 
+Do NOT proceed until both skills are loaded.
+
 Execute BDD scenario $1 in $2 $3 $4 $5 $6.
