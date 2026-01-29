@@ -1,7 +1,7 @@
 {
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
@@ -14,7 +14,7 @@
     "workflow"
   ],
   "mcpServers": {
-    "atlassian": {
+    "jira": {
       "url": "https://mcp.atlassian.com/v1/sse",
       "type": "sse"
     },
