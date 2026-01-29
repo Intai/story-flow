@@ -1,7 +1,7 @@
 {
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
@@ -26,7 +26,7 @@
       "command": "npx",
       "args": ["@playwright/mcp@latest", "--browser=chromium", "--isolated", "--no-sandbox"]
     },
-    "appium-mcp-server": {
+    "appium": {
       "command": "npx",
       "args": ["-y", "appium-mcp-server@latest"]
     }
