@@ -18,6 +18,17 @@ description: Analyze a Jira story to review story.md requirements and tasks.
 - Report findings with specific examples of what's missing, incomplete, or misaligned.
 - Highlight any requirements from Jira that are not reflected in the markdown.
 - Note any tasks in the markdown that don't map to Jira requirements.
+- **Task Implementation Summary**: For each task in the markdown, provide a summary of what will be implemented:
+  - Describe the key changes, features, or components that will be built
+  - **Codebase Verification**:
+    - For files to modify: Confirm they exist and identify relevant code sections
+    - For new files: Verify target directories exist and check naming conventions against similar files
+    - For dependencies: Check that referenced modules, components, or APIs exist
+    - Identify similar existing implementations as reference patterns
+  - **Implementability Assessment**: Mark each task as:
+    - ✅ **Doable** - Can be implemented as described
+    - ⚠️  **Needs Adjustment** - Feasible with modifications (explain what)
+    - ❌ **Blocked** - Cannot be implemented (list blockers)
 
 ## Example Inputs
 

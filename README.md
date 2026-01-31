@@ -50,7 +50,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    Discuss story requirements, planned tasks, and execution plan with the team.
 
 6. 🤖 **Implement the story** \
-   Prompt: `/implement-story @path/to/story.md` starting from **plan mode**. \
+   Prompt: `/implement-story @path/to/story.md` with accept-edits on. \
    Executes tasks according to the plan.
 
 7. 🧠 **Review implementation** \
