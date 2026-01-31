@@ -4,6 +4,9 @@
     "name": "Intai",
     "email": "intai.hg@gmail.com"
   },
+  "metadata": {
+    "description": "🤖🧠 Agentic development workflow for AI–HI (Human Intelligence) collaboration"
+  },
   "plugins": [
     {
       "name": "story-flow",
@@ -11,8 +14,5 @@
       "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
       "category": "productivity"
     }
-  ],
-  "metadata": {
-    "description": "🤖🧠 Agentic development workflow for AI–HI (Human Intelligence) collaboration"
-  }
+  ]
 }

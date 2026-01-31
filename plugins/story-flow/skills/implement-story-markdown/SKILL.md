@@ -14,6 +14,8 @@ description: Implememnt story.md requirements and tasks.
     - Write, Edit, MultiEdit
     - TaskCreate, TaskUpdate, TaskGet, TaskList
 - Instruct each sub-agent: For every source file created or modified, update the corresponding test file to achieve 100% coverage and ensure all linting warnings and errors are resolved.
+  - One test case per scenario/behavior, not one test per assertion.
+  - Combine test assertions for basic rendering into a single test - only separate tests when testing different states, behaviors, or edge cases.
 - When a story references @agent-qa-tester for planning BDD scenarios, use the qa-tester subagent and instruct it to load BOTH skills in this order using the Skill tool:
   1. First: `story-flow:plan-bdd-scenarios` (plugin - general BDD planning protocol)
   2. Then: `plan-bdd-scenarios` (project-level - overrides/extends the plugin)
