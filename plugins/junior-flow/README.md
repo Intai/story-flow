@@ -19,7 +19,7 @@ A Claude plugin that helps junior developers create technical story markdown fro
    1. Understand the drafted tasks technically by reading the codebase.
    2. Continue on story-flow [step 1](https://github.com/Intai/story-flow#steps) to review and refine the story markdown.
 
-&ensp;2-6. Follow story-flow [steps 2-6](https://github.com/Intai/story-flow#steps)
+2-6. Follow story-flow [steps 2-6](https://github.com/Intai/story-flow#steps)
 
 7. 🤖🧠 **Review implementation** \
    Stage your changes with `git add`, then prompt: `/code-review:code-review for staged changes` in **plan mode**. \
