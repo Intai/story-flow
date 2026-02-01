@@ -13,6 +13,12 @@
       "source": "./plugins/story-flow",
       "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
       "category": "productivity"
+    },
+    {
+      "name": "junior-flow",
+      "source": "./plugins/junior-flow",
+      "description": "Helps junior developers create technical story markdown from Jira story",
+      "category": "productivity"
     }
   ]
 }

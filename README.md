@@ -6,12 +6,14 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 - Jira story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
 - Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
-- Login to Atlassian MCP.
+- Login to Atlassian MCP: Run `/mcp` to verify connection status.
 
 ### Steps
 
 1. 🧠 **Handcraft the technical story markdown** \
    Create a markdown file with requirements and tasks according to a Jira story, e.g. `src/onboarding/docs/onboarding-story.md`
+
+   > 💡 **New to the codebase?** Use [junior-flow](plugins/junior-flow/README.md) to draft a story markdown from a Jira story as a starting point.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.
