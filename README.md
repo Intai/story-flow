@@ -60,6 +60,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Code quality
    - 100% test coverage
    - Full BDD coverage (positive, negative, edge cases)
+   - Test assertions match their descriptions (tests actually verify what they claim to test)
 
 8. 🤖🧠 **Execute BDD scenarios** \
    Prompt: `/execute-scenario SCN-01 @path/to/file.feature` with accept-edits on. \
