@@ -5,7 +5,7 @@ A Claude plugin that helps junior developers create technical story markdown fro
 ### Prerequisites
 
 - Install the Claude Code plugins:
-  - [code-review@claude-plugins-official](https://github.com/anthropics/claude-code/blob/main/plugins/code-review/README.md)
+  - [code-review@claude-plugins-official](https://github.com/anthropics/claude-code/blob/main/plugins/code-review)
   - [story-flow](https://github.com/Intai/story-flow#installation)
 - Review story-flow's [prerequisites](https://github.com/Intai/story-flow#prerequisite).
 

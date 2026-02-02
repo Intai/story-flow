@@ -13,7 +13,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 1. 🧠 **Handcraft the technical story markdown** \
    Create a markdown file with requirements and tasks according to a Jira story, e.g. `src/onboarding/docs/onboarding-story.md`
 
-   > 💡 **New to the codebase?** Use [junior-flow](plugins/junior-flow/README.md) to draft a story markdown from the Jira story as a starting point.
+   > 💡 **New to the codebase?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira story as a starting point.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.
