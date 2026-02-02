@@ -7,7 +7,7 @@ description: Interactive guidance on why human code review is essential for read
 
 ## Overview
 
-This learning module helps junior developers understand why, as of today, human code review remains essential even when AI-generated code has 100% unit test coverage. Tests only verify code doesn't crash - humans must verify correctness, readability, and maintainability.
+This learning module helps junior developers understand why, as of today in 2026, human code review remains essential even when AI-generated code has 100% unit test coverage. Tests only verify code doesn't crash - humans must verify correctness, readability, and maintainability.
 
 ## Instructions
 
