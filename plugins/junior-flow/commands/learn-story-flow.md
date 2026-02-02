@@ -15,7 +15,8 @@ Which topic would you like to explore? (Enter the number or topic name)
 | # | Topic | Description |
 |---|-------|-------------|
 | 1 | `technical-design` | Why discuss technical design before implementation? |
-| 2 | `bdd-scenarios` | What defines effective, complete BDD scenarios? |
+| 2 | `review-implementation` | Why review implementation even with 100% test coverage? |
+| 3 | `bdd-scenarios` | What defines effective, complete BDD scenarios? |
 
 ---
 

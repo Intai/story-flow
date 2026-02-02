@@ -11,7 +11,7 @@ This learning module helps junior developers understand why creating a technical
 
 ## Instructions
 
-Present the following content interactively. After each section, use `AskUserQuestion` to offer options:
+Present the following content interactively. After each section, use `AskUserQuestion` to offer 3 options:
 - "Continue to next section"
 - "Show me an example"
 - "I have a question"

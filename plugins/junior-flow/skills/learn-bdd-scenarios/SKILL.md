@@ -11,7 +11,7 @@ This learning module helps junior developers understand how to write BDD (Behavi
 
 ## Instructions
 
-Present the following content interactively. After each section, use `AskUserQuestion` to offer options:
+Present the following content interactively. After each section, use `AskUserQuestion` to offer 3 options:
 - "Continue to next section"
 - "Show more examples"
 - "I have a question"

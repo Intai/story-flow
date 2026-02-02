@@ -14,6 +14,7 @@ A Claude plugin that helps junior developers create technical story markdown fro
 Prompt Claude Code: `/learn-story-flow` for an interactive menu of topics. \
 Available topics:
 - Why discuss technical design before implementation?
+- Why review implementation even with 100% test coverage?
 - What defines effective, complete BDD scenarios?
 
 ### Steps
