@@ -9,6 +9,12 @@ A Claude plugin that helps junior developers create technical story markdown fro
   - [story-flow](https://github.com/Intai/story-flow#installation)
 - Review story-flow's [prerequisites](https://github.com/Intai/story-flow#prerequisite).
 
+### Learning Resources
+
+Prompt Claude Code: `/learn-story-flow` for an interactive menu of topics. \
+Available topics:
+- What defines effective, complete BDD scenarios?
+
 ### Steps
 
 1. 🤖🧠 **Draft the technical story markdown** \
