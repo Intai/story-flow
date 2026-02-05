@@ -1,6 +1,6 @@
 ---
-argument-hint: [JIRA-123, @path/to/story.md]
-description: Review a story markdown against a Jira story
+argument-hint: [@path/to/story.md, JIRA-123 (optional)]
+description: Review a story markdown, optionally against a Jira story
 ---
 
 Load BOTH skills in this order using the Skill tool:
@@ -8,4 +8,7 @@ Load BOTH skills in this order using the Skill tool:
 2. Then: `review-story-against-jira` (project-level - overrides/extends the plugin)
 3. Confirm both skills are loaded before continuing with the review.
 
-Review $2 against Jira story $1.
+If a Jira ticket is provided ($2):
+  Review $1 against Jira story $2.
+If no Jira ticket is provided:
+  Review $1 without Jira comparison.
