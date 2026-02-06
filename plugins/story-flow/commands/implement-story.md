@@ -8,4 +8,4 @@ Load BOTH skills in this order using the Skill tool:
 2. Then: `implement-story-markdown` (project-level - overrides/extends the plugin)
 3. Confirm both skills are loaded before continuing with the implementation.
 
-Execute tasks according to $ARGUMENTS using sub-agents. Use context7.
+Execute tasks according to $ARGUMENTS using subagents. Use context7.
