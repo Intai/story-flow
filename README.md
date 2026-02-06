@@ -32,9 +32,9 @@ This workflow leverages Claude Code to automate and streamline software developm
 
    ## Tasks
 
-   - @agent-backend-developer Add `displayName: String` to the user schema @src/account/schemas/user-schema.js.
-   - @agent-frontend-developer Add a Display Name input field with validation to the profile form @src/account/components/profile-form.jsx and update state management @src/account/redux/profile-slice.js.
-   - @agent-qa-tester Plan BDD scenarios @src/account/docs/update-profile-name.feature.
+   - Use backend-developer subagent to add `displayName: String` to the user schema @src/account/schemas/user-schema.js.
+   - Use frontend-developer subagent to add a Display Name input field with validation to the profile form @src/account/components/profile-form.jsx and update state management @src/account/redux/profile-slice.js.
+   - Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
    ```
 
 2. 🤖 **Review the story markdown** \

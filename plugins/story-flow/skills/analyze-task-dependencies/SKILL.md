@@ -23,7 +23,7 @@ description: Parse story markdown to identify task dependencies and parallel exe
   - `**Parallel after task X completes:**` for parallel tasks depending on a single prerequisite task
   - `**Parallel after tasks X-Y complete:**` for parallel tasks depending on multiple prerequisite tasks
 - Number tasks sequentially (1, 2, 3...) across all groups
-- Keep the original task descriptions with their @agent mentions and file paths
+- Keep the original task descriptions with their agent assignments and file paths
 
 ## Parallelism Strategy
 
@@ -49,24 +49,24 @@ Proposed format:
 
 **Sequential tasks 1-3:**
 
-1. @agent-backend-developer Original task description
-2. @agent-backend-developer Original task description
-3. @agent-backend-developer Original task description
+1. Use backend-developer subagent to [original task description]
+2. Use backend-developer subagent to [original task description]
+3. Use backend-developer subagent to [original task description]
 
 **Parallel tasks 4-5:**
 
-4. @agent-backend-developer Original task description
-5. @agent-qa-tester Original task description
+4. Use backend-developer subagent to [original task description]
+5. Use qa-tester subagent to [original task description]
 
 **Parallel after task 4 completes:**
 
-6. @agent-frontend-developer Original task description
-7. @agent-frontend-developer Original task description
+6. Use frontend-developer subagent to [original task description]
+7. Use frontend-developer subagent to [original task description]
 
 **Sequential tasks 8-9 after tasks 6-7 complete:**
 
-8. @agent-backend-developer Original task description
-9. @agent-frontend-developer Original task description
+8. Use backend-developer subagent to [original task description]
+9. Use frontend-developer subagent to [original task description]
 ```
 
 ## Dependency Detection Rules

@@ -1,7 +1,7 @@
 {
   "name": "junior-flow",
   "description": "Helps junior developers create technical story markdown from Jira story",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"

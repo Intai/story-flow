@@ -97,14 +97,14 @@ Create a story markdown with the following structure:
 
 ## Tasks
 
-- @agent-backend-developer [Task description] @path/to/file.js. [Technical details].
-- @agent-frontend-developer [Task description] @path/to/component.jsx. [Technical details].
-- @agent-qa-tester Plan BDD scenarios @path/to/feature.feature.
+- Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
+- Use frontend-developer subagent to [task description] @path/to/component.jsx. [Technical details].
+- Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
 ```
 
 **Task guidelines:**
 - Each task should have:
-  - Agent assignment (`@agent-backend-developer`, `@agent-frontend-developer`, `@agent-mobile-developer`, `@agent-qa-tester`)
+  - Agent assignment (`Use backend-developer subagent to`, `Use frontend-developer subagent to`, `Use mobile-developer subagent to`, `Use qa-tester subagent to`)
   - Clear action description
   - Specific file path(s) using `@path/to/file` format
   - Technical details about what to implement
@@ -131,10 +131,10 @@ When Figma design information is available:
    - Always include the Figma link for reference
 
 **Agent assignment guide:**
-- `@agent-backend-developer`: APIs, schemas, database models, server-side logic, backend services
-- `@agent-frontend-developer`: React/Vue/Angular components, state management, UI logic, styling
-- `@agent-mobile-developer`: React Native, iOS, Android native code, mobile-specific features
-- `@agent-qa-tester`: BDD scenarios, test planning, feature files
+- `Use backend-developer subagent to`: APIs, schemas, database models, server-side logic, backend services
+- `Use frontend-developer subagent to`: React/Vue/Angular components, state management, UI logic, styling
+- `Use mobile-developer subagent to`: React Native, iOS, Android native code, mobile-specific features
+- `Use qa-tester subagent to`: BDD scenarios, test planning, feature files
 
 ### Phase 3b: Handle Unknown Files
 
@@ -191,11 +191,11 @@ As a user, I want to update my profile name so that my account details are accur
 
 ## Tasks
 
-- @agent-backend-developer Add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Add validation for max 100 characters.
-- @agent-backend-developer Update user update API to handle displayName @src/account/api/user-api.js.
-- @agent-frontend-developer Create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
-- @agent-frontend-developer Update profile state management @src/account/redux/profile-slice.js.
-- @agent-qa-tester Plan BDD scenarios @src/account/docs/update-profile-name.feature.
+- Use backend-developer subagent to add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Add validation for max 100 characters.
+- Use backend-developer subagent to update user update API to handle displayName @src/account/api/user-api.js.
+- Use frontend-developer subagent to create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
+- Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
+- Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
 ```
 
 ## Example Inputs

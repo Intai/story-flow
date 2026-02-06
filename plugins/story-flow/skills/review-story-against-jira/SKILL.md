@@ -13,7 +13,7 @@ description: Analyze a Jira story to review story.md requirements and tasks.
 - Review the following aspects:
   - **Requirements Completeness**: Verify all Jira acceptance criteria and requirements are documented in the markdown.
   - **Task Breakdown**: Check that tasks in the markdown align with Jira story requirements and subtasks.
-  - **Agent Assignments**: Ensure tasks have appropriate agent mentions (@agent-backend-developer, @agent-frontend-developer, etc.).
+  - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
   - **Technical Accuracy**: Validate that the technical approach and implementation details match Jira specifications.
 - Report findings with specific examples of what's missing, incomplete, or misaligned.
 - Highlight any requirements from Jira that are not reflected in the markdown.
