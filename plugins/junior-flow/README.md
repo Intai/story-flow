@@ -1,6 +1,6 @@
 ## Agentic Development Workflow Helpers for Junior Developers
 
-A Claude plugin that helps junior developers create technical story markdown from Jira story. This plugin automates the most challenging part of the story-flow workflow for developers who are new to a codebase.
+A Claude plugin that helps junior developers create technical story markdown from a Jira story or a feature description. This plugin automates the most challenging part of the story-flow workflow for developers who are new to a codebase.
 
 ### Prerequisites
 
@@ -20,8 +20,10 @@ Available topics:
 ### Steps
 
 1. 🤖🧠 **Draft the technical story markdown** \
-   Prompt Claude Code: `/draft-story JIRA-123 @path/to/story.md` with accept-edits on. \
-   This generates a draft story markdown from a Jira story as a starting point.
+   Prompt Claude Code with accept-edits on: \
+   `/draft-story @path/to/story.md JIRA-123` to draft from a Jira story, or \
+   `/draft-story @path/to/story.md "feature description"` to draft from a feature description. \
+   This generates a draft story markdown as a starting point.
 
    **Then:**
    1. Understand the drafted tasks technically by reading the codebase.

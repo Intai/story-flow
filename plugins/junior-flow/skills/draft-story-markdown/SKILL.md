@@ -1,23 +1,27 @@
 ---
-name: Draft a story markdown from a Jira story
-description: Generate a draft story markdown by analyzing Jira story, Figma designs, and the codebase.
+name: Draft a story markdown from a Jira story or feature description
+description: Generate a draft story markdown by analyzing a Jira story or feature description, Figma designs, and the codebase.
 ---
 
-# Draft a story markdown from a Jira story
+# Draft a story markdown from a Jira story or feature description
 
 ## Overview
 
 This skill helps junior developers create technical story markdown by:
-1. Fetching Jira story details (description, acceptance criteria, subtasks)
-2. Fetching Figma designs linked in the Jira story
+1. Gathering requirements from a Jira story or a provided feature description
+2. Fetching Figma designs linked in the Jira story (when applicable)
 3. Exploring the codebase to discover relevant files and patterns
 4. Generating a draft `story.md` for the developer to review and refine
 
 ## Instructions
 
-### Phase 1: Fetch Jira Story
+### Phase 1: Gather Requirements
 
-- Use the Jira MCP tools to fetch the story by its ticket ID (e.g., JIRA-123).
+#### Option A: Jira ticket provided
+
+When the input is a Jira ticket ID (matching a pattern like `PROJ-123`):
+
+- Use the Jira MCP tools to fetch the story by its ticket ID.
 - Extract:
   - Summary (user story statement)
   - Description (context and background)
@@ -27,6 +31,17 @@ This skill helps junior developers create technical story markdown by:
 - If the Jira fetch fails, inform the developer and ask them to verify:
   - The ticket ID is correct
   - They are logged into Atlassian MCP (`/mcp` to check status)
+
+#### Option B: Feature description provided
+
+When the input is a feature description (not a Jira ticket):
+
+- Use the provided description as the basis for the story.
+- Ask the developer clarifying questions if the description is too vague to derive requirements from, such as:
+  - What is the expected user flow?
+  - Are there specific acceptance criteria?
+  - Are there any Figma designs to reference?
+- Derive a user story summary, context, and initial requirements from the description and any clarifications.
 
 ### Phase 2: Explore Codebase
 
@@ -53,11 +68,11 @@ Use a **single comprehensive Explore agent** (Task tool with `subagent_type: Exp
 
 **Exploration prompt template:**
 ```
-Explore the codebase to help draft a story for: [SUMMARY FROM JIRA]
+Explore the codebase to help draft a story for: [SUMMARY FROM JIRA OR FEATURE DESCRIPTION]
 
 Find:
 1. Project structure - how are features organized?
-2. Files related to: [KEYWORDS FROM JIRA]
+2. Files related to: [KEYWORDS FROM REQUIREMENTS]
 3. Similar implementations to use as reference patterns
 4. Naming conventions for schemas, components, APIs, and tests
 5. Where new files should be created based on existing patterns
@@ -72,12 +87,12 @@ Provide specific file paths and patterns discovered.
 Create a story markdown with the following structure:
 
 ```markdown
-[User story summary from Jira]
+[User story summary from Jira or feature description]
 
 ## Requirements
 
-- [Requirement 1 from acceptance criteria]
-- [Requirement 2 from acceptance criteria]
+- [Requirement 1 from acceptance criteria or feature description]
+- [Requirement 2 from acceptance criteria or feature description]
 - [Additional requirements derived from Figma design]
 
 ## Tasks
@@ -189,3 +204,5 @@ As a user, I want to update my profile name so that my account details are accur
 - Create story markdown from JIRA-456
 - Generate technical story for JIRA-789 @src/feature/docs/story.md
 - Draft JIRA-100 to @path/to/output.md
+- Draft story for "Add dark mode support to the settings page"
+- Draft story for "Implement user profile image upload"
