@@ -12,13 +12,29 @@
       "name": "story-flow",
       "source": "./plugins/story-flow",
       "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
-      "category": "productivity"
+      "homepage": "https://github.com/Intai/story-flow/blob/main/README.md",
+      "repository": "https://github.com/Intai/story-flow",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "development-workflow",
+        "development",
+        "workflow"
+      ]
     },
     {
       "name": "junior-flow",
       "source": "./plugins/junior-flow",
       "description": "Helps junior developers create technical story markdown from Jira story",
-      "category": "productivity"
+      "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/junior-flow/README.md",
+      "repository": "https://github.com/Intai/story-flow",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "junior-developer",
+        "story-planning",
+        "jira"
+      ]
     }
   ]
 }
