@@ -434,9 +434,10 @@ Playwright's accessibility snapshot does NOT show `data-testid` attributes. Use 
    ```
 
 4. **If no testid exists**, use this fallback priority:
+   - `page.locator('[data-slot]')` - for other data attributes
    - `getByRole()` with accessible name
-   - `getByText()` for unique text content
    - `getByLabel()` for form fields
+   - `getByText()` for unique text content
 
 ### Recording Command Line Executions
 
@@ -741,11 +742,12 @@ await page.waitForLoadState("networkidle");
 
 Use Playwright's preferred locator strategies in order of preference:
 1. `page.getByTestId('OnboardingPrimaryColor')` - **ALWAYS check for data-testid first**
-2. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
-3. `page.getByLabel('Name')` - for form fields
-4. `page.getByPlaceholder('Enter name')` - for placeholder text
-5. `page.getByText('Error message')` - for text content
-6. `page.locator('.class-name')` - fallback for CSS selectors
+2. `page.locator('[data-slot="sidebar-overlay"]')` - for other data attributes
+3. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
+4. `page.getByLabel('Name')` - for form fields
+5. `page.getByPlaceholder('Enter name')` - for placeholder text
+6. `page.getByText('Error message')` - for text content
+7. `page.locator('.class-name')` - fallback for CSS selectors
 
 **Anti-pattern (DO NOT):**
 Feature file says: "click the delete button on image1"
