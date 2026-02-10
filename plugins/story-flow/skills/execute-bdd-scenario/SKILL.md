@@ -7,7 +7,7 @@ description: Execute BDD test scenarios from .feature files using browser automa
 
 ## Instructions
 
-- Use Playwright MCP to manipulate Chromium to EXECUTE the BDD scenarios directly without generating any Playwright test file.
+- Use `mcp__plugin_story-flow_playwright__*` tools to manipulate Chromium to EXECUTE the BDD scenarios directly without generating any Playwright test file.
 - **Test Execution Protocol:**
   - **Before executing:** Read the feature file and confirm the exact line numbers, scenario title, background sections and all "Then" and "And" assertions.
   - **Execution order is CRITICAL:**
@@ -26,9 +26,9 @@ description: Execute BDD test scenarios from .feature files using browser automa
   1. Read the feature file to identify all scenario IDs and titles
   2. For each scenario, use the **Task tool** with `subagent_type="general-purpose"` to run it in isolated context sequentially:
     ```
-    Use `execute-bdd-scenario` skill using the Skill tool to execute BDD scenario ARMR-01 in @path/to/file.feature [--record if recording mode is active].
+    Use `story-flow:execute-bdd-scenario` and `execute-bdd-scenario` skills using the Skill tool to execute BDD scenario ARMR-01 in @path/to/file.feature [--record if recording mode is active].
     ```
-    **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording happens within each scenario's isolated context, not at the parent orchestration level.
+    **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's isolated context, not at the parent orchestration level.
   3. Wait for subagent completion, record PASS/FAIL result
   4. **If the scenario FAILED:** STOP immediately and print the summary table with remaining scenarios marked as "⊘ SKIPPED". Do NOT proceed to the next scenario.
   5. Print summary table:
@@ -122,7 +122,7 @@ WebdriverIO options:
 
 ### Execution Guidelines
 
-- Use Appium MCP or WebDriver REST API to manipulate mobile app to EXECUTE the BDD scenarios directly without generating any Playwright test file.
+- Use `mcp__plugin_story-flow_appium__*` tools or WebDriver REST API to manipulate mobile app to EXECUTE the BDD scenarios directly without generating any Playwright test file.
 - Save Appium screenshots to `.appium-mcp` folder using absolute paths (e.g., `/path/to/project/.appium-mcp/screenshot.png`). The Appium MCP tool does not support relative paths.
 - **Page source vs screenshots:**
   - **Use page source XML** (via `appium_get_page_source` or REST API) for:
@@ -152,7 +152,7 @@ WebdriverIO options:
 
 ## Recording Mode (--record flag)
 
-When the `--record` flag is present in the input, generate a Playwright `.spec.js` file by recording actions and expectations during execution.
+When the `--record` flag is present in the input, generate a Playwright `.spec.js` file after executing **every** scenario by recording actions and expectations during execution.
 
 ### Recording Scenario Tags
 
@@ -783,7 +783,7 @@ const element = isAndroid
 3. `android=UiSelector()` / `-ios predicate string:` - platform-specific text/attribute matching
 4. XPath - last resort, fragile
 
-### Generating the Spec File
+### Generating the Mandatory Spec File
 
 At scenario completion, use the Write tool to create a `.spec.js` file alongside the `.feature` file with:
 
