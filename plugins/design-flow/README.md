@@ -8,7 +8,7 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 
 ### Steps
 
-1. 🤖🧠 **Explore product design for the feature** \
+1. 🤖🧠 **Explore product design for a feature** \
    Use product-designer subagent to bounce ideas and create a product design in markdown. \
    Discuss user needs, edge cases, business requirements, and acceptance criteria collaboratively with Claude to produce a clear product specification.
 
