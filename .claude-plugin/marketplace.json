@@ -23,6 +23,20 @@
       ]
     },
     {
+      "name": "design-flow",
+      "description": "Agentic design workflow for collaborative product and UI design exploration",
+      "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/design-flow/README.md",
+      "repository": "https://github.com/Intai/story-flow",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "product-design",
+        "ui-design",
+        "design-workflow",
+        "workflow"
+      ]
+    },
+    {
       "name": "junior-flow",
       "source": "./plugins/junior-flow",
       "description": "Helps junior developers create technical story markdown from Jira story",

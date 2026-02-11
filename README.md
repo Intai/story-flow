@@ -5,6 +5,9 @@ This workflow leverages Claude Code to automate and streamline software developm
 ### Prerequisite
 
 - Jira story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
+
+  > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, and create UI designs collaboratively with Claude before grooming.
+
 - Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
 - Login to Atlassian MCP: Run `/mcp` to verify connection status.
 
