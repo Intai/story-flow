@@ -113,7 +113,7 @@ Create a story markdown with the following structure:
 - Always include a QA task for BDD scenarios
 - Use existing file paths discovered during exploration
 - For new files, follow the naming conventions discovered
-- Do not worry about task order or dependencies - list tasks in any logical order. Task dependencies and parallel execution grouping are handled separately using the `analyze-task-dependencies` skill after the story is drafted.
+- **IMPORTANT: Do NOT add task dependency or ordering annotations** (e.g. "Parallel tasks 1-3:", "Sequential task N after task M completes:"). List tasks as unordered bullet points in any logical order. Task dependencies and parallel execution grouping are handled separately using the `analyze-task-dependencies` skill after the story is drafted. Note: existing story files in the codebase may already have dependency groupings added by that skill — do NOT copy that format when drafting.
 
 **Using Figma design to inform content:**
 
