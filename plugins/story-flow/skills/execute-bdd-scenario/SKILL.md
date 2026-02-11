@@ -22,7 +22,7 @@ description: Execute BDD test scenarios from .feature files using browser automa
     - Root cause analysis
     - **CRITICAL: Do NOT continue to subsequent test steps after a failure**
 - **Executing Multiple Scenarios:**
-  When executing multiple scenarios (e.g., "Execute all scenarios in @path/to/file.feature"):
+  When executing multiple scenarios (e.g., "Execute all scenarios in @path/to/file.feature", "Execute ARMR-01,ARMR-02 scenarios in @path/to/file.feature"):
   1. Read the feature file to identify all scenario IDs and titles
   2. For each scenario, use the **Task tool** with `subagent_type="general-purpose"` to run it in isolated context sequentially:
     ```
