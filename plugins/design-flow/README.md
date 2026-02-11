@@ -26,7 +26,7 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 
    **Then:**
    1. Groom, refine, and story point the feature with the team before continuing to development.
-   2. Continue on story-flow [step 1](https://github.com/Intai/story-flow#steps) to create the technical story markdown according to the designs.
+   2. Continue on story-flow [step 1](https://github.com/Intai/story-flow#steps) to create the technical story markdown according to the designs and team discussions.
 
 ### Installation
 
