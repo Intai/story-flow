@@ -352,6 +352,9 @@ When a BDD step contains an ordinal qualifier, you MUST append the corresponding
 | `evaluate` | `await page.evaluate(value)` or `await page.evaluate(value, ...args)` |
 | `execSync` | `const output = execSync(value, { encoding: 'utf-8' }); extract = output.match(pattern)?.[1]` |
 | `setInputFiles` | `await locator.setInputFiles(value)` |
+| `keyboardPress` | `await page.keyboard.press(value)` |
+| `keyboardDown` | `await page.keyboard.down(value)` |
+| `keyboardUp` | `await page.keyboard.up(value)` |
 | `waitFor` | `await locator.waitFor()` |
 | `waitForURL` | `await page.waitForURL(value)` |
 | `waitForLoadState` | `await page.waitForLoadState(value)` |
