@@ -7,7 +7,7 @@ description: Execute BDD test scenarios from .feature files using browser automa
 
 ## Instructions
 
-- Use `mcp__plugin_story-flow_playwright__*` tools to manipulate Chromium to EXECUTE the BDD scenarios directly without generating any Playwright test file.
+- Use `mcp__plugin_story-flow_playwright__*` tools to manipulate browser to EXECUTE the BDD scenarios directly without generating any Playwright test file.
 - **Test Execution Protocol:**
   - **Before executing:** Read the feature file and confirm the exact line numbers, scenario title, background sections and all "Then" and "And" assertions.
   - **Execution order is CRITICAL:**
