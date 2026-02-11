@@ -28,7 +28,7 @@ description: Execute BDD test scenarios from .feature files using browser automa
     ```
     Use `story-flow:execute-bdd-scenario` and `execute-bdd-scenario` skills using the Skill tool to execute BDD scenario ARMR-01 in @path/to/file.feature [--record if recording mode is active].
     ```
-    **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's isolated context, not at the parent orchestration level.
+    **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's subagent isolated context, not at the parent orchestration level.
   3. Wait for subagent completion, record PASS/FAIL result
   4. **If the scenario FAILED:** STOP immediately and print the summary table with remaining scenarios marked as "⊘ SKIPPED". Do NOT proceed to the next scenario.
   5. Print summary table:
