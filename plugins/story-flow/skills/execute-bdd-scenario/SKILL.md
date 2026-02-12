@@ -25,10 +25,15 @@ description: Execute BDD test scenarios from .feature files using browser automa
   When executing multiple scenarios (e.g., "Execute all scenarios in @path/to/file.feature", "Execute ARMR-01,ARMR-02 scenarios in @path/to/file.feature"):
   1. Read the feature file to identify all scenario IDs and titles
   2. For each scenario, use the **Task tool** with `subagent_type="general-purpose"` to run it in isolated context sequentially:
-    ```
-    Use `story-flow:execute-bdd-scenario` and `execute-bdd-scenario` skills using the Skill tool to execute BDD scenario ARMR-01 in @path/to/file.feature [--record if recording mode is active].
-    ```
-    **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's subagent isolated context, not at the parent orchestration level.
+     ```
+     Load BOTH skills in this order using the Skill tool:
+     1. First: `story-flow:execute-bdd-scenario` (plugin - general BDD framework)
+     2. Then: `execute-bdd-scenario` (project-level - overrides/extends the plugin)
+     3. Confirm both skills are loaded before continuing with the execution.
+
+     Execute BDD scenario all in @path/to/file.feature [--record if recording mode is active].
+     ```
+     **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's subagent isolated context, not at the parent orchestration level.
   3. Wait for subagent completion, record PASS/FAIL result
   4. **If the scenario FAILED:** STOP immediately and print the summary table with remaining scenarios marked as "⊘ SKIPPED". Do NOT proceed to the next scenario.
   5. Print summary table:
@@ -786,9 +791,9 @@ const element = isAndroid
 3. `android=UiSelector()` / `-ios predicate string:` - platform-specific text/attribute matching
 4. XPath - last resort, fragile
 
-### Generating the Mandatory Spec File
+### Generating the Spec File
 
-At scenario completion, use the Write tool to create a `.spec.js` file alongside the `.feature` file with:
+After executing all scenario steps, use the Write tool to create a `.spec.js` file alongside the `.feature` file with:
 
 **Handling Existing Spec Files:**
 - If a `.spec.js` file already exists, read it first to preserve the file structure
