@@ -114,6 +114,13 @@ Parallel tasks 3-4:
 ```
 Tasks 1-2 are sequential because they modify the same file. Tasks 3-4 can run in parallel with 1-2 because they assume runtime values will exist.
 
+## Completion
+
+This skill is a standalone analysis task. After updating the story file (or if the user declines):
+- Report that the task dependency analysis is complete.
+- Do NOT proceed to implementation planning, codebase exploration, or any other workflow phases.
+- STOP and wait for the user's next instruction.
+
 ## Example Inputs
 
 - Analyze task dependencies in @path/to/story.md
