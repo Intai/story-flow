@@ -1,6 +1,6 @@
 ---
 argument-hint: [@path/to/story.md]
-description: Implememnt a story according to the requirements and tasks
+description: Implement a story according to the requirements and tasks
 ---
 
 Load BOTH skills in this order using the Skill tool:
