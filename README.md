@@ -9,7 +9,7 @@ This workflow leverages Claude Code to automate and streamline software developm
   > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, and create UI designs collaboratively with Claude before grooming.
 
 - Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
-- Login to Atlassian MCP: Run `/mcp` to verify connection status.
+- If you use Jira, login to Atlassian MCP and run `/mcp` to verify the connection status.
 
 ### Steps
 
