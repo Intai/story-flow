@@ -8,6 +8,7 @@ A Claude plugin that helps junior developers create technical story markdown fro
   - [code-review@claude-plugins-official](https://github.com/anthropics/claude-code/blob/main/plugins/code-review)
   - [story-flow](https://github.com/Intai/story-flow#installation)
 - Review story-flow's [prerequisites](https://github.com/Intai/story-flow#prerequisite).
+- If you use Figma, login to Figma MCP and run `/mcp` to verify the connection status.
 
 ### Learning Resources
 
