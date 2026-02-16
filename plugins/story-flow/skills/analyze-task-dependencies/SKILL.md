@@ -1,6 +1,7 @@
 ---
 name: Analyze task dependencies for parallel execution
 description: Parse story markdown to identify task dependencies and parallel execution opportunities.
+user-invocable: false
 ---
 
 # Analyze task dependencies for parallel execution

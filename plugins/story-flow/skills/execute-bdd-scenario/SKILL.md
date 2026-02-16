@@ -1,6 +1,7 @@
 ---
 name: Execute BDD scenarios
 description: Execute BDD test scenarios from .feature files using browser automation.
+user-invocable: false
 ---
 
 # Execute BDD scenarios

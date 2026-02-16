@@ -1,6 +1,7 @@
 ---
 name: Learn what defines effective BDD scenarios
 description: Interactive guidance on writing complete, effective BDD scenarios for story-flow.
+user-invocable: false
 ---
 
 # What Defines Effective, Complete BDD Scenarios

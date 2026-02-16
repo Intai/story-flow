@@ -1,6 +1,7 @@
 ---
 name: Implement a story according to the requirements and tasks
 description: Implement story.md requirements and tasks.
+user-invocable: false
 ---
 
 # Implement a story according to the requirements and tasks

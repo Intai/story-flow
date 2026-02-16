@@ -1,6 +1,7 @@
 ---
 name: Learn why to discuss technical design before implementation
 description: Interactive guidance on creating technical design PRs to align with your team before coding.
+user-invocable: false
 ---
 
 # Why Discuss Technical Design Before Implementation?

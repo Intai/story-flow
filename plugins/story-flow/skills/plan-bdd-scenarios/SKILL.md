@@ -1,6 +1,7 @@
 ---
 name: Plan BDD scenarios
 description: Plan BDD scenarios.
+user-invocable: false
 ---
 
 # Plan BDD scenarios

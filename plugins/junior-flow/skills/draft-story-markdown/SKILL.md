@@ -1,6 +1,7 @@
 ---
 name: Draft a story markdown from a Jira story or feature description
 description: Generate a draft story markdown by analyzing a Jira story or feature description, Figma designs, and the codebase.
+user-invocable: false
 ---
 
 # Draft a story markdown from a Jira story or feature description

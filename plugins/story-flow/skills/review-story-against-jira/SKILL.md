@@ -1,6 +1,7 @@
 ---
 name: Review a story markdown against a Jira story
 description: Analyze a Jira story to review story.md requirements and tasks.
+user-invocable: false
 ---
 
 # Review a story markdown against a Jira story

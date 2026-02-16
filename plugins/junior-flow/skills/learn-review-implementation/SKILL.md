@@ -1,6 +1,7 @@
 ---
 name: Learn why to review implementation even with 100% test coverage
 description: Interactive guidance on why human code review is essential for readability and maintainability.
+user-invocable: false
 ---
 
 # Why Review Implementation Even with 100% Test Coverage?
