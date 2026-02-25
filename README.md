@@ -22,7 +22,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Include a QA task to plan BDD scenarios.
    - Do not specify task dependencies at this stage; they will be analyzed later.
    - Include comprehensive technical details—this allows Claude to produce better, more reliable results without guessing.
-   - Think first, code later. Handcrafting the story ensures the technical design exists before a single line of code is written. This reduces rework and enables smooth parallel development.
+   - Think first, code later. Handcrafting the story markdown ensures the technical design exists before a single line of code is written. This reduces rework and enables smooth parallel development.
 
    Example:
    ```markdown
@@ -45,7 +45,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    This checks the story markdown, optionally against a Jira story.
 
 3. 🧠 **Update the story markdown** \
-   Incorporate feedback to ensure the story is well-defined and detailed.
+   Incorporate feedback to ensure the story markdown is well-defined and detailed.
 
 4. 🤖 **Analyze task dependencies** \
    Prompt: `/analyze-tasks @path/to/story.md` starting from **plan mode**. \
