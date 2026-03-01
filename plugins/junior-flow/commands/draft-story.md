@@ -13,4 +13,4 @@ If $2 matches a Jira ticket pattern (e.g., PROJ-123):
 If $2 is provided but is not a Jira ticket:
   Draft a story markdown $1 using "$2" as the feature description.
 If $2 is not provided:
-  Ask the developer what feature they want to plan, then draft a story markdown $1.
+  Draft a story markdown $1 according to the plan.

@@ -23,7 +23,8 @@ Available topics:
 1. 🤖🧠 **Draft the technical story markdown** \
    Prompt Claude Code with accept-edits on: \
    `/draft-story @path/to/story.md JIRA-123` to draft from a Jira story, or \
-   `/draft-story @path/to/story.md "feature description"` to draft from a feature description. \
+   `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
+   `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
    This generates a draft story markdown as a starting point.
 
    **Then:**
