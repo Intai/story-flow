@@ -298,7 +298,14 @@ test('DAS-02: Delete image', async ({ page, context }) => {
 
 ### Recording Actions (Given/When steps)
 
-After each action step, output a structured annotation:
+After each action step, output a structured annotation.
+
+**Before recording the `locator` field:** An element's own selector may not be unique on the page. Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). After discovering the scoped locator chain, you MUST use ALL in the chain for the `locator` field. e.g. If the chain returns:
+  `[{ testid: "ShareButton" }, { testid: "MobileContainer" }]`
+Then the locator MUST be:
+  `page.getByTestId('MobileContainer').getByTestId('ShareButton')`
+NOT:
+  `page.getByTestId('ShareButton')`
 
 ```
 [RECORD_ACTION]
@@ -367,7 +374,14 @@ When a BDD step contains an ordinal qualifier, you MUST append the corresponding
 
 ### Recording Expectations (Then/And assertion steps)
 
-After verifying each assertion step, output a structured annotation:
+After verifying each assertion step, output a structured annotation.
+
+**Before recording the `locator` field:** An element's own selector may not be unique on the page. Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). After discovering the scoped locator chain, you MUST use ALL in the chain for the `locator` field. e.g. If the chain returns:
+  `[{ testid: "ShareButton" }, { testid: "MobileContainer" }]`
+Then the locator MUST be:
+  `page.getByTestId('MobileContainer').getByTestId('ShareButton')`
+NOT:
+  `page.getByTestId('ShareButton')`
 
 ```
 [RECORD_EXPECT]
@@ -398,55 +412,6 @@ value: 3
 | `toBeDisabled` | `await expect(locator).toBeDisabled()` |
 | `toHaveURL` | `await expect(page).toHaveURL(value)` |
 | `toHaveAttribute` | `await expect(locator).toHaveAttribute(name, value)` |
-
-**Locator Selection for expectations:**
-
-Playwright's accessibility snapshot does NOT show `data-testid` attributes. Use JavaScript evaluation to discover testids for the specific element you're interacting with.
-
-1. **Find testid for a specific element** using `browser_evaluate` with the element ref:
-   ```javascript
-   (element) => {
-     // Walk up DOM tree to find testid chain
-     let el = element;
-     const chain = [];
-     while (el && el !== document.body) {
-       const testid = el.getAttribute('data-testid');
-       if (testid) {
-         chain.push({ testid, tag: el.tagName.toLowerCase() });
-       }
-       el = el.parentElement;
-     }
-     return chain;
-   }
-   ```
-
-2. **Use the testid chain to build scoped locators:**
-   ```
-   # Example: clicking delete button in product section
-   # Snapshot shows: [S42] button "delete"
-   # JavaScript returns: [
-   #   { testid: "DeleteButton", tag: "button" },
-   #   { testid: "Product", tag: "div" }
-   # ]
-
-   # Generated locator:
-   locator: page.getByTestId("Product").getByTestId("DeleteButton")
-   ```
-
-3. **Use testids over DOM traversal:**
-   ```typescript
-   // WRONG - fragile, breaks when DOM structure changes
-   locator: page.getByRole("heading", { name: "Product" }).locator("..").locator("..")
-
-   // CORRECT - stable, uses discovered testid chain
-   locator: page.getByTestId("Product").getByTestId("DeleteButton")
-   ```
-
-4. **If no testid exists**, use this fallback priority:
-   - `page.locator('[data-slot]')` - for other data attributes
-   - `getByRole()` with accessible name
-   - `getByLabel()` for form fields
-   - `getByText()` for unique text content
 
 ### Recording Command Line Executions
 
@@ -750,13 +715,63 @@ await page.waitForLoadState("networkidle");
 #### Web (Playwright)
 
 Use Playwright's preferred locator strategies in order of preference:
-1. `page.getByTestId('OnboardingPrimaryColor')` - **ALWAYS check for data-testid first**
-2. `page.locator('[data-slot="sidebar-overlay"]')` - for other data attributes
-3. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
-4. `page.getByLabel('Name')` - for form fields
-5. `page.getByPlaceholder('Enter name')` - for placeholder text
-6. `page.getByText('Error message')` - for text content
-7. `page.locator('.class-name')` - fallback for CSS selectors
+1. `page.getByTestId('OnboardingContainer').getByTestId('OnboardingPrimaryColor')` - scoped by parent testids to avoid ambiguity
+2. `page.getByTestId('OnboardingPrimaryColor')` - **ALWAYS check for data-testid first**
+3. `page.locator('[data-slot="sidebar-overlay"]')` - for other data attributes
+4. `page.getByRole('button', { name: 'Submit' })` - for semantic elements
+5. `page.getByLabel('Name')` - for form fields
+6. `page.getByPlaceholder('Enter name')` - for placeholder text
+7. `page.getByText('Error message')` - for text content
+8. `page.locator('.class-name')` - fallback for CSS selectors
+
+**Discovering testids via JavaScript evaluation:**
+
+Playwright's accessibility snapshot does NOT show `data-testid` attributes. Use JavaScript evaluation to discover testids for the specific element you're interacting with — this applies to **both actions and expectations**.
+
+1. **Find testid for a specific element** using `browser_evaluate` with the element ref:
+   ```javascript
+   (element) => {
+     // Walk up DOM tree to find testid chain
+     let el = element;
+     const chain = [];
+     while (el && el !== document.body) {
+       const testid = el.getAttribute('data-testid');
+       if (testid) {
+         chain.push({ testid, tag: el.tagName.toLowerCase() });
+       }
+       el = el.parentElement;
+     }
+     return chain;
+   }
+   ```
+
+2. **Use the testid chain to build scoped locators:**
+   ```
+   # Example: clicking delete button in product section
+   # Snapshot shows: [S42] button "delete"
+   # JavaScript returns: [
+   #   { testid: "DeleteButton", tag: "button" },
+   #   { testid: "Product", tag: "div" }
+   # ]
+
+   # Generated locator:
+   locator: page.getByTestId("Product").getByTestId("DeleteButton")
+   ```
+
+3. **Use testids over DOM traversal:**
+   ```typescript
+   // WRONG - fragile, breaks when DOM structure changes
+   locator: page.getByRole("heading", { name: "Product" }).locator("..").locator("..")
+
+   // CORRECT - stable, uses discovered testid chain
+   locator: page.getByTestId("Product").getByTestId("DeleteButton")
+   ```
+
+4. **If no testid exists**, use this fallback priority:
+   - `page.locator('[data-slot]')` - for other data attributes
+   - `getByRole()` with accessible name
+   - `getByLabel()` for form fields
+   - `getByText()` for unique text content
 
 **Anti-pattern (DO NOT):**
 Feature file says: "click the delete button on image1"
@@ -766,7 +781,7 @@ Recording assumes: data-testid="delete-image1"  ← WRONG if not verified
 Feature file says: "click the delete button on image1"
 → Take snapshot
 → Find actual element: [S42] button "delete" (data-testid="DeleteButton")
-→ Record: page.locator('[data-testid="DeleteButton"]').first()
+→ Record: page.getByTestId("Product").getByTestId("DeleteButton")
 
 #### Mobile (Appium/WebDriverIO)
 
