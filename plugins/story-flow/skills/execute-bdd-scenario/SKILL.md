@@ -300,10 +300,11 @@ test('DAS-02: Delete image', async ({ page, context }) => {
 
 After each action step, output a structured annotation.
 
-**Before recording the `locator` field:** An element's own selector may not be unique on the page. Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). After discovering the scoped locator chain, you MUST use ALL in the chain for the `locator` field. e.g. If the chain returns:
-  `[{ testid: "ShareButton" }, { testid: "MobileContainer" }]`
+**Before recording the `locator` field:** Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). No exceptions — even if you already know the element's data-testid, you must discover its full ancestor chain to build the scoped locator.
+**CRITICAL:** After discovering the scoped locator chain, you MUST use ALL entries in the chain for the `locator` field. e.g. If the chain returns:
+  `[{ testid: "ShareButton" }, { testid: "Container" }]`
 Then the locator MUST be:
-  `page.getByTestId('MobileContainer').getByTestId('ShareButton')`
+  `page.getByTestId('Container').getByTestId('ShareButton')`
 NOT:
   `page.getByTestId('ShareButton')`
 
@@ -376,17 +377,18 @@ When a BDD step contains an ordinal qualifier, you MUST append the corresponding
 
 After verifying each assertion step, output a structured annotation.
 
-**Before recording the `locator` field:** An element's own selector may not be unique on the page. Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). After discovering the scoped locator chain, you MUST use ALL in the chain for the `locator` field. e.g. If the chain returns:
-  `[{ testid: "ShareButton" }, { testid: "MobileContainer" }]`
+**Before recording the `locator` field:** Discover the element's scoped locator chain by evaluating its ancestors in the UI hierarchy (see Locator Strategies). No exceptions — even if you already know the element's data-testid, you must discover its full ancestor chain to build the scoped locator.
+**CRITICAL:** After discovering the scoped locator chain, you MUST use ALL entries in the chain for the `locator` field. e.g. If the chain returns:
+  `[{ testid: "ShareButton" }, { testid: "Container" }]`
 Then the locator MUST be:
-  `page.getByTestId('MobileContainer').getByTestId('ShareButton')`
+  `page.getByTestId('Container').getByTestId('ShareButton')`
 NOT:
   `page.getByTestId('ShareButton')`
 
 ```
 [RECORD_EXPECT]
 step: "Then I should see 3 images in the product section"
-locator: page.getByTestId('Product').locator('img')
+locator: page.getByTestId('Products').getByTestId('Product').locator('img')
 assertion: toHaveCount
 value: 3
 [/RECORD_EXPECT]
@@ -412,6 +414,7 @@ value: 3
 | `toBeDisabled` | `await expect(locator).toBeDisabled()` |
 | `toHaveURL` | `await expect(page).toHaveURL(value)` |
 | `toHaveAttribute` | `await expect(locator).toHaveAttribute(name, value)` |
+| `evaluate` | `const ret = await locator.evaluate(func)` |
 
 ### Recording Command Line Executions
 
