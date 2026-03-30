@@ -18,6 +18,7 @@ user-invocable: false
     - TaskCreate, TaskUpdate, TaskGet, TaskList
     - Task with Explore subagent
 - Instruct each subagent:
+  - After implementing UI according to UI design HTML files, verify by taking screenshots of both the UI and the design using `mcp__plugin_story-flow_chrome-devtools__navigate_page` and `mcp__plugin_story-flow_chrome-devtools__take_screenshot`.
   - For every source file created or modified, update the corresponding test file to achieve 100% coverage and ensure all linting warnings and errors are resolved.
     - One test case per scenario/behavior, not one test per assertion.
     - Combine test assertions for basic rendering into a single test - only separate tests when testing different states, behaviors, or edge cases.

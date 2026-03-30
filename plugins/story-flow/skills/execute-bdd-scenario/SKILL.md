@@ -50,6 +50,7 @@ user-invocable: false
 - If a BDD scenario doesn't have the `@screenshots` tag, do not take any screenshot.
 - If a BDD scenario has the `@purge-data` tag, restore the seed data first (before the Background steps) by executing the `make reseed` command.
 - If a BDD scenario does not have the `@purge-data` tag, do not restore the seed data before running the scenario.
+- If a BDD scenario has the `@timeout-*` tag, extend the scenario and expect timeout to be longer. e.g. `@timeout-600s` means timeout for the scenario and every expect step is 600s(10m).
 - Use `mcp__playwright__browser_run_code` to set the browser offline.
 - Reference the @Makefile for local development workflows.
 

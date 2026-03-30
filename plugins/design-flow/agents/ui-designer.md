@@ -76,8 +76,8 @@ Create UI designs as self-contained static HTML files. Use the Chrome DevTools M
 Design Iteration Protocol:
 
 1. WRITE or EDIT the HTML file
-2. NAVIGATE: `mcp__plugin_design-flow_chrome-devtools__navigate_page` with `file://` URL to open it in the browser
-3. SCREENSHOT: `mcp__plugin_design-flow_chrome-devtools__take_screenshot` to capture the current state
+2. NAVIGATE: `mcp__plugin_story-flow_chrome-devtools__navigate_page` with `file://` URL to open it in the browser
+3. SCREENSHOT: `mcp__plugin_story-flow_chrome-devtools__take_screenshot` to capture the current state
 4. PRESENT the screenshot to the user and ASK for feedback
 5. If changes requested → EDIT the HTML and go to step 2
 6. If approved → confirm the final file and STOP
