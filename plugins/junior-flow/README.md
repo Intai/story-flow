@@ -47,7 +47,7 @@ Available topics:
 
 Add the marketplace to Claude Code:
 ```
-/plugin marketplace add Intai/story-flow
+claude plugin marketplace add Intai/story-flow
 ```
 
 Browse and install both plugins (story-flow and junior-flow):

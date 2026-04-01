@@ -32,7 +32,7 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 
 Add the marketplace to Claude Code:
 ```
-/plugin marketplace add Intai/story-flow
+claude plugin marketplace add Intai/story-flow
 ```
 
 Browse and install the design-flow plugin:
