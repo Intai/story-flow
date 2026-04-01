@@ -103,7 +103,7 @@ Example:
 
 Add this marketplace to Claude Code:
 ```
-/plugin marketplace add Intai/story-flow
+claude plugin marketplace add Intai/story-flow
 ```
 
 Browse and install plugins:
