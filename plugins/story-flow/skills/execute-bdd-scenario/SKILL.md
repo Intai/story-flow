@@ -174,7 +174,7 @@ tags: ["@purge-data"]
 
 **Annotation fields:**
 - `scenario`: The scenario ID and title
-- `tags`: Array of tags applied to this scenario
+- `tags`: Array of tags applied to this scenario — **appended to the test name** to enable `--grep` filtering (e.g., `npm run test:e2e -- --grep-invert "@timeout-"`)
 
 **Example: Scenario with @purge-data tag and Background**
 
@@ -197,9 +197,9 @@ tags: ["@purge-data"]
 [/RECORD_TAG]
 ```
 
-Generated Playwright code (note: tag action comes BEFORE Background helper call):
+Generated Playwright code (note: tags in test name, tag action comes BEFORE Background helper call):
 ```typescript
-test('DAS-01: Finish onboarding', async ({ page, context }) => {
+test('DAS-01: Finish onboarding @purge-data', async ({ page, context }) => {
   // @purge-data - Restore the seed data to initial state (runs FIRST)
   execSync('make reseed', { stdio: 'inherit' });
 
@@ -815,6 +815,11 @@ const element = isAndroid
 
 After executing all scenario steps, use the Write tool to create a `.spec.js` file alongside the `.feature` file with:
 
+**Test Naming Convention:**
+- **Append BDD tags to the end of the test name**, space-separated: `test('ID: Title @tag1 @tag2', ...)`
+- This enables Playwright's `--grep` / `--grep-invert` filtering, e.g., `npm run test:e2e -- --grep-invert "@timeout-"` to skip slow tests
+- If a scenario has no tags, the test name is just the ID and title
+
 **Handling Existing Spec Files:**
 - If a `.spec.js` file already exists, read it first to preserve the file structure
 - Replace test cases that match the recorded scenario ID (e.g., `test('DAS-01: ...')`)
@@ -864,7 +869,7 @@ async function setupBackground(context: BrowserContext): Promise<string> {
 // ============================================================
 
 test.describe('Feature: App Settings', () => {
-  test('DAS-01: Finish onboarding', async ({ page, context }) => {
+  test('DAS-01: Finish onboarding @purge-data', async ({ page, context }) => {
     // @purge-data - Restore the seed data to initial state (tag action runs FIRST)
     execSync('make reseed', { stdio: 'inherit' });
 
@@ -890,7 +895,8 @@ test.describe('Feature: App Settings', () => {
 **Key points:**
 - **Helper functions first**: All Background-derived helpers appear at the top of the file
 - **No beforeEach**: Each test explicitly calls `setupBackground()` for clarity
-- **Tags only affect tag actions**: `@purge-data` adds `execSync('make reseed')` BEFORE the helper call
+- **Tags in test names**: Append all scenario tags to the test name (e.g., `test('DAS-01: Finish onboarding @purge-data', ...)`) to enable `--grep` / `--grep-invert` filtering
+- **Tags also affect tag actions**: `@purge-data` adds `execSync('make reseed')` BEFORE the helper call
 - **Self-contained tests**: Each test shows its full setup, making debugging easier
 - **Return values**: If scenario needs a Background value (e.g., `appId`), capture it from the helper
 
