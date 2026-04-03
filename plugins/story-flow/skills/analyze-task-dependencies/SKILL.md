@@ -115,6 +115,32 @@ Parallel tasks 3-4:
 ```
 Tasks 1-2 are sequential because they modify the same file. Tasks 3-4 can run in parallel with 1-2 because they assume runtime values will exist.
 
+### Sequential Group Merging
+
+❌ **Split sequential groups (incorrect approach):**
+```
+Sequential tasks 1-3:
+1. Create user model
+2. Create user service
+3. Create user controller
+
+Sequential tasks 4-5 after task 3 completes:
+4. Add authentication middleware
+5. Add protected routes
+```
+The second group's only prerequisite is the last task of the first group — this is just one sequential chain.
+
+✅ **Merged sequential group (correct approach):**
+```
+Sequential tasks 1-5:
+1. Create user model
+2. Create user service
+3. Create user controller
+4. Add authentication middleware
+5. Add protected routes
+```
+If a sequential group's only prerequisite is the last task of a prior sequential group, merge them into one group.
+
 ## Completion
 
 This skill is a standalone analysis task. After updating the story file (or if the user declines):
