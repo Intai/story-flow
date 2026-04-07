@@ -16,6 +16,8 @@ user-invocable: false
   - **Task Breakdown**: Check that tasks in the markdown align with Jira story requirements and subtasks.
   - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
   - **Technical Accuracy**: Validate that the technical approach and implementation details match Jira specifications.
+  - **Redundant Unit Testing Tasks**: Flag any tasks that are solely about writing or updating unit tests. Unit testing is automatically handled as part of each implementation task by the `implement-story-markdown` skill — separate testing tasks create duplication and should be removed or merged into the relevant implementation tasks.
+  - **Task Dependency Ordering**: Do NOT flag missing explicit task dependency ordering or parallel/sequential grouping. This is handled separately by the `analyze-task-dependencies` skill.
 - Report findings with specific examples of what's missing, incomplete, or misaligned.
 - Highlight any requirements from Jira that are not reflected in the markdown.
 - Note any tasks in the markdown that don't map to Jira requirements.
