@@ -67,6 +67,12 @@ Use a **single comprehensive Explore agent** (Task tool with `subagent_type: Exp
    - API route patterns and middleware usage
    - Component structure and state management approach
 
+5. **Existing utility/helper patterns**
+   - Locate utility or helper directories (e.g., `src/utils/`, `src/helpers/`, `lib/`)
+   - Note naming conventions for shared modules
+   - Identify reusable functions that already exist (validation, formatting, transformations)
+   - Look for patterns where multiple modules import from the same shared location
+
 **Exploration prompt template:**
 ```
 Explore the codebase to help draft a story for: [SUMMARY FROM JIRA OR FEATURE DESCRIPTION]
@@ -77,6 +83,7 @@ Find:
 3. Similar implementations to use as reference patterns
 4. Naming conventions for schemas, components, APIs, and tests
 5. Where new files should be created based on existing patterns
+6. Utility/helper directories and existing shared functions (validation, formatting, etc.)
 
 Provide specific file paths and patterns discovered.
 ```
@@ -114,6 +121,10 @@ Create a story markdown with the following structure:
 - Always include a QA task for BDD scenarios
 - Use existing file paths discovered during exploration
 - For new files, follow the naming conventions discovered
+- **Shared utility tasks:** When exploration reveals that two or more tasks will need the same logic (validation, formatting, data transformation), add a separate task to create the shared utility function before the tasks that use it. This avoids duplicating logic across tasks and keeps each task focused on a single responsibility.
+  - Only create utility tasks when the shared pattern is genuinely identical across consumers — do not pre-emptively abstract similar-looking code that may diverge.
+  - Place utility files in the project's existing utility directory (discovered during exploration, e.g., `src/utils/`, `src/helpers/`).
+  - Name utility files by category (e.g., `validation.js`, `formatting.js`, `transforms.js`), not one function per file.
 - **IMPORTANT: Do NOT add task dependency or ordering annotations** (e.g. "Parallel tasks 1-3:", "Sequential task N after task M completes:"). List tasks as unordered bullet points in any logical order. Task dependencies and parallel execution grouping are handled separately using the `analyze-task-dependencies` skill after the story is drafted. Note: existing story files in the codebase may already have dependency groupings added by that skill — do NOT copy that format when drafting.
 
 **Using Figma design to inform content:**
@@ -192,9 +203,10 @@ As a user, I want to update my profile name so that my account details are accur
 
 ## Tasks
 
-- Use backend-developer subagent to add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Add validation for max 100 characters.
+- Use backend-developer subagent to create `validateDisplayName(name)` function in @src/account/utils/validation.js. Return error message or null. Pure function, no side effects. Max 100 characters.
+- Use backend-developer subagent to add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Use `validateDisplayName` from @src/account/utils/validation.js.
 - Use backend-developer subagent to update user update API to handle displayName @src/account/api/user-api.js.
-- Use frontend-developer subagent to create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
+- Use frontend-developer subagent to create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
 - Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
 - Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
 ```

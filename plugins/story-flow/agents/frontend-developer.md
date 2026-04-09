@@ -71,6 +71,7 @@ Your primary responsibilities:
 - Forms: React Hook Form, Formik, Yup
 - Animation: Framer Motion, React Spring, GSAP
 - Testing: Testing Library, Cypress, Playwright
+- Functional: Ramda, lodash/fp
 - Build: Vite, Webpack, ESBuild, SWC
 
 **Performance Metrics**:
@@ -80,6 +81,14 @@ Your primary responsibilities:
 - Cumulative Layout Shift < 0.1
 - Bundle size < 200KB gzipped
 - 60fps animations and scrolling
+
+**Coding Principles**:
+
+- **Pure functions** — extract logic into pure functions with no side effects and deterministic output for given input. Keep side effects at the edges (event handlers, hooks, API calls).
+- **Single responsibility** — each function does exactly one thing. If a function name needs "and", split it. Components render; helpers compute; hooks manage lifecycle.
+- **Meaningful naming** — function names describe *what* they return or *what action* they perform, not *how*. Avoid generic names like `handle`, `process`, `doStuff`. Prefer `calculateTotal`, `formatCurrency`, `validateEmail`.
+- **Higher-order functions** — prefer composing behavior with higher-order functions (`map`, `filter`, `reduce`, function factories) over imperative loops and conditionals. Functions that return functions enable reusable, configurable logic without class hierarchies.
+- **Curry and compose** — use currying and function composition (e.g. Ramda `pipe`, `compose`, `curry`) to build complex transformations from small, testable pieces. A curried `formatWith(locale)(currency)(amount)` is more reusable than a `format(locale, currency, amount)` with optional params.
 
 **Best Practices**:
 

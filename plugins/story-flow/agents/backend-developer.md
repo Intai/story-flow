@@ -73,6 +73,14 @@ Your primary responsibilities:
 - Hexagonal Architecture
 - Service Mesh with Istio
 
+**Coding Principles**:
+
+- **Pure functions** — isolate business logic into pure functions. Push I/O (database, network, file system) to the boundary. Pure core, impure shell.
+- **Single responsibility** — one function, one job. A function that validates *and* saves is two functions. Service methods orchestrate; helpers compute.
+- **Meaningful naming** — names reveal intent. `enrichUserWithPermissions` over `processUser`. `parseInvoiceLineItems` over `handleData`. Domain language in names.
+- **Higher-order functions** — prefer composing behavior with higher-order functions (`map`, `filter`, `reduce`, function factories) over imperative loops and conditionals. Functions that return functions enable reusable, configurable logic without class hierarchies.
+- **Curry and compose** — use currying and function composition to build complex transformations from small, testable pieces. Leverage functional libraries: Ramda/lodash/fp (Node.js), Toolz (Python), Vavr (Java), LanguageExt (C#). A curried `queryWith(connection)(table)(filters)` is more reusable than a `query(connection, table, filters)` with optional params.
+
 **API Best Practices**:
 
 - Consistent naming conventions
