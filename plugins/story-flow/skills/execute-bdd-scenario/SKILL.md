@@ -32,9 +32,10 @@ user-invocable: false
      2. Then: `execute-bdd-scenario` (project-level - overrides/extends the plugin)
      3. Confirm both skills are loaded before continuing with the execution.
 
-     Execute BDD scenario all in @path/to/file.feature [--record if recording mode is active].
+     Execute BDD scenario <SCENARIO-ID> in @path/to/file.feature [--record if recording mode is active].
      ```
-     **Recording Mode:** When executing multiple scenarios with `--record`, pass the flag to each subagent prompt. Recording and Playwright `.spec.js` generation happen within each scenario's subagent isolated context, not at the parent orchestration level.
+     **IMPORTANT:** Replace `<SCENARIO-ID>` with the individual scenario ID (e.g., `ARMR-01`), NOT "all". Each subagent executes exactly one scenario.
+     **Recording Mode:** When executing multiple scenarios with `--record`, pass the `--record` flag to each subagent prompt. Each subagent is responsible for generating/updating the `.spec.js` file after executing its scenario — do NOT defer spec file generation to the parent orchestrator.
   3. Wait for subagent completion, record PASS/FAIL result
   4. **If the scenario FAILED:** STOP immediately and print the summary table with remaining scenarios marked as "⊘ SKIPPED". Do NOT proceed to the next scenario.
   5. Print summary table:
@@ -161,45 +162,51 @@ WebdriverIO options:
 
 When the `--record` flag is present in the input, generate a Playwright `.spec.js` file after executing **every** scenario by recording actions and expectations during execution.
 
-### Recording Scenario Tags
+### Recording Feature and Scenario Tags
 
-When recording, capture scenario tags and output them BEFORE recording any other steps (including Background):
+When recording, capture both feature-level tags (above the `Feature:` line) and scenario-level tags. Output them BEFORE recording any other steps (including Background):
 
 ```
 [RECORD_TAG]
 scenario: "DAS-01: Finish onboarding"
+featureTags: ["@e2e", "@auth"]
 tags: ["@purge-data"]
 [/RECORD_TAG]
 ```
 
 **Annotation fields:**
 - `scenario`: The scenario ID and title
-- `tags`: Array of tags applied to this scenario — **appended to the test name** to enable `--grep` filtering (e.g., `npm run test:e2e -- --grep-invert "@timeout-"`)
+- `featureTags`: Feature-level tags (above the `Feature:` line) — inherited by all scenarios in the file. Empty array `[]` when the feature has no tags.
+- `tags`: Scenario-level tags applied only to this scenario.
 
-**Example: Scenario with @purge-data tag and Background**
+**Example: Feature with @e2e @auth and scenario with @purge-data**
 
 Feature file:
 ```gherkin
-Background:
-  Given I extract appId from S3
-  And I set localStorage
+@e2e @auth
+Feature: App Settings
 
-@purge-data
-Scenario: DAS-01: Finish onboarding
-  Given I am on the onboarding page
+  Background:
+    Given I extract appId from S3
+    And I set localStorage
+
+  @purge-data
+  Scenario: DAS-01: Finish onboarding
+    Given I am on the onboarding page
 ```
 
 Recording output:
 ```
 [RECORD_TAG]
 scenario: "DAS-01: Finish onboarding"
+featureTags: ["@e2e", "@auth"]
 tags: ["@purge-data"]
 [/RECORD_TAG]
 ```
 
-Generated Playwright code (note: tags in test name, tag action comes BEFORE Background helper call):
+Generated Playwright code (note: feature tags precede scenario tags in the test name; tag action comes BEFORE Background helper call):
 ```typescript
-test('DAS-01: Finish onboarding @purge-data', async ({ page, context }) => {
+test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context }) => {
   // @purge-data - Restore the seed data to initial state (runs FIRST)
   execSync('make reseed', { stdio: 'inherit' });
 
@@ -816,9 +823,9 @@ const element = isAndroid
 After executing all scenario steps, use the Write tool to create a `.spec.js` file alongside the `.feature` file with:
 
 **Test Naming Convention:**
-- **Append BDD tags to the end of the test name**, space-separated: `test('ID: Title @tag1 @tag2', ...)`
+- **Append BDD tags to the end of the test name**, space-separated, with feature-level tags first and scenario-level tags after, deduplicated: `test('ID: Title @featureTag @scenarioTag', ...)`
 - This enables Playwright's `--grep` / `--grep-invert` filtering, e.g., `npm run test:e2e -- --grep-invert "@timeout-"` to skip slow tests
-- If a scenario has no tags, the test name is just the ID and title
+- If neither the feature nor the scenario has tags, the test name is just the ID and title
 
 **Handling Existing Spec Files:**
 - If a `.spec.js` file already exists, read it first to preserve the file structure
@@ -869,7 +876,7 @@ async function setupBackground(context: BrowserContext): Promise<string> {
 // ============================================================
 
 test.describe('Feature: App Settings', () => {
-  test('DAS-01: Finish onboarding @purge-data', async ({ page, context }) => {
+  test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context }) => {
     // @purge-data - Restore the seed data to initial state (tag action runs FIRST)
     execSync('make reseed', { stdio: 'inherit' });
 
@@ -881,7 +888,7 @@ test.describe('Feature: App Settings', () => {
     // ... remaining scenario steps
   });
 
-  test('DAS-02: Delete image', async ({ page, context }) => {
+  test('DAS-02: Delete image @e2e @auth', async ({ page, context }) => {
     // Background (returns appId for use in scenario)
     const appId = await setupBackground(context);
 
@@ -895,7 +902,7 @@ test.describe('Feature: App Settings', () => {
 **Key points:**
 - **Helper functions first**: All Background-derived helpers appear at the top of the file
 - **No beforeEach**: Each test explicitly calls `setupBackground()` for clarity
-- **Tags in test names**: Append all scenario tags to the test name (e.g., `test('DAS-01: Finish onboarding @purge-data', ...)`) to enable `--grep` / `--grep-invert` filtering
+- **Tags in test names**: Append BDD tags to the test name — feature tags first, then scenario tags, deduplicated (e.g., `test('DAS-01: Finish onboarding @e2e @auth @purge-data', ...)`) to enable `--grep` / `--grep-invert` filtering. `test.describe()` stays tag-free.
 - **Tags also affect tag actions**: `@purge-data` adds `execSync('make reseed')` BEFORE the helper call
 - **Self-contained tests**: Each test shows its full setup, making debugging easier
 - **Return values**: If scenario needs a Background value (e.g., `appId`), capture it from the helper
