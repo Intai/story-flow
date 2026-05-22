@@ -1,7 +1,7 @@
 {
   "name": "junior-flow",
-  "description": "Helps junior developers create technical story markdown from Jira story",
-  "version": "1.0.7",
+  "description": "Helps junior developers create technical story markdown from Jira/ClickUp story",
+  "version": "1.0.8",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
@@ -12,7 +12,8 @@
   "keywords": [
     "junior-developer",
     "story-planning",
-    "jira"
+    "jira",
+    "clickup"
   ],
   "mcpServers": {
     "figma": {

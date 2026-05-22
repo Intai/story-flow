@@ -1,16 +1,16 @@
 ---
-name: Draft a story markdown from a Jira story or feature description
-description: Generate a draft story markdown by analyzing a Jira story or feature description, Figma designs, and the codebase.
+name: Draft a story markdown from a Jira/ClickUp story or feature description
+description: Generate a draft story markdown by analyzing a Jira/ClickUp story or feature description, Figma designs, and the codebase.
 user-invocable: false
 ---
 
-# Draft a story markdown from a Jira story or feature description
+# Draft a story markdown from a Jira/ClickUp story or feature description
 
 ## Overview
 
 This skill helps junior developers create technical story markdown by:
-1. Gathering requirements from a Jira story or a provided feature description
-2. Fetching Figma designs linked in the Jira story (when applicable)
+1. Gathering requirements from a Jira/ClickUp story or a provided feature description
+2. Fetching Figma designs linked in the Jira/ClickUp story (when applicable)
 3. Exploring the codebase to discover relevant files and patterns
 4. Generating a draft `story.md` for the developer to review and refine
 
@@ -18,24 +18,24 @@ This skill helps junior developers create technical story markdown by:
 
 ### Phase 1: Gather Requirements
 
-#### Option A: Jira ticket provided
+#### Option A: Jira/ClickUp ticket provided
 
-When the input is a Jira ticket ID (matching a pattern like `PROJ-123`):
+When the input is a Jira/ClickUp ticket ID (matching a pattern like `PROJ-123`, `86d2uf1mh`):
 
-- Use the Jira MCP tools to fetch the story by its ticket ID.
+- Use the Jira/ClickUp MCP tools to fetch the story by its ticket ID.
 - Extract:
   - Summary (user story statement)
   - Description (context and background)
   - Acceptance criteria (requirements)
   - Subtasks (if any)
   - Figma links (URLs matching `figma.com/file/` or `figma.com/design/`)
-- If the Jira fetch fails, inform the developer and ask them to verify:
+- If the Jira/ClickUp fetch fails, inform the developer and ask them to verify:
   - The ticket ID is correct
   - They are logged into Atlassian MCP (`/mcp` to check status)
 
 #### Option B: Feature description provided
 
-When the input is a feature description (not a Jira ticket):
+When the input is a feature description (not a Jira/ClickUp ticket):
 
 - Use the provided description as the basis for the story.
 - Ask the developer clarifying questions if the description is too vague to derive requirements from, such as:
@@ -54,7 +54,7 @@ Use a **single comprehensive Explore agent** (Task tool with `subagent_type: Exp
    - Common patterns (how similar features are structured)
 
 2. **Files related to the feature area**
-   - Search using keywords extracted from the Jira story summary and description
+   - Search using keywords extracted from the Jira/ClickUp story summary and description
    - Look for existing files in the same domain/module
    - Identify files that will likely need modification
 
@@ -75,7 +75,7 @@ Use a **single comprehensive Explore agent** (Task tool with `subagent_type: Exp
 
 **Exploration prompt template:**
 ```
-Explore the codebase to help draft a story for: [SUMMARY FROM JIRA OR FEATURE DESCRIPTION]
+Explore the codebase to help draft a story for: [SUMMARY FROM JIRA/CLICKUP OR FEATURE DESCRIPTION]
 
 Find:
 1. Project structure - how are features organized?
@@ -95,7 +95,7 @@ Provide specific file paths and patterns discovered.
 Create a story markdown with the following structure:
 
 ```markdown
-[User story summary from Jira or feature description]
+[User story summary from Jira/ClickUp or feature description]
 
 ## Requirements
 
@@ -174,7 +174,7 @@ If a requirement cannot be mapped to specific files:
 2. **Highlight areas needing review:**
    - Tasks where file paths were uncertain (marked with assumptions)
    - Requirements that may need clarification
-   - Any gaps between Jira acceptance criteria and generated tasks
+   - Any gaps between Jira/ClickUp acceptance criteria and generated tasks
 
 3. **Suggest output path:**
    - If an output path was provided, use it
@@ -213,9 +213,9 @@ As a user, I want to update my profile name so that my account details are accur
 
 ## Example Inputs
 
-- Draft story for JIRA-123
-- Create story markdown from JIRA-456
-- Generate technical story for JIRA-789 @src/feature/docs/story.md
-- Draft JIRA-100 to @path/to/output.md
+- Draft story for PROJ-123
+- Create story markdown from PROJ-456
+- Generate technical story for PROJ-789 @src/feature/docs/story.md
+- Draft PROJ-100 to @path/to/output.md
 - Draft story for "Add dark mode support to the settings page"
 - Draft story for "Implement user profile image upload"

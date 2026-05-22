@@ -4,19 +4,19 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Prerequisite
 
-- Jira story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
+- Jira/ClickUp story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
 
   > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, and create UI designs collaboratively with Claude before grooming.
 
 - Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
-- If you use Jira, login to Atlassian MCP and run `/mcp` to verify the connection status.
+- If you use Jira/ClickUp, login to Atlassian/ClickUp MCP and run `/mcp` to verify the connection status.
 
 ### Steps
 
 1. 🧠 **Handcraft the technical story markdown** \
-   Create a markdown file with requirements and tasks according to a Jira story, e.g. `src/onboarding/docs/onboarding-story.md`
+   Create a markdown file with requirements and tasks according to a Jira/ClickUp story, e.g. `src/onboarding/docs/onboarding-story.md`
 
-   > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira story as a starting point.
+   > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira/ClickUp story as a starting point.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.
@@ -42,7 +42,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 2. 🤖 **Review the story markdown** \
    Prompt Claude Code: `/review-story @path/to/story.md JIRA-123` in **plan mode**. \
-   This checks the story markdown, optionally against a Jira story.
+   This checks the story markdown, optionally against a Jira/ClickUp story.
 
 3. 🧠 **Update the story markdown** \
    Incorporate feedback to ensure the story markdown is well-defined and detailed.
