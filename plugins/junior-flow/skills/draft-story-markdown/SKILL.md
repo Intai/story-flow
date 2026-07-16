@@ -90,7 +90,7 @@ Provide specific file paths and patterns discovered.
 
 ### Phase 3: Generate Draft
 
-**Important:** Do not include unit test requirements or tasks in the story. Unit tests are automatically created during implementation with 100% coverage for every source file. Only include QA tasks for BDD scenario planning.
+**Important:** Do not include unit test requirements or tasks in the story. Unit tests are automatically created during implementation with 100% coverage for every source file. Only include QA tasks for BDD scenario planning and for verifying the implementation against the acceptance criteria.
 
 Create a story markdown with the following structure:
 
@@ -108,6 +108,7 @@ Create a story markdown with the following structure:
 - Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
 - Use frontend-developer subagent to [task description] @path/to/component.jsx. [Technical details].
 - Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
+- Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @path/to/feature.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
 
 **Task guidelines:**
@@ -118,7 +119,8 @@ Create a story markdown with the following structure:
   - Technical details about what to implement
   - Relevant Figma links for reference, if available
 - Group related work into single tasks when appropriate
-- Always include a QA task for BDD scenarios
+- Always include a QA task to **plan** BDD scenarios
+- Always include a final QA task to **verify** the implementation by executing the BDD scenarios (via `/execute-scenario`) and fixing any failure until all scenarios pass
 - Use existing file paths discovered during exploration
 - For new files, follow the naming conventions discovered
 - **Shared utility tasks:** When exploration reveals that two or more tasks will need the same logic (validation, formatting, data transformation), add a separate task to create the shared utility function before the tasks that use it. This avoids duplicating logic across tasks and keeps each task focused on a single responsibility.
@@ -146,7 +148,7 @@ When Figma design information is available:
 - `Use backend-developer subagent to`: APIs, schemas, database models, server-side logic, backend services
 - `Use frontend-developer subagent to`: React/Vue/Angular components, state management, UI logic, styling
 - `Use mobile-developer subagent to`: React Native, iOS, Android native code, mobile-specific features
-- `Use qa-tester subagent to`: BDD scenarios, test planning, feature files
+- `Use qa-tester subagent to`: BDD scenarios, test planning, feature files, executing/verifying scenarios against acceptance criteria and coordinating fixes on failure
 
 ### Phase 3b: Handle Unknown Files
 
@@ -209,6 +211,7 @@ As a user, I want to update my profile name so that my account details are accur
 - Use frontend-developer subagent to create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
 - Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
 - Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
+- Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @src/account/docs/update-profile-name.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
 
 ## Example Inputs

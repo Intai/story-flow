@@ -13,7 +13,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Steps
 
-1. 🧠 **Handcraft the technical story markdown** \
+1. 🧠 **Create the technical story markdown** \
    Create a markdown file with requirements and tasks according to a Jira/ClickUp story, e.g. `src/onboarding/docs/onboarding-story.md`
 
    > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira/ClickUp story as a starting point.
@@ -22,7 +22,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Include a QA task to plan BDD scenarios.
    - Do not specify task dependencies at this stage; they will be analyzed later.
    - Include comprehensive technical details—this allows Claude to produce better, more reliable results without guessing.
-   - Think first, code later. Handcrafting the story markdown ensures the technical design exists before a single line of code is written. This reduces rework and enables smooth parallel development.
+   - Think first, code later. Creating the story markdown ensures the technical design exists before a single line of code is written. This reduces rework and enables smooth parallel development.
 
    Example:
    ```markdown
@@ -55,8 +55,8 @@ This workflow leverages Claude Code to automate and streamline software developm
    Discuss story requirements, planned tasks, and execution plan with the team.
 
 6. 🤖 **Implement the story** \
-   Prompt: `/implement-story @path/to/story.md` with accept-edits on. \
-   Executes tasks according to the plan. Each task is delegated to a subagent running in an isolated context, keeping the orchestrator lightweight so it can handle larger stories without exhausting its context window. Tasks previously analyzed as independent will be implemented in parallel.
+   Prompt: `/implement-story @path/to/story.md` in **auto mode**. \
+   Executes tasks according to the plan in loops until the acceptance criteria are met. Each task is delegated to a subagent running in an isolated context, keeping the orchestrator lightweight so it can handle larger stories without exhausting its context window. Tasks previously analyzed as independent will be implemented in parallel.
 
 7. 🧠 **Review implementation** \
    Check code, unit tests, and BDD scenarios line by line for:
@@ -66,14 +66,14 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Test assertions match their descriptions (tests actually verify what they claim to test)
 
 8. 🤖🧠 **Execute BDD scenarios** \
-   Prompt: `/execute-scenario SCN-01 @path/to/file.feature` with accept-edits on. \
+   Prompt: `/execute-scenario SCN-01 @path/to/file.feature` in **auto mode**. \
    Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass.
 
 9. 🧠 **Create the final pull request** \
    Discuss the fully tested implementation with the team.
 
 10. 🤖 **Optional: Generate a Playwright script** \
-    Prompt: `/execute-scenario all @path/to/file.feature --record` with accept-edits on. \
+    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
     Generates a Playwright test script that can be run efficiently without Claude for regression testing.
 
     **Troubleshoot Recording Issues** \
