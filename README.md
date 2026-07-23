@@ -6,9 +6,9 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 - Jira/ClickUp story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
 
-  > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, and create UI designs collaboratively with Claude before grooming.
+  > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, create UI designs, and break the feature into epics and stories collaboratively with Claude before grooming.
 
-- Team alignment: All scrum team members understand the feature, including edge cases and expected outcomes.
+- Team alignment: All scrum team members understand the feature, including edge cases, error handling, and expected outcomes.
 - If you use Jira/ClickUp, login to Atlassian/ClickUp MCP and run `/mcp` to verify the connection status.
 
 ### Steps
