@@ -52,7 +52,13 @@ This workflow leverages Claude Code to automate and streamline software developm
    This identifies tasks that can be executed in parallel and updates the story markdown accordingly.
 
 5. 🧠 **Create an initial pull request** \
-   Discuss story requirements, planned tasks, and execution plan with the team.
+   Open a PR with the story markdown and discuss requirements, planned tasks, and the execution plan with the team **before any code is written**.
+
+   > 💡 **Why now?** Shift-left: a wrong approach caught here costs a review comment; caught after implementation it costs the implementation. Use [junior-flow](plugins/junior-flow) `/learn-story-flow technical-design` to explore why design PRs reduce rework.
+
+   **Important:**
+   - Include alternatives considered and open questions for reviewers.
+   - Designs evolve; update the story markdown when implementation diverges.
 
 6. 🤖 **Implement the story** \
    Prompt: `/implement-story @path/to/story.md` in **auto mode**. \
