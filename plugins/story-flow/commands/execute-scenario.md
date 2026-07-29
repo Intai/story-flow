@@ -1,6 +1,6 @@
 --- 
 argument-hint: [ST-01 or all, @path/to/file.feature (use * for wildcard), ..., --record (optional)]
-description: Execute BDD test scenarios in a .feature file using browser automation. Use --record to generate a Playwright .spec.ts file.
+description: Execute BDD test scenarios in a .feature file using browser automation. Use --record to generate a Playwright .spec.js file.
 ---
 
 Load BOTH skills in this order using the Skill tool:

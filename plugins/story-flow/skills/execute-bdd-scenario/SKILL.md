@@ -47,12 +47,12 @@ user-invocable: false
      | SMG-03   | Inline edit a string value  | ⊘ SKIPPED |
      ```
 - Save `.feature` files in the same folder as the stories.
-- If a BDD scenario has the `@screenshots` tag, take screenshots throughout the execution.
+- If a BDD scenario has the `@screenshots` tag, take a screenshot after **every assertion step** and, in `--record` mode when VRT is configured, emit one visual regression tracking call per assertion step (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). Pass `browser_take_screenshot` a filename explicitly prefixed with `.playwright-mcp/` — e.g. `.playwright-mcp/SMG-01-i-should-see-the-dashboard.png` so it lands in the `.playwright-mcp` output folder — never an absolute path, which writes to the project root.
 - If a BDD scenario doesn't have the `@screenshots` tag, do not take any screenshot.
 - If a BDD scenario has the `@purge-data` tag, restore the seed data first (before the Background steps) by executing the `make reseed` command.
 - If a BDD scenario does not have the `@purge-data` tag, do not restore the seed data before running the scenario.
 - If a BDD scenario has the `@timeout-*` tag, extend the scenario and expect timeout to be longer. e.g. `@timeout-600s` means timeout for the scenario and every expect step is 600s(10m).
-- Use `mcp__playwright__browser_run_code` to set the browser offline.
+- Use `mcp__plugin_story-flow_playwright__browser_run_code_unsafe` to set the browser offline.
 - Reference the @Makefile for local development workflows.
 
 ## Mobile App Instructions
@@ -74,7 +74,7 @@ user-invocable: false
 Start Appium server: `npx appium server --port 4723`
 
 WebdriverIO options:
-```typescript
+```javascript
 {
   hostname: "localhost",
   port: 4723,
@@ -101,11 +101,11 @@ When all 3 BrowserStack env vars are set, connect to BrowserStack cloud instead 
 Start BrowserStackLocal binary before running tests. Stop BrowserStackLocal after tests complete. Use the WebDriver REST API directly by curl instead of Appium MCP or WebDriverIO library. 
 
 WebdriverIO options:
-```typescript
+```javascript
 {
   hostname: "hub-cloud.browserstack.com",
   port: 443,
-  protocol: "https" as const,
+  protocol: "https",
   path: "/wd/hub",
   waitforTimeout: 30000,
   waitforInterval: 500,
@@ -139,7 +139,7 @@ WebdriverIO options:
       - **Default timeout**: Call these methods WITHOUT explicit timeout parameters - they use `waitforTimeout` from appiumOptions (default: 30000ms)
       - **Custom timeout**: Only add explicit `{ timeout: X }` when an operation is known to take longer than the default (e.g., network fetches, large file operations)
       - Example:
-        ```typescript
+        ```javascript
         // CORRECT - uses default waitforTimeout (30s)
         await element.waitForDisplayed();
 
@@ -153,10 +153,55 @@ WebdriverIO options:
     - All non-visual verification steps
   - **Only use screenshots** for:
     - Visual verification (e.g., verifying colors with ImageMagick)
-    - When the scenario has `@screenshots` tag
+    - After every assertion step, when the scenario has the `@screenshots` tag
   - Page source is faster and provides structured data; screenshots are only needed when pixel-level visual verification is required.
 - **Multi-finger gestures (3-finger tap, pinch, etc.):**
   - The Appium MCP tools don't have direct multi-finger support, so use the W3C Actions API via HTTP.
+
+## Visual Regression Testing (VRT)
+
+Visual regression compares each screenshot against an approved baseline in a self-hosted [Visual Regression Tracker (VRT)](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI for approve/reject. This is wired **only into `--record` mode** — the generated Playwright spec calls the VRT SDK natively. Direct (non-record) execution is unaffected: `@screenshots` captures the same per-assertion-step set, just untracked.
+
+**Provisioning is out of scope for this plugin.** Standing up the VRT stack (Docker, ports, creating the project and API key) is the consuming project's responsibility. The skill assumes VRT is reachable whenever the `VRT_*` env vars are set — the same way it assumes a BrowserStack account exists when `BROWSERSTACK_*` is set.
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VRT_APIURL` | VRT backend API URL | `http://localhost:4200` |
+| `VRT_PROJECT` | VRT project name or ID | - |
+| `VRT_APIKEY` | VRT user API key | - |
+| `VRT_BRANCHNAME` | Baseline branch | Current git branch |
+| `VRT_CIBUILDID` | Groups every worker's `start()` into one VRT build | Current git SHA |
+| `VRT_ENABLESOFTASSERT` | `true` = collect diffs without throwing; review in UI | `true` |
+
+**Build scope**: one build per commit, not per feature file. The VRT backend upserts a build on (project, `ciBuildId`), so defaulting `VRT_CIBUILDID` to the current git SHA makes every Playwright worker's `start()` resolve to the same build. Re-running the suite on the same commit appends to that commit's build — set `VRT_CIBUILDID` explicitly (e.g. a CI run id) when each re-run needs its own.
+
+**Mode detection**: When running with `--record` **and** `VRT_APIURL`, `VRT_APIKEY`, and `VRT_PROJECT` are all set, the generated spec for a `@screenshots` scenario tracks each screenshot in VRT. Otherwise (no `--record`, or any of the three unset), `@screenshots` captures screenshots only. The `@visual-regression-tracker/agent-playwright` SDK reads the `VRT_*` variables natively, so generated specs carry no inline credentials.
+
+**Run-time detection**: Record-time config controls whether VRT wiring is *emitted*; the env vars control whether it *runs*. The generated spec re-checks `VRT_APIURL`, `VRT_APIKEY`, `VRT_PROJECT`, and `VRT_BRANCHNAME` at run time via an `isVrtEnabled` flag (see [VRT wiring](#generating-the-spec-file)), so a spec recorded with VRT configured degrades to screenshot-only on machines and CI jobs without those vars instead of failing the suite.
+
+**Soft-assert default**: Default `VRT_ENABLESOFTASSERT` to `true` so diffs are collected for review rather than hard-failing the test — the safer default given a human approval step and unavoidable first-run "new image" states.
+
+- `VRT_ENABLESOFTASSERT=true` (default): diffs do not fail the test; a human approves/rejects in the UI. Covers first runs / baseline establishment cleanly.
+- `VRT_ENABLESOFTASSERT=false` (opt-in strict mode): a new/unapproved/changed image fails the test, and the failure includes the VRT diff link.
+
+**IMPORTANT:** The VRT SDK's own native default for soft-assert is `false`. When `VRT_ENABLESOFTASSERT` is unset, the generated spec MUST set it explicitly to `true` — do not rely on the SDK default.
+
+**First run / approval flow**: Images with no baseline appear as "new" in the VRT UI. Approving them creates the baseline, keyed by Project + Name + Branch + OS + Browser + Viewport + Device + Custom Tags — so `name` must be reproducible across recordings, otherwise a re-record orphans the approved baseline and shows up as a spurious "new" image.
+
+### Screenshot Options
+
+Every tracked image is captured with `animations: 'disabled'`. The helpers apply it (see [VRT wiring](#generating-the-spec-file)), so it is never spelled out per call.
+
+**IMPORTANT:** The SDK forwards `screenshotOptions` to Playwright's `page.screenshot()`, **not** `toHaveScreenshot()`. `page.screenshot()` defaults to `animations: 'allow'`; only `toHaveScreenshot()` flips it to `'disabled'`. Since VRT bypasses `toHaveScreenshot`, the comparison-safe default is not inherited and MUST be set explicitly — the same trap as `VRT_ENABLESOFTASSERT` above.
+
+- **Why it matters**: without it, a shot taken mid-transition captures an arbitrary frame. The approved baseline becomes one random frame of a fade, and every later run diffs against it.
+- **What `animations: 'disabled'` does**: finite CSS animations, CSS transitions, and Web Animations are fast-forwarded to their end state (so `transitionend` fires); infinite ones are cancelled to their initial state and resumed after the shot.
+- **What it does NOT freeze**: `<video>`, animated GIF/APNG, canvas/WebGL, and JS animations driven by `requestAnimationFrame`/`setTimeout` rather than the Web Animations API. Exclude those regions with `ignoreAreas`.
+- **Element shots**: `trackElementHandle` takes the same options via `elementHandle.screenshot()`, so `trackVisualElement` gets the same default.
+
+Anything passed as `screenshotOptions` in a `[RECORD_VISUAL]` annotation merges **over** this default, so `{ fullPage: true }` still captures with animations disabled. Only an explicit `{ animations: 'allow' }` overrides it.
 
 ## Recording Mode (--record flag)
 
@@ -205,7 +250,7 @@ tags: ["@purge-data"]
 ```
 
 Generated Playwright code (note: feature tags precede scenario tags in the test name; tag action comes BEFORE Background helper call):
-```typescript
+```javascript
 test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context }) => {
   // @purge-data - Restore the seed data to initial state (runs FIRST)
   execSync('make reseed', { stdio: 'inherit' });
@@ -249,8 +294,8 @@ body: |
 
 **Annotation fields:**
 - `name`: Function name (camelCase, descriptive)
-- `params`: Array of typed parameters (e.g., `["context: BrowserContext", "appId: string"]`)
-- `returns`: Return type (e.g., `"string"`, `"Promise<void>"`, `"Promise<string>"`)
+- `params`: Array of typed parameters (e.g., `["context: BrowserContext", "appId: string"]`) — the types are metadata; the generated JavaScript emits names only: `async function setupBackground(context, appId)`
+- `returns`: Return type (e.g., `"string"`, `"Promise<void>"`, `"Promise<string>"`) — not emitted either; it signals whether to `await` the call and capture its value
 - `body`: The function implementation (multiline supported)
 
 ### Composite vs Granular Helpers
@@ -295,7 +340,7 @@ body: |
 
 The value is then available in the test via the composite helper's return value:
 
-```typescript
+```javascript
 test('DAS-02: Delete image', async ({ page, context }) => {
   // Background (returns appId for use in scenario)
   const appId = await setupBackground(context);
@@ -424,6 +469,77 @@ value: 3
 | `toHaveAttribute` | `await expect(locator).toHaveAttribute(name, value)` |
 | `evaluate` | `const ret = await locator.evaluate(func)` |
 
+### Recording Visual Regression (VRT)
+
+Only applies when the scenario has the `@screenshots` tag AND VRT is configured at record time (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). The generated calls are additionally guarded at run time, so they no-op when the `VRT_*` env vars are absent. Output one `[RECORD_VISUAL]` annotation per assertion step — the same set direct execution captures — placed AFTER that step's `[RECORD_EXPECT]` / `[RECORD_COMMAND]` annotation so the tracking call lands after the assertion in the generated code:
+
+```
+[RECORD_VISUAL]
+step: "Then I should see the dashboard"
+name: "SMG-01-i-should-see-the-dashboard"
+target: page
+options: { diffTollerancePercent: 1 }
+[/RECORD_VISUAL]
+```
+
+**Annotation fields:**
+- `step`: The exact Gherkin step text (becomes a comment)
+- `name`: **Derived, never invented** — see [Deriving the VRT name](#deriving-the-vrt-name) below
+- `target`: `page` for a full-page shot (→ `trackPage`), or a discovered scoped locator for an element shot (→ `trackElementHandle`). Default to `page`; use a locator only when the assertion is scoped to one element and a full-page shot would be noisy. Discover the locator chain per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors.
+- `options`: Optional VRT options object — `diffTollerancePercent`, `ignoreAreas`, `screenshotOptions`, `agent`. `screenshotOptions` merges over the helpers' `animations: 'disabled'` default rather than replacing it, so only record it when a shot needs something extra (e.g. `fullPage`) — see [Screenshot Options](#screenshot-options).
+
+**Supported tracking calls:**
+
+| target | Generated Code |
+|--------|----------------|
+| `page` | `await trackVisualPage(page, name, options)` |
+| locator | `await trackVisualElement(locator, name, options)` |
+
+Both are run-time-guarded helpers defined at the top of the spec, not direct SDK calls — see [VRT wiring](#generating-the-spec-file).
+
+#### Deriving the VRT name
+
+`name` is part of VRT's baseline key, so it MUST be reproducible: recording the same scenario twice has to produce byte-identical names, or the approved baseline is orphaned. Never coin a short label — derive it mechanically:
+
+```
+<scenario-id>[-<row-key>]-<step-slug>[-<n>]
+```
+
+- **`<scenario-id>`** — verbatim from the feature file, keeping its original casing so it matches the generated `test('SMG-01: …')` name. Only the step text is lowercased.
+- **`[-<row-key>]`** — present only for a `Scenario Outline`; see [Scenario Outline rows](#scenario-outline-rows) below.
+- **`<step-slug>`** — slugify the `step` value:
+  1. Drop the leading Gherkin keyword (`Given` / `When` / `Then` / `And` / `But`).
+  2. Lowercase the remainder.
+  3. Replace every run of non-alphanumeric characters with a single `-`, then trim leading and trailing `-`.
+  4. Truncate to 80 characters at a `-` boundary. VRT imposes no length limit on `name` — this cap exists only to keep names readable in the VRT UI.
+- **`[-<n>]`** — append `-2`, `-3`, … **only** when an identical name was already emitted within the same scenario (and, for an outline, the same row), numbered in emission order. Do not add a positional step index otherwise: it would shift whenever a step is inserted or reordered and orphan every downstream baseline.
+
+##### Scenario Outline rows
+
+Each `Examples:` row renders a different image, so every row needs its own name — rows sharing one name collide on a single baseline and flip it back and forth on every run. VRT's `customTags` variant dimension is not reachable through `@visual-regression-tracker/agent-playwright`, so the row must be distinguished inside `name`:
+
+- Take the placeholders that appear in the **`Scenario Outline:` title**, in the order they appear there, and slugify that row's values for them. That is the row key. Placeholders appearing only in steps or only in `Examples:` are deliberately excluded — the title is the author's declaration of what distinguishes the rows.
+- **Fallback:** when the outline title contains no placeholders, use `row-1`, `row-2`, … in `Examples:` row order (header excluded). This fallback is positional — inserting or reordering rows orphans the affected baselines — so prefer putting the discriminating placeholder in the outline title.
+- Slugify the step text **after** placeholder substitution, matching what `step` records at execution time. If a step's text also contains the title's placeholder, the value simply appears twice in the name; that is harmless and not special-cased.
+
+```gherkin
+Scenario Outline: SMG-01 Dashboard for <role>
+  Given I log in as "<role>" with locale "<locale>"
+  Then I should see the dashboard
+
+  Examples:
+    | role  | locale | notes       |
+    | admin | en-US  | full access |
+    | guest | ja-JP  | read only   |
+```
+
+```
+SMG-01-admin-i-should-see-the-dashboard
+SMG-01-guest-i-should-see-the-dashboard
+```
+
+`locale` and `notes` are excluded because they do not appear in the title.
+
 ### Recording Command Line Executions
 
 For steps that require command line verification (e.g., S3 state checks), output:
@@ -455,7 +571,7 @@ assertion: shouldFail
 
 When generating shell commands with file paths, **always quote local file paths** that may contain special shell characters (parentheses, spaces, `$`, etc.):
 
-```typescript
+```javascript
 // WRONG - parentheses interpreted as subshell syntax
 execSync(`aws s3 cp ${fixturePath}.png s3://bucket/...`);
 
@@ -483,7 +599,7 @@ pattern: "#9933FF"
 ```
 
 **Generated imports and setup:**
-```typescript
+```javascript
 import { test, expect } from '@playwright/test';
 import { remote } from 'webdriverio';
 import { execSync } from 'child_process';
@@ -506,14 +622,14 @@ function getAppiumOptions() {
 ```
 
 **Generated helper functions:**
-```typescript
-async function takeAppScreenshot(driver: WebdriverIO.Browser, filename: string): Promise<string> {
+```javascript
+async function takeAppScreenshot(driver, filename) {
   const imagePath = path.join(process.cwd(), '.appium-mcp', filename);
   await driver.saveScreenshot(imagePath);
   return imagePath;
 }
 
-function verifyColorAtPixel(imagePath: string, x: number, y: number, expectedColor: string): void {
+function verifyColorAtPixel(imagePath, x, y, expectedColor) {
   const output = execSync(
     `magick '${imagePath}' -crop 1x1+${x}+${y} txt:- | tail -1`,
     { encoding: 'utf-8' }
@@ -525,7 +641,7 @@ function verifyColorAtPixel(imagePath: string, x: number, y: number, expectedCol
 ```
 
 **Generated test code:**
-```typescript
+```javascript
 const driver = await remote(getAppiumOptions());
 
 // Take screenshot for color verification
@@ -607,7 +723,7 @@ value: "John"
 **Generated Playwright code:**
 ```javascript
 // Helper function (add to helpers section if not present)
-function getS3User(appId: string): Record<string, unknown> {
+function getS3User(appId) {
   try {
     const output = execSync(
       `AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 cp s3://apps/${appId}/user.json - 2>/dev/null`,
@@ -638,7 +754,7 @@ await expect.poll(() => getS3User(appId).name).toBe("John");
 - MUI Select components use `role="combobox"` but are NOT actual `<input>` elements
 - `toHaveValue()` will fail on combobox elements with "Not an input element" error
 - Use `toContainText()` to verify the selected value:
-  ```typescript
+  ```javascript
   // WRONG - will fail (combobox is not an <input>)
   await expect(page.getByRole('combobox', { name: 'Country' })).toHaveValue('US');
 
@@ -664,7 +780,7 @@ await expect.poll(() => getS3User(appId).name).toBe("John");
 
 **Waiting for URL redirections:**
 - When asserting URL changes after actions that trigger navigation (e.g., form submissions, button clicks that redirect), use `waitForURL` before the assertion:
-  ```typescript
+  ```javascript
   // Wait for navigation to complete before asserting
   await page.waitForURL(/\/landing/);
   await expect(page).toHaveURL(/\/landing/);
@@ -692,7 +808,7 @@ await expect.poll(() => getS3User(appId).name).toBe("John");
 | Wait after navigation | `waitForURL` + `waitForLoadState` | See below |
 
 **Pattern for page navigation with dynamic content:**
-```typescript
+```javascript
 // WRONG - hardcoded wait
 await page.goto("http://localhost:8080/settings");
 await page.waitForTimeout(2000);
@@ -707,7 +823,7 @@ await expect(page.locator('[alt^="image"]')).toHaveCount(3);
 ```
 
 **Pattern for actions that trigger async operations:**
-```typescript
+```javascript
 // WRONG
 await page.getByRole("combobox", { name: "Country" }).click();
 await page.getByRole("option", { name: "United States" }).click();
@@ -770,7 +886,7 @@ Playwright's accessibility snapshot does NOT show `data-testid` attributes. Use 
    ```
 
 3. **Use testids over DOM traversal:**
-   ```typescript
+   ```javascript
    // WRONG - fragile, breaks when DOM structure changes
    locator: page.getByRole("heading", { name: "Product" }).locator("..").locator("..")
 
@@ -805,7 +921,7 @@ The `~accessibilityId` selector (e.g., `driver.$('~Sign in')`) is cross-platform
 **Common issue:** An element may have `text="Sign in"` but no `content-description`, causing `~Sign in` to fail.
 
 **Cross-platform pattern**:
-```typescript
+```javascript
 const isAndroid = driver.isAndroid;
 const element = isAndroid
   ? await driver.$('android=new UiSelector().text("Sign in")')
@@ -835,15 +951,15 @@ After executing all scenario steps, use the Write tool to create a `.spec.js` fi
 
 **Generated File Structure (unified for all scenarios):**
 
-```typescript
-import { expect, test, BrowserContext, Page } from '@playwright/test';
+```javascript
+import { expect, test } from '@playwright/test';
 import { execSync } from 'child_process';
 
 // ============================================================
 // Helper Functions
 // ============================================================
 
-function extractAppIdFromS3(): string {
+function extractAppIdFromS3() {
   const output = execSync(
     'AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/',
     { encoding: 'utf-8' }
@@ -851,20 +967,20 @@ function extractAppIdFromS3(): string {
   return output.match(/PRE ([a-f0-9-]{36})\//)?.[1] ?? '';
 }
 
-async function setLocalStorageAppId(context: BrowserContext, appId: string): Promise<void> {
+async function setLocalStorageAppId(context, appId) {
   await context.addInitScript((id) => {
     if (id) localStorage.setItem('app_id', JSON.stringify(id));
   }, appId);
 }
 
-async function setCookies(context: BrowserContext): Promise<void> {
+async function setCookies(context) {
   await context.addCookies([
     { name: 'x-tenant-id', value: '0595cc48-354b-4b13-8f17-fe65d7f79146', domain: 'localhost', path: '/' },
     { name: 'x-app-id', value: 'd37a8fae-ed2d-4a78-9d71-d5a3dfe0d0ca', domain: 'localhost', path: '/' },
   ]);
 }
 
-async function setupBackground(context: BrowserContext): Promise<string> {
+async function setupBackground(context) {
   const appId = extractAppIdFromS3();
   await setLocalStorageAppId(context, appId);
   await setCookies(context);
@@ -907,6 +1023,93 @@ test.describe('Feature: App Settings', () => {
 - **Self-contained tests**: Each test shows its full setup, making debugging easier
 - **Return values**: If scenario needs a Background value (e.g., `appId`), capture it from the helper
 
+**VRT wiring (only when the scenario has `@screenshots` and VRT is configured at record time):**
+
+Add the tracker import and construct it once (it reads the `VRT_*` env vars natively). Derive the env defaults **before** constructing, then construct **only when the VRT backend is fully configured at run time** — a recorded spec must still pass on a machine or CI job that has no VRT credentials. If `VRT_ENABLESOFTASSERT` is unset, set it to `true` explicitly — the SDK's own default is `false`.
+
+```javascript
+import { PlaywrightVisualRegressionTracker } from '@visual-regression-tracker/agent-playwright';
+import { chromium } from '@playwright/test';
+
+const gitOutput = (command) => {
+  try {
+    return execSync(command, { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch {
+    return '';
+  }
+};
+
+// One build per commit: every worker derives the same ciBuildId, and the VRT backend
+// upserts a build on (project, ciBuildId), so all workers report into a single build
+process.env.VRT_CIBUILDID ||= gitOutput('git rev-parse HEAD');
+// The SDK throws "branchName is not specified" when this is unset — it has no default
+process.env.VRT_BRANCHNAME ||= gitOutput('git rev-parse --abbrev-ref HEAD');
+// Default soft-assert to true unless the project opted into strict mode
+process.env.VRT_ENABLESOFTASSERT ??= 'true';
+
+// Track only when the VRT backend is fully configured; otherwise the spec runs unchanged
+const isVrtEnabled = Boolean(
+  process.env.VRT_APIURL &&
+    process.env.VRT_APIKEY &&
+    process.env.VRT_PROJECT &&
+    process.env.VRT_BRANCHNAME
+);
+
+// Reads VRT_APIURL / VRT_PROJECT / VRT_APIKEY / VRT_BRANCHNAME / VRT_CIBUILDID / VRT_ENABLESOFTASSERT
+const vrt = isVrtEnabled ? new PlaywrightVisualRegressionTracker(chromium.name()) : null;
+
+// page.screenshot() defaults to animations: 'allow' — see "Screenshot Options"
+const DEFAULT_SCREENSHOT_OPTIONS = { animations: 'disabled' };
+
+function withScreenshotDefaults(options) {
+  return {
+    ...options,
+    screenshotOptions: { ...DEFAULT_SCREENSHOT_OPTIONS, ...options?.screenshotOptions },
+  };
+}
+
+async function trackVisualPage(page, name, options) {
+  if (!vrt) return;
+  await vrt.trackPage(page, name, withScreenshotDefaults(options));
+}
+
+async function trackVisualElement(locator, name, options) {
+  if (!vrt) return;
+  await vrt.trackElementHandle(locator, name, withScreenshotDefaults(options));
+}
+```
+
+Open and close the VRT build around the visual scenarios, then emit the `[RECORD_VISUAL]` tracking calls inside the test body via the helpers:
+
+```javascript
+test.describe('Feature: App Settings', () => {
+  test.beforeAll(async () => { if (vrt) await vrt.start(); });
+  test.afterAll(async () => { if (vrt) await vrt.stop(); });
+
+  test('DAS-01: Finish onboarding @e2e @auth @screenshots', async ({ page, context }) => {
+    await setupBackground(context);
+    await page.goto('http://localhost:8080/onboarding');
+
+    // Then I should see the onboarding page
+    await expect(page.getByTestId('OnboardingPage')).toBeVisible();
+    await trackVisualPage(
+      page,
+      'DAS-01-i-should-see-the-onboarding-page',
+      { diffTollerancePercent: 1 }
+    );
+
+    // And I should see the welcome banner
+    await expect(page.getByTestId('WelcomeBanner')).toBeVisible();
+    await trackVisualPage(page, 'DAS-01-i-should-see-the-welcome-banner');
+  });
+});
+```
+
+- Keep the import, the helpers, and `vrt.start()`/`vrt.stop()` **conditional on the tag** at record time — specs without a `@screenshots` scenario are unchanged.
+- `isVrtEnabled` is the **run-time** switch layered on top. When it is false the spec still passes: no build is opened, no tracking call fires, and every non-visual assertion in the scenario runs exactly as before. Never call `vrt.trackPage` / `vrt.trackElementHandle` directly from a test body — always go through `trackVisualPage` / `trackVisualElement` so the guard cannot be bypassed.
+- The `process.env` defaults MUST come **before** the tracker is constructed — the SDK reads them at construction. Use `||=` (not `??=`) for the git-derived ones so an empty env var still falls back. There is deliberately no `main` fallback for `VRT_BRANCHNAME`: outside a git checkout it stays empty and `isVrtEnabled` turns VRT off, rather than silently comparing against the wrong baseline branch.
+- `withScreenshotDefaults` is why `[RECORD_VISUAL]` annotations never need to spell out `animations: 'disabled'` — the choke point applies it. A recorded `screenshotOptions` merges on top; see [Screenshot Options](#screenshot-options).
+
 ### Example Recording Session
 
 Feature step:
@@ -946,7 +1149,7 @@ assertion: toBeVisible
 ```
 
 Generated Playwright code:
-```typescript
+```javascript
 // When I enter "John" in the "Name" field
 await page.getByLabel('Name').fill('John');
 
@@ -976,7 +1179,7 @@ assertion: shouldFail
 ```
 
 Generated Playwright code:
-```typescript
+```javascript
 // And the image should be deleted from S3 bucket
 expect(() => execSync(
   `AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/${appId}/assets/image1.png`,

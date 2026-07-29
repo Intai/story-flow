@@ -176,7 +176,7 @@ Explain the supported tags:
 | Tag | Effect | When to Use |
 |-----|--------|-------------|
 | `@purge-data` | Runs `make reseed` before scenario | When scenario needs clean/known state |
-| `@screenshots` | Takes screenshots during execution | For visual verification or debugging |
+| `@screenshots` | Takes a screenshot after every assertion step | For visual verification or debugging |
 
 ```gherkin
 @purge-data @screenshots

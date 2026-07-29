@@ -120,6 +120,24 @@ Browse and install plugins:
 | `BROWSERSTACK_USERNAME` | BrowserStack username | - |
 | `BROWSERSTACK_ACCESS_KEY` | BrowserStack access key | - |
 | `BROWSERSTACK_APP_ID` | Uploaded app ID (`bs://...`) | - |
+| `VRT_APIURL` | VRT backend API URL | `http://localhost:4200` |
+| `VRT_PROJECT` | VRT project name or ID | - |
+| `VRT_APIKEY` | VRT user API key | - |
+| `VRT_BRANCHNAME` | Baseline branch | Current git branch |
+| `VRT_CIBUILDID` | Groups every worker's run into one VRT build | Current git SHA |
+| `VRT_ENABLESOFTASSERT` | `true` = collect diffs without failing the test; review in the UI | `true` |
+
+The `VRT_*` variables enable visual regression testing for `@screenshots` scenarios recorded with `--record`. Screenshots are compared against approved baselines in a self-hosted [Visual Regression Tracker](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI to approve or reject diffs — standing up that instance is the project's responsibility. Tracking activates only when `VRT_APIURL`, `VRT_APIKEY`, and `VRT_PROJECT` are all set; otherwise `@screenshots` still captures screenshots, just untracked.
+
+### BDD Tags
+
+Tags on a `Feature:` or `Scenario:` line control execution behaviour.
+
+| Tag | Effect |
+|-----|--------|
+| `@purge-data` | Restores seed data (`make reseed`) before the scenario runs |
+| `@screenshots` | Takes a screenshot after every assertion step; tracked for visual regression when the `VRT_*` variables are set |
+| `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes |
 
 ### Knowledge Sharing
 
