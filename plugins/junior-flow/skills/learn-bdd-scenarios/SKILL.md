@@ -66,7 +66,7 @@ Scenario: FEAT-01: [Clear, descriptive title]
 |---------|---------|---------|
 | `Feature:` | Groups related scenarios | `Feature: Image Gallery Management` |
 | `Background:` | Shared setup (runs before each scenario) | Login, navigation, seed data |
-| `@tags` | Control execution behavior | `@purge-data`, `@screenshots` |
+| `@tags` | Control execution behavior, or label tests for filtering | `@purge-data`, `@screenshots`, `@staging` |
 | `Scenario: ID:` | Unique identifier + descriptive title | `FEAT-01: Delete single image` |
 | `Given` | Preconditions/initial state | `Given there are 3 images` |
 | `When` | User actions | `When I click "Delete"` |
@@ -177,6 +177,8 @@ Explain the supported tags:
 |-----|--------|-------------|
 | `@purge-data` | Runs `make reseed` before scenario | When scenario needs clean/known state |
 | `@screenshots` | Takes a screenshot after every assertion step | For visual verification or debugging |
+| `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes | When a scenario is genuinely slow, not to paper over flakiness |
+| Any other tag | No effect on execution; carried into the generated Playwright test name | Labels for `--grep` filtering, e.g. `@staging`, `@prod` |
 
 ```gherkin
 @purge-data @screenshots

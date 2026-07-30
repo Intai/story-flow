@@ -121,6 +121,7 @@ Browse and install plugins:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `BASE_URL` | Base URL of the app under test | `use.baseURL` in `playwright.config.js` |
 | `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` |
 | `APPIUM_APP_PACKAGE` | Local app package unique identifier | - |
 | `BROWSERSTACK_USERNAME` | BrowserStack username | - |
@@ -133,6 +134,18 @@ Browse and install plugins:
 | `VRT_CIBUILDID` | Groups every worker's run into one VRT build | Current git SHA |
 | `VRT_ENABLESOFTASSERT` | `true` = collect diffs without failing the test; review in the UI | `true` |
 
+`BASE_URL` selects the environment to run against. The project's `playwright.config.js` reads it into `use.baseURL` with a local default, so scenarios and recorded specs navigate with relative paths (`page.goto('/settings')`) and one spec runs unchanged against dev, QA, staging or production. Skip starting the local dev server when it points at a remote host:
+
+```javascript
+const baseURL = process.env.BASE_URL ?? 'http://localhost:3000'
+const isRemote = !baseURL.includes('localhost')
+
+export default defineConfig({
+  use: { baseURL },
+  ...(isRemote ? {} : { webServer: [{ command: 'make dev-bg', url: baseURL }] }),
+})
+```
+
 The `VRT_*` variables enable visual regression testing for `@screenshots` scenarios recorded with `--record`. Screenshots are compared against approved baselines in a self-hosted [Visual Regression Tracker](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI to approve or reject diffs — standing up that instance is the project's responsibility. Tracking activates only when `VRT_APIURL`, `VRT_APIKEY`, and `VRT_PROJECT` are all set; otherwise `@screenshots` still captures screenshots, just untracked.
 
 ### BDD Tags
@@ -144,6 +157,14 @@ Tags on a `Feature:` or `Scenario:` line control execution behaviour.
 | `@purge-data` | Restores seed data (`make reseed`) before the scenario runs |
 | `@screenshots` | Takes a screenshot after every assertion step; tracked for visual regression when the `VRT_*` variables are set |
 | `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes |
+
+Every tag is appended to the generated test name — including ones with no built-in behaviour, such as environment tags like `@staging` and `@prod` — so Playwright can filter on them:
+
+```bash
+BASE_URL=https://staging.example.com npx playwright test --grep "@staging"
+npx playwright test --grep-invert "@purge-data"   # skip destructive scenarios on a shared environment
+npx playwright test --grep-invert "@timeout-"     # skip slow scenarios
+```
 
 ### Knowledge Sharing
 

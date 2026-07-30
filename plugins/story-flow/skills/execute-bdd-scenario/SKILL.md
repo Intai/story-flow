@@ -54,6 +54,7 @@ user-invocable: false
 - If a BDD scenario has the `@timeout-*` tag, extend the scenario and expect timeout to be longer. e.g. `@timeout-600s` means timeout for the scenario and every expect step is 600s(10m).
 - Use `mcp__plugin_story-flow_playwright__browser_run_code_unsafe` to set the browser offline.
 - Reference the @Makefile for local development workflows.
+- Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Never hardcode a host.
 
 ## Mobile App Instructions
 
@@ -188,7 +189,7 @@ Visual regression compares each screenshot against an approved baseline in a sel
 
 **IMPORTANT:** The VRT SDK's own native default for soft-assert is `false`. When `VRT_ENABLESOFTASSERT` is unset, the generated spec MUST set it explicitly to `true` — do not rely on the SDK default.
 
-**First run / approval flow**: Images with no baseline appear as "new" in the VRT UI. Approving them creates the baseline, keyed by Project + Name + Branch + OS + Browser + Viewport + Device + Custom Tags — so `name` must be reproducible across recordings, otherwise a re-record orphans the approved baseline and shows up as a spurious "new" image.
+**First run / approval flow**: Images with no baseline appear as "new" in the VRT UI. Approving them creates the baseline, keyed by Project + Name + Branch + OS + Browser + Viewport + Device + Custom Tags — so `name` must be reproducible across recordings, otherwise a re-record orphans the approved baseline and shows up as a spurious "new" image. The key has no environment dimension, so give each environment its own `VRT_PROJECT`.
 
 ### Screenshot Options
 
@@ -251,16 +252,16 @@ tags: ["@purge-data"]
 
 Generated Playwright code (note: feature tags precede scenario tags in the test name; tag action comes BEFORE Background helper call):
 ```javascript
-test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context }) => {
+test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context, baseURL }) => {
   // @purge-data - Restore the seed data to initial state (runs FIRST)
   execSync('make reseed', { stdio: 'inherit' });
 
   // Background (runs SECOND)
-  await setupBackground(context);
+  await setupBackground(context, baseURL);
 
   // Scenario steps (runs THIRD)
   // Given I am on the onboarding page
-  await page.goto('http://localhost:8080/onboarding');
+  await page.goto('/onboarding');
 });
 ```
 
@@ -285,7 +286,7 @@ params: []
 returns: "string"
 body: |
   const output = execSync(
-    "AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/",
+    `aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/`,
     { encoding: "utf-8" }
   );
   return output.match(/PRE ([a-f0-9-]{36})\//)?.[1] ?? "";
@@ -331,7 +332,7 @@ params: []
 returns: "string"
 body: |
   const output = execSync(
-    "AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/",
+    `aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/`,
     { encoding: "utf-8" }
   );
   return output.match(/PRE ([a-f0-9-]{36})\//)?.[1] ?? "";
@@ -404,6 +405,10 @@ locator: page.getByTestId('Images').getByTestId('DeleteButton').first()
 ```
 
 When a BDD step contains an ordinal qualifier, you MUST append the corresponding method to the locator to avoid strict mode violations.
+
+**Recording URLs:**
+
+Record `goto`, `waitForURL` and `toHaveURL` values as a **path** (`/settings`), never an absolute URL — they resolve against `use.baseURL` in the project's playwright.config.js, so one spec runs against any environment. Keep an absolute URL only when the step deliberately leaves the application's origin, e.g. an external identity provider.
 
 **Supported action methods:**
 
@@ -547,7 +552,7 @@ For steps that require command line verification (e.g., S3 state checks), output
 ```
 [RECORD_COMMAND]
 step: "And the image should be deleted from S3 bucket"
-command: AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/${appId}/assets/image.png
+command: aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/${appId}/assets/image.png
 assertion: shouldFail
 [/RECORD_COMMAND]
 ```
@@ -706,7 +711,7 @@ For steps that require waiting for eventual consistency (S3 state, API responses
 ```
 [RECORD_POLL]
 step: "And I wait until \"name\" is \"John\" in S3"
-command: AWS_ACCESS_KEY_ID=minioadmin ... s3 cp s3://apps/${appId}/user.json -
+command: aws --endpoint-url=${process.env.S3_ENDPOINT} s3 cp s3://apps/${appId}/user.json -
 key: name
 assertion: toBe
 value: "John"
@@ -726,7 +731,7 @@ value: "John"
 function getS3User(appId) {
   try {
     const output = execSync(
-      `AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 cp s3://apps/${appId}/user.json - 2>/dev/null`,
+      `aws --endpoint-url=${process.env.S3_ENDPOINT} s3 cp s3://apps/${appId}/user.json - 2>/dev/null`,
       { encoding: "utf-8" }
     );
     return JSON.parse(output);
@@ -810,15 +815,15 @@ await expect.poll(() => getS3User(appId).name).toBe("John");
 **Pattern for page navigation with dynamic content:**
 ```javascript
 // WRONG - hardcoded wait
-await page.goto("http://localhost:8080/settings");
+await page.goto("/settings");
 await page.waitForTimeout(2000);
 
 // CORRECT - wait for network to settle
-await page.goto("http://localhost:8080/settings");
+await page.goto("/settings");
 await page.waitForLoadState("networkidle");
 
 // BEST - wait for specific content you need
-await page.goto("http://localhost:8080/settings");
+await page.goto("/settings");
 await expect(page.locator('[alt^="image"]')).toHaveCount(3);
 ```
 
@@ -940,7 +945,8 @@ After executing all scenario steps, use the Write tool to create a `.spec.js` fi
 
 **Test Naming Convention:**
 - **Append BDD tags to the end of the test name**, space-separated, with feature-level tags first and scenario-level tags after, deduplicated: `test('ID: Title @featureTag @scenarioTag', ...)`
-- This enables Playwright's `--grep` / `--grep-invert` filtering, e.g., `npm run test:e2e -- --grep-invert "@timeout-"` to skip slow tests
+- This enables Playwright's `--grep` / `--grep-invert` filtering, e.g., `--grep "@staging"` to run one environment's set, `--grep-invert "@purge-data"` to skip destructive scenarios on a shared environment, or `--grep-invert "@timeout-"` to skip slow tests
+- Environment tags such as `@staging` and `@prod` have no execution behaviour — like `@e2e` and `@auth` they exist only to make the generated spec filterable. `--grep` matches the file name, `describe` title, test name and tags combined, so avoid tag names that collide with words appearing in those
 - If neither the feature nor the scenario has tags, the test name is just the ID and title
 
 **Handling Existing Spec Files:**
@@ -961,7 +967,7 @@ import { execSync } from 'child_process';
 
 function extractAppIdFromS3() {
   const output = execSync(
-    'AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/',
+    `aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/`,
     { encoding: 'utf-8' }
   );
   return output.match(/PRE ([a-f0-9-]{36})\//)?.[1] ?? '';
@@ -973,17 +979,17 @@ async function setLocalStorageAppId(context, appId) {
   }, appId);
 }
 
-async function setCookies(context) {
+async function setCookies(context, baseURL) {
   await context.addCookies([
-    { name: 'x-tenant-id', value: '0595cc48-354b-4b13-8f17-fe65d7f79146', domain: 'localhost', path: '/' },
-    { name: 'x-app-id', value: 'd37a8fae-ed2d-4a78-9d71-d5a3dfe0d0ca', domain: 'localhost', path: '/' },
+    { name: 'x-tenant-id', value: process.env.TENANT_ID, url: baseURL },
+    { name: 'x-app-id', value: process.env.APP_ID, url: baseURL },
   ]);
 }
 
-async function setupBackground(context) {
+async function setupBackground(context, baseURL) {
   const appId = extractAppIdFromS3();
   await setLocalStorageAppId(context, appId);
-  await setCookies(context);
+  await setCookies(context, baseURL);
   return appId;
 }
 
@@ -992,24 +998,24 @@ async function setupBackground(context) {
 // ============================================================
 
 test.describe('Feature: App Settings', () => {
-  test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context }) => {
+  test('DAS-01: Finish onboarding @e2e @auth @purge-data', async ({ page, context, baseURL }) => {
     // @purge-data - Restore the seed data to initial state (tag action runs FIRST)
     execSync('make reseed', { stdio: 'inherit' });
 
     // Background (helper call runs SECOND)
-    await setupBackground(context);
+    await setupBackground(context, baseURL);
 
     // Scenario steps (runs THIRD)
-    await page.goto('http://localhost:8080/onboarding');
+    await page.goto('/onboarding');
     // ... remaining scenario steps
   });
 
-  test('DAS-02: Delete image @e2e @auth', async ({ page, context }) => {
+  test('DAS-02: Delete image @e2e @auth', async ({ page, context, baseURL }) => {
     // Background (returns appId for use in scenario)
-    const appId = await setupBackground(context);
+    const appId = await setupBackground(context, baseURL);
 
     // Scenario steps using appId
-    await page.goto('http://localhost:8080/settings');
+    await page.goto('/settings');
     // ... remaining scenario steps using appId
   });
 });
@@ -1022,6 +1028,7 @@ test.describe('Feature: App Settings', () => {
 - **Tags also affect tag actions**: `@purge-data` adds `execSync('make reseed')` BEFORE the helper call
 - **Self-contained tests**: Each test shows its full setup, making debugging easier
 - **Return values**: If scenario needs a Background value (e.g., `appId`), capture it from the helper
+- **No inline URLs or credentials**: navigations use relative paths resolved against `use.baseURL`; hosts, endpoints and secrets come from `process.env`
 
 **VRT wiring (only when the scenario has `@screenshots` and VRT is configured at record time):**
 
@@ -1086,9 +1093,9 @@ test.describe('Feature: App Settings', () => {
   test.beforeAll(async () => { if (vrt) await vrt.start(); });
   test.afterAll(async () => { if (vrt) await vrt.stop(); });
 
-  test('DAS-01: Finish onboarding @e2e @auth @screenshots', async ({ page, context }) => {
-    await setupBackground(context);
-    await page.goto('http://localhost:8080/onboarding');
+  test('DAS-01: Finish onboarding @e2e @auth @screenshots', async ({ page, context, baseURL }) => {
+    await setupBackground(context, baseURL);
+    await page.goto('/onboarding');
 
     // Then I should see the onboarding page
     await expect(page.getByTestId('OnboardingPage')).toBeVisible();
@@ -1173,7 +1180,7 @@ Verifying S3 deletion via AWS CLI...
 
 [RECORD_COMMAND]
 step: "And the image should be deleted from S3 bucket"
-command: AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/0bec779c-db96-4c0e-b78f-800888d4fe20/assets/image1.png
+command: aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/0bec779c-db96-4c0e-b78f-800888d4fe20/assets/image1.png
 assertion: shouldFail
 [/RECORD_COMMAND]
 ```
@@ -1182,7 +1189,7 @@ Generated Playwright code:
 ```javascript
 // And the image should be deleted from S3 bucket
 expect(() => execSync(
-  `AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin aws --endpoint-url=http://localhost:9000 s3 ls s3://apps/${appId}/assets/image1.png`,
+  `aws --endpoint-url=${process.env.S3_ENDPOINT} s3 ls s3://apps/${appId}/assets/image1.png`,
   { stdio: "pipe" }
 )).toThrow();
 ```
