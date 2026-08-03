@@ -13,7 +13,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Steps
 
-1. 🧠 **Create the technical story markdown** \
+1. 🤖🧠 **Create the technical story markdown** \
    Create a markdown file with requirements and tasks according to a Jira/ClickUp story, e.g. `src/onboarding/docs/onboarding-story.md`
 
    > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira/ClickUp story as a starting point.
