@@ -4,7 +4,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Prerequisite
 
-- Story readiness: The story in your story tracker has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
+- Story readiness: The story in your story tracker (e.g. Jira, ClickUp, Azure DevOps) has been groomed, refined, and story-pointed. Acceptance criteria are clearly defined.
 
   > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, create UI designs, and break the feature into epics and stories collaboratively with Claude before grooming.
 
