@@ -1,6 +1,6 @@
 ---
-argument-hint: [@path/to/story.md, JIRA-123 (optional)]
-description: Review a story markdown, optionally against a Jira/ClickUp story
+argument-hint: [@path/to/story.md, ticket ID e.g. PROJ-123, 86d2uf1mh, 4821 (optional)]
+description: Review a story markdown, optionally against a story tracker
 ---
 
 Load BOTH skills in this order using the Skill tool:
@@ -8,7 +8,7 @@ Load BOTH skills in this order using the Skill tool:
 2. Then: `review-story-against-jira` (project-level - overrides/extends the plugin)
 3. Confirm both skills are loaded before continuing with the review.
 
-If a Jira/ClickUp ticket is provided ($2):
-  Review $1 against Jira/ClickUp story $2.
-If no Jira/ClickUp ticket is provided:
-  Review $1 without Jira/ClickUp comparison.
+If a ticket ID is provided ($2):
+  Review $1 against story $2.
+If no ticket ID is provided:
+  Review $1 without story tracker comparison.

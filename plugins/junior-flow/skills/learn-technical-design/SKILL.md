@@ -35,7 +35,7 @@ Explain that in story-flow, before writing implementation code, developers creat
 
 **What gets included:**
 
-- Story requirements (from Jira/ClickUp, Figma analysis)
+- Story requirements (from the story tracker, Figma analysis)
 - Planned tasks with execution order
 - Pseudo code, example payloads, or expected API responses
 - Questions or concerns for reviewers
@@ -140,7 +140,7 @@ Present the recommended structure:
 ### In the Story Markdown File
 
 **1. Story Requirements**
-- Acceptance criteria from Jira/ClickUp
+- Acceptance criteria from the story tracker
 - Insights from Figma designs
 - Business context and user impact
 
@@ -266,7 +266,7 @@ Present this checklist for the developer to keep:
 - [ ] Pseudo code or payload examples for complex logic
 - [ ] Alternatives were considered and documented
 - [ ] Questions for reviewers are highlighted
-- [ ] Related Jira/ClickUp story is mentioned
+- [ ] Related ticket ID is mentioned
 
 **During review:**
 

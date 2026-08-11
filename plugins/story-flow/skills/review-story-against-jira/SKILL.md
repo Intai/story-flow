@@ -1,27 +1,27 @@
 ---
-name: Review a story markdown against a Jira/ClickUp story
-description: Analyze a Jira/ClickUp story to review story.md requirements and tasks.
+name: Review a story markdown against a story tracker
+description: Analyze a story from the story tracker to review story.md requirements and tasks.
 user-invocable: false
 ---
 
-# Review a story markdown against a Jira/ClickUp story
+# Review a story markdown against a story tracker
 
 ## Instructions
 
-- Fetch the Jira/ClickUp issue by its ticket ID (e.g. PROJ-123, 86d2uf1mh) to retrieve the complete story details including description, acceptance criteria, and subtasks.
+- Fetch the story by its ticket ID (e.g. PROJ-123, 86d2uf1mh, 4821) using the project's story tracker MCP tools (Jira, ClickUp, Azure DevOps), to retrieve the complete story details including description, acceptance criteria, and subtasks. If no story tracker MCP tool is available, tell the developer the project has no story tracker MCP server configured (`/mcp` to check status) and ask them to paste the story details or drop the ticket argument — never guess at the story content.
 - Read the local story markdown file using the Read tool.
-- Compare the Jira/ClickUp story content against the markdown file and identify discrepancies.
+- Compare the story content against the markdown file and identify discrepancies.
 - Review the following aspects:
-  - **Requirements Completeness**: Verify all Jira/ClickUp acceptance criteria and requirements are documented in the markdown.
-  - **Task Breakdown**: Check that tasks in the markdown align with Jira/ClickUp story requirements and subtasks.
+  - **Requirements Completeness**: Verify all acceptance criteria and requirements from the story are documented in the markdown.
+  - **Task Breakdown**: Check that tasks in the markdown align with the story requirements and subtasks.
   - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
-  - **Technical Accuracy**: Validate that the technical approach and implementation details match Jira/ClickUp specifications.
+  - **Technical Accuracy**: Validate that the technical approach and implementation details match the story specifications.
   - **Maintainability & Readability**: Assess whether each task, as scoped, promotes maintainable code. Using the similar existing implementations found during Codebase Verification, flag tasks that would duplicate logic that already exists (should reuse an existing utility/component instead), or that over- or under-engineer relative to the codebase's established patterns. Prefer pure, single-responsibility units with meaningful naming. Do NOT review implemented code here (none exists yet) — only the intent and scope of the planned tasks.
   - **Redundant Unit Testing Tasks**: Flag any tasks that are solely about writing or updating unit tests. Unit testing is automatically handled as part of each implementation task by the `implement-story-markdown` skill — separate testing tasks create duplication and should be removed or merged into the relevant implementation tasks.
   - **Task Dependency Ordering**: Do NOT flag missing explicit task dependency ordering or parallel/sequential grouping. This is handled separately by the `analyze-task-dependencies` skill.
 - Report findings with specific examples of what's missing, incomplete, or misaligned.
-- Highlight any requirements from Jira/ClickUp that are not reflected in the markdown.
-- Note any tasks in the markdown that don't map to Jira/ClickUp requirements.
+- Highlight any requirements from the story that are not reflected in the markdown.
+- Note any tasks in the markdown that don't map to the story requirements.
 - **Task Implementation Summary**: For each task in the markdown, provide a summary of what will be implemented:
   - Describe the key changes, features, or components that will be built
   - **Codebase Verification**:
@@ -36,7 +36,7 @@ user-invocable: false
 
 ## Example Inputs
 
-- Review @path/to/story.md against Jira/ClickUp story PROJ-123
-- Compare Jira/ClickUp issue PROJ-123 with @path/to/story.md
-- Validate that @path/to/story.md matches the Jira/ClickUp requirements for PROJ-123
+- Review @path/to/story.md against story PROJ-123
+- Compare story 86d2uf1mh with @path/to/story.md
+- Validate that @path/to/story.md matches the requirements for 4821
 - Check if the story file matches PROJ-123

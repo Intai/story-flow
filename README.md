@@ -4,19 +4,19 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 ### Prerequisite
 
-- Jira/ClickUp story readiness: The story has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
+- Story readiness: The story in your story tracker has been groomed, refined, and story pointed. Acceptance criteria are clearly defined.
 
   > 💡 **Stories not ready yet?** Use [design-flow](plugins/design-flow) to explore product design, establish a style guide, create UI designs, and break the feature into epics and stories collaboratively with Claude before grooming.
 
 - Team alignment: All scrum team members understand the feature, including edge cases, error handling, and expected outcomes.
-- If you use Jira/ClickUp, login to Atlassian/ClickUp MCP and run `/mcp` to verify the connection status.
+- If you use a story tracker, add its MCP server to your project's `.mcp.json`. Then run `/mcp` to login and verify the connection status.
 
 ### Steps
 
 1. 🤖🧠 **Create the technical story markdown** \
-   Create a markdown file with requirements and tasks according to a Jira/ClickUp story, e.g. `src/onboarding/docs/onboarding-story.md`
+   Create a markdown file with requirements and tasks according to the story, e.g. `src/onboarding/docs/onboarding-story.md`
 
-   > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the Jira/ClickUp story as a starting point.
+   > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the story tracker as a starting point.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.
@@ -41,8 +41,8 @@ This workflow leverages Claude Code to automate and streamline software developm
    ```
 
 2. 🤖 **Review the story markdown** \
-   Prompt Claude Code: `/review-story @path/to/story.md JIRA-123` in **plan mode**. \
-   This checks the story markdown, optionally against a Jira/ClickUp story.
+   Prompt Claude Code: `/review-story @path/to/story.md PROJ-123` in **plan mode**. \
+   This checks the story markdown, optionally against the story in your story tracker.
 
 3. 🧠 **Update the story markdown** \
    Incorporate feedback to ensure the story markdown is well-defined and detailed.

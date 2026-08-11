@@ -5,7 +5,7 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 ### Prerequisite
 
 - Chrome DevTools MCP: Run `/mcp` to verify connection status.
-- Jira/ClickUp MCP (optional): If you use Jira/ClickUp, login to Atlassian/ClickUp MCP and run `/mcp` to verify the connection status.
+- Story tracker MCP (optional): If you use a story tracker, add its MCP server to your project's `.mcp.json`. Then run `/mcp` to login and verify the connection status.
 
 ### Steps
 
@@ -25,8 +25,8 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
    Use ui-designer subagent to create UI designs in static HTML files according to the style guide and layout designs. \
    Iterate with Claude to review and finalise design details.
 
-5. 🤖🧠 **Create epics and stories in Jira/ClickUp** (skip if already tracked) \
-   Use the Jira/ClickUp MCP to create epics for the feature and break it into stories from the product design and UI designs, so the work is ready for grooming. \
+5. 🤖🧠 **Create epics and stories in your story tracker** (skip if already tracked) \
+   Use the story tracker MCP to create epics for the feature and break it into stories from the product design and UI designs, so the work is ready for grooming. \
    Review the breakdown collaboratively with Claude before continuing. As you repeat this across features, your epics form the project roadmap.
 
    **Then:**
