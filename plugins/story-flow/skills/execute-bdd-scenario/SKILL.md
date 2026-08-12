@@ -1032,11 +1032,10 @@ test.describe('Feature: App Settings', () => {
 
 **VRT wiring (only when the scenario has `@screenshots` and VRT is configured at record time):**
 
-Add the tracker import and construct it once (it reads the `VRT_*` env vars natively). Derive the env defaults **before** constructing, then construct **only when the VRT backend is fully configured at run time** — a recorded spec must still pass on a machine or CI job that has no VRT credentials. If `VRT_ENABLESOFTASSERT` is unset, set it to `true` explicitly — the SDK's own default is `false`.
+Add the tracker import and derive the env defaults at module scope (the SDK reads the `VRT_*` vars natively when constructed). Construct the tracker per worker in `beforeAll` from the `browserName` fixture, and **only when the VRT backend is fully configured at run time** — a recorded spec must still pass on a machine or CI job that has no VRT credentials. If `VRT_ENABLESOFTASSERT` is unset, set it to `true` explicitly — the SDK's own default is `false`.
 
 ```javascript
 import { PlaywrightVisualRegressionTracker } from '@visual-regression-tracker/agent-playwright';
-import { chromium } from '@playwright/test';
 
 const gitOutput = (command) => {
   try {
@@ -1062,8 +1061,8 @@ const isVrtEnabled = Boolean(
     process.env.VRT_BRANCHNAME
 );
 
-// Reads VRT_APIURL / VRT_PROJECT / VRT_APIKEY / VRT_BRANCHNAME / VRT_CIBUILDID / VRT_ENABLESOFTASSERT
-const vrt = isVrtEnabled ? new PlaywrightVisualRegressionTracker(chromium.name()) : null;
+// Assigned per worker in beforeAll — the tracker needs the running project's browser name
+let vrt = null;
 
 // page.screenshot() defaults to animations: 'allow' — see "Screenshot Options"
 const DEFAULT_SCREENSHOT_OPTIONS = { animations: 'disabled' };
@@ -1090,8 +1089,19 @@ Open and close the VRT build around the visual scenarios, then emit the `[RECORD
 
 ```javascript
 test.describe('Feature: App Settings', () => {
-  test.beforeAll(async () => { if (vrt) await vrt.start(); });
-  test.afterAll(async () => { if (vrt) await vrt.stop(); });
+  // browserName is a worker-scoped fixture, so it is available in beforeAll
+  test.beforeAll(async ({ browserName }) => {
+    if (!isVrtEnabled) return;
+    // Reads VRT_APIURL / VRT_PROJECT / VRT_APIKEY / VRT_BRANCHNAME / VRT_CIBUILDID / VRT_ENABLESOFTASSERT
+    vrt = new PlaywrightVisualRegressionTracker(browserName);
+    await vrt.start();
+  });
+
+  test.afterAll(async () => {
+    if (!vrt) return;
+    await vrt.stop();
+    vrt = null;
+  });
 
   test('DAS-01: Finish onboarding @e2e @auth @screenshots', async ({ page, context, baseURL }) => {
     await setupBackground(context, baseURL);
@@ -1114,7 +1124,8 @@ test.describe('Feature: App Settings', () => {
 
 - Keep the import, the helpers, and `vrt.start()`/`vrt.stop()` **conditional on the tag** at record time — specs without a `@screenshots` scenario are unchanged.
 - `isVrtEnabled` is the **run-time** switch layered on top. When it is false the spec still passes: no build is opened, no tracking call fires, and every non-visual assertion in the scenario runs exactly as before. Never call `vrt.trackPage` / `vrt.trackElementHandle` directly from a test body — always go through `trackVisualPage` / `trackVisualElement` so the guard cannot be bypassed.
-- The `process.env` defaults MUST come **before** the tracker is constructed — the SDK reads them at construction. Use `||=` (not `??=`) for the git-derived ones so an empty env var still falls back. There is deliberately no `main` fallback for `VRT_BRANCHNAME`: outside a git checkout it stays empty and `isVrtEnabled` turns VRT off, rather than silently comparing against the wrong baseline branch.
+- Construct the tracker with the `browserName` worker fixture. Browser is part of the baseline key, so each Playwright project gets its own baseline to approve, while all of them still report into the one `VRT_CIBUILDID` build.
+- The `process.env` defaults MUST stay at module scope, which runs **before** `beforeAll` constructs the tracker — the SDK reads them at construction. Use `||=` (not `??=`) for the git-derived ones so an empty env var still falls back. There is deliberately no `main` fallback for `VRT_BRANCHNAME`: outside a git checkout it stays empty and `isVrtEnabled` turns VRT off, rather than silently comparing against the wrong baseline branch.
 - `withScreenshotDefaults` is why `[RECORD_VISUAL]` annotations never need to spell out `animations: 'disabled'` — the choke point applies it. A recorded `screenshotOptions` merges on top; see [Screenshot Options](#screenshot-options).
 
 ### Example Recording Session
