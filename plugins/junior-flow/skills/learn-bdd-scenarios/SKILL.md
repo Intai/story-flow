@@ -176,7 +176,7 @@ Explain the supported tags:
 | Tag | Effect | When to Use |
 |-----|--------|-------------|
 | `@purge-data` | Runs `make reseed` before scenario | When scenario needs clean/known state |
-| `@screenshots` | Takes a screenshot after every assertion step | For visual verification or debugging |
+| `@screenshots` | Takes one screenshot per assertion group — consecutive assertions with no action between them share a shot | For visual verification or debugging |
 | `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes | When a scenario is genuinely slow, not to paper over flakiness |
 | Any other tag | No effect on execution; carried into the generated Playwright test name | Labels for `--grep` filtering, e.g. `@staging`, `@prod` |
 

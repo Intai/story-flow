@@ -155,7 +155,7 @@ Tags on a `Feature:` or `Scenario:` line control execution behaviour.
 | Tag | Effect |
 |-----|--------|
 | `@purge-data` | Restores seed data (`make reseed`) before the scenario runs |
-| `@screenshots` | Takes a screenshot after every assertion step; tracked for visual regression when the `VRT_*` variables are set |
+| `@screenshots` | Takes one screenshot per assertion group — consecutive assertion steps with no action between them share a shot, captured after the last of them; tracked for visual regression when the `VRT_*` variables are set |
 | `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes |
 
 Every tag is appended to the generated test name — including ones with no built-in behaviour, such as environment tags like `@staging` and `@prod` — so Playwright can filter on them:

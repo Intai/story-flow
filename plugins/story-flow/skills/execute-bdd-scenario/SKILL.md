@@ -2,6 +2,7 @@
 name: Execute BDD scenarios
 description: Execute BDD test scenarios from .feature files using browser automation.
 user-invocable: false
+effort: medium
 ---
 
 # Execute BDD scenarios
@@ -47,7 +48,7 @@ user-invocable: false
      | SMG-03   | Inline edit a string value  | ⊘ SKIPPED |
      ```
 - Save `.feature` files in the same folder as the stories.
-- If a BDD scenario has the `@screenshots` tag, take a screenshot after **every assertion step** and, in `--record` mode when VRT is configured, emit one visual regression tracking call per assertion step (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). Pass `browser_take_screenshot` a filename explicitly prefixed with `.playwright-mcp/` — e.g. `.playwright-mcp/SMG-01-i-should-see-the-dashboard.png` so it lands in the `.playwright-mcp` output folder — never an absolute path, which writes to the project root.
+- If a BDD scenario has the `@screenshots` tag, take one screenshot per **assertion group** — a maximal run of consecutive assertion steps with no action or wait step between them, since nothing re-renders in between — captured after the group's **last** UI assertion so every asserted condition has settled, and, in `--record` mode when VRT is configured, emit one visual regression tracking call per group (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). Command and polling assertion steps (S3/CLI/API checks) assert outside the viewport: they take no screenshot and do not break the group. Pass `browser_take_screenshot` a filename explicitly prefixed with `.playwright-mcp/` — e.g. `.playwright-mcp/SMG-01-i-should-see-the-dashboard.png` so it lands in the `.playwright-mcp` output folder — never an absolute path, which writes to the project root.
 - If a BDD scenario doesn't have the `@screenshots` tag, do not take any screenshot.
 - If a BDD scenario has the `@purge-data` tag, restore the seed data first (before the Background steps) by executing the `make reseed` command.
 - If a BDD scenario does not have the `@purge-data` tag, do not restore the seed data before running the scenario.
@@ -154,14 +155,14 @@ WebdriverIO options:
     - All non-visual verification steps
   - **Only use screenshots** for:
     - Visual verification (e.g., verifying colors with ImageMagick)
-    - After every assertion step, when the scenario has the `@screenshots` tag
+    - After the last UI assertion of each assertion group, when the scenario has the `@screenshots` tag
   - Page source is faster and provides structured data; screenshots are only needed when pixel-level visual verification is required.
 - **Multi-finger gestures (3-finger tap, pinch, etc.):**
   - The Appium MCP tools don't have direct multi-finger support, so use the W3C Actions API via HTTP.
 
 ## Visual Regression Testing (VRT)
 
-Visual regression compares each screenshot against an approved baseline in a self-hosted [Visual Regression Tracker (VRT)](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI for approve/reject. This is wired **only into `--record` mode** — the generated Playwright spec calls the VRT SDK natively. Direct (non-record) execution is unaffected: `@screenshots` captures the same per-assertion-step set, just untracked.
+Visual regression compares each screenshot against an approved baseline in a self-hosted [Visual Regression Tracker (VRT)](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI for approve/reject. This is wired **only into `--record` mode** — the generated Playwright spec calls the VRT SDK natively. Direct (non-record) execution is unaffected: `@screenshots` captures the same per-assertion-group set, just untracked.
 
 **Provisioning is out of scope for this plugin.** Standing up the VRT stack (Docker, ports, creating the project and API key) is the consuming project's responsibility. The skill assumes VRT is reachable whenever the `VRT_*` env vars are set — the same way it assumes a BrowserStack account exists when `BROWSERSTACK_*` is set.
 
@@ -476,7 +477,7 @@ value: 3
 
 ### Recording Visual Regression (VRT)
 
-Only applies when the scenario has the `@screenshots` tag AND VRT is configured at record time (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). The generated calls are additionally guarded at run time, so they no-op when the `VRT_*` env vars are absent. Output one `[RECORD_VISUAL]` annotation per assertion step — the same set direct execution captures — placed AFTER that step's `[RECORD_EXPECT]` / `[RECORD_COMMAND]` annotation so the tracking call lands after the assertion in the generated code:
+Only applies when the scenario has the `@screenshots` tag AND VRT is configured at record time (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). The generated calls are additionally guarded at run time, so they no-op when the `VRT_*` env vars are absent. Output one `[RECORD_VISUAL]` annotation per assertion group per target — the same set direct execution captures — placed AFTER the group's **last** UI assertion's `[RECORD_EXPECT]` annotation so the tracking call lands once the whole group has settled:
 
 ```
 [RECORD_VISUAL]
@@ -488,9 +489,9 @@ options: { diffTollerancePercent: 1 }
 ```
 
 **Annotation fields:**
-- `step`: The exact Gherkin step text (becomes a comment)
+- `step`: The exact Gherkin step text (becomes a comment) — the group's **last** UI assertion step, the same step the shot is captured after, so the recorded `name` stays derivable from it
 - `name`: **Derived, never invented** — see [Deriving the VRT name](#deriving-the-vrt-name) below
-- `target`: `page` for a full-page shot (→ `trackPage`), or a discovered scoped locator for an element shot (→ `trackElementHandle`). Default to `page`; use a locator only when the assertion is scoped to one element and a full-page shot would be noisy. Discover the locator chain per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors.
+- `target`: `page` for a full-page shot (→ `trackPage`), or a discovered scoped locator for an element shot (→ `trackElementHandle`). Default to `page`; use a locator only when the assertion is scoped to one element and a full-page shot would be noisy. Discover the locator chain per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors. Element shots are **not** collapsed into the group's page shot: each distinct target is a different image, so a group containing element-scoped assertions emits one annotation per target, each recording its own step.
 - `options`: Optional VRT options object — `diffTollerancePercent`, `ignoreAreas`, `screenshotOptions`, `agent`. `screenshotOptions` merges over the helpers' `animations: 'disabled'` default rather than replacing it, so only record it when a shot needs something extra (e.g. `fullPage`) — see [Screenshot Options](#screenshot-options).
 
 **Supported tracking calls:**
@@ -1109,15 +1110,16 @@ test.describe('Feature: App Settings', () => {
 
     // Then I should see the onboarding page
     await expect(page.getByTestId('OnboardingPage')).toBeVisible();
-    await trackVisualPage(
-      page,
-      'DAS-01-i-should-see-the-onboarding-page',
-      { diffTollerancePercent: 1 }
-    );
 
     // And I should see the welcome banner
     await expect(page.getByTestId('WelcomeBanner')).toBeVisible();
-    await trackVisualPage(page, 'DAS-01-i-should-see-the-welcome-banner');
+
+    // One shot for the whole assertion group, after the last assertion has settled
+    await trackVisualPage(
+      page,
+      'DAS-01-i-should-see-the-welcome-banner',
+      { diffTollerancePercent: 1 }
+    );
   });
 });
 ```
