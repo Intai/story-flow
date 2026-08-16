@@ -63,8 +63,11 @@ effort: medium
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` |
-| `APPIUM_APP_PACKAGE` | Local app package unique identifier | - |
+| `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` (Android) |
+| `APPIUM_UDID` | Local iOS device or simulator UDID | - |
+| `APPIUM_APP_PACKAGE` | Local Android app package unique identifier | - |
+| `APPIUM_APP_ACTIVITY` | Local Android app launcher activity | `.MainActivity` |
+| `APPIUM_BUNDLE_ID` | Local iOS app bundle identifier | - |
 | `BROWSERSTACK_USERNAME` | BrowserStack username | - |
 | `BROWSERSTACK_ACCESS_KEY` | BrowserStack access key | - |
 | `BROWSERSTACK_APP_ID` | Uploaded app ID (`bs://...`) | - |
@@ -73,29 +76,54 @@ effort: medium
 
 ### Local Appium Configuration (Default)
 
-Start Appium server: `npx appium server --port 4723`
+Start Appium server: `npx appium server --port 4723`. Appium ships no drivers — install `uiautomator2` for Android, `xcuitest` (with Xcode) for iOS.
 
-WebdriverIO options:
+A hybrid app's webview needs no extra driver: switch with `driver.switchContext('WEBVIEW_...')` and UiAutomator2 proxies to a Chromedriver it downloads to match the app's webview engine, while XCUITest drives Safari's remote debugger. Pin a mismatched build with `appium:chromedriverExecutable` rather than installing the standalone `chromium` driver, which automates desktop Chrome, not app webviews.
+
+WebdriverIO options — Android:
 ```javascript
 {
   hostname: "localhost",
   port: 4723,
   waitforTimeout: 30000,
   waitforInterval: 500,
-  connectionRetryTimeout: 30000,
+  connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   capabilities: {
     platformName: "Android",
     "appium:deviceName": process.env.APPIUM_DEVICE_NAME || "emulator-5554",
     "appium:automationName": "UiAutomator2",
     "appium:appPackage": process.env.APPIUM_APP_PACKAGE,
-    "appium:appActivity": ".MainActivity",
+    "appium:appActivity": process.env.APPIUM_APP_ACTIVITY || ".MainActivity",
     "appium:autoGrantPermissions": true,
     "appium:noReset": true,
     "appium:fullReset": false,
   },
 }
 ```
+
+WebdriverIO options — iOS:
+```javascript
+{
+  hostname: "localhost",
+  port: 4723,
+  waitforTimeout: 30000,
+  waitforInterval: 500,
+  // The first session builds WebDriverAgent, which exceeds the 30s Android uses
+  connectionRetryTimeout: 120000,
+  connectionRetryCount: 3,
+  capabilities: {
+    platformName: "iOS",
+    "appium:udid": process.env.APPIUM_UDID,
+    "appium:automationName": "XCUITest",
+    "appium:bundleId": process.env.APPIUM_BUNDLE_ID,
+    "appium:noReset": true,
+    "appium:fullReset": false,
+  },
+}
+```
+
+`appium:autoGrantPermissions` and `appium:appActivity` are Android-only — never carry them into the iOS capabilities. Do not add `appium:autoAcceptAlerts` either: it swallows alerts a scenario asserts on.
 
 ### BrowserStack Configuration
 
@@ -132,7 +160,7 @@ WebdriverIO options:
 
 ### Execution Guidelines
 
-- Use `mcp__plugin_story-flow_appium__*` tools or WebDriver REST API to manipulate mobile app to EXECUTE the BDD scenarios directly without generating any Playwright test file.
+- Use `mcp__plugin_story-flow_appium__*` tools or WebDriver REST API directly by curl to manipulate mobile app to EXECUTE the BDD scenarios directly without generating any Playwright test file.
 - Save Appium screenshots to `.appium-mcp` folder using absolute paths (e.g., `/path/to/project/.appium-mcp/screenshot.png`). The Appium MCP tool does not support relative paths.
 - **Page source vs screenshots:**
   - **Use page source XML** (via `appium_get_page_source` or REST API) for:
@@ -164,7 +192,9 @@ WebdriverIO options:
 
 Visual regression compares each screenshot against an approved baseline in a self-hosted [Visual Regression Tracker (VRT)](https://github.com/Visual-Regression-Tracker/Visual-Regression-Tracker) instance, which provides a web UI for approve/reject. This is wired **only into `--record` mode** — the generated Playwright spec calls the VRT SDK natively. Direct (non-record) execution is unaffected: `@screenshots` captures the same per-assertion-group set, just untracked.
 
-**Provisioning is out of scope for this plugin.** Standing up the VRT stack (Docker, ports, creating the project and API key) is the consuming project's responsibility. The skill assumes VRT is reachable whenever the `VRT_*` env vars are set — the same way it assumes a BrowserStack account exists when `BROWSERSTACK_*` is set.
+The spec imports `@visual-regression-tracker/agent-playwright` to track a browser page, and `@visual-regression-tracker/sdk-js` to track a mobile app screen — the mobile app is driven by WebdriverIO, which no VRT agent covers, and `sdk-js` (the base the Playwright agent wraps) tracks an image from any source.
+
+**Provisioning is out of scope for this plugin.** Standing up the VRT stack (Docker, ports, creating the project and API key) and installing the SDK the generated spec imports are the consuming project's responsibility. The skill assumes VRT is reachable whenever the `VRT_*` env vars are set — the same way it assumes a BrowserStack account exists when `BROWSERSTACK_*` is set.
 
 ### Environment Variables
 
@@ -179,7 +209,7 @@ Visual regression compares each screenshot against an approved baseline in a sel
 
 **Build scope**: one build per commit, not per feature file. The VRT backend upserts a build on (project, `ciBuildId`), so defaulting `VRT_CIBUILDID` to the current git SHA makes every Playwright worker's `start()` resolve to the same build. Re-running the suite on the same commit appends to that commit's build — set `VRT_CIBUILDID` explicitly (e.g. a CI run id) when each re-run needs its own.
 
-**Mode detection**: When running with `--record` **and** `VRT_APIURL`, `VRT_APIKEY`, and `VRT_PROJECT` are all set, the generated spec for a `@screenshots` scenario tracks each screenshot in VRT. Otherwise (no `--record`, or any of the three unset), `@screenshots` captures screenshots only. The `@visual-regression-tracker/agent-playwright` SDK reads the `VRT_*` variables natively, so generated specs carry no inline credentials.
+**Mode detection**: When running with `--record` **and** `VRT_APIURL`, `VRT_APIKEY`, and `VRT_PROJECT` are all set, the generated spec for a `@screenshots` scenario tracks each screenshot in VRT. Otherwise (no `--record`, or any of the three unset), `@screenshots` captures screenshots only. Both SDKs read the `VRT_*` variables natively, so generated specs carry no inline credentials.
 
 **Run-time detection**: Record-time config controls whether VRT wiring is *emitted*; the env vars control whether it *runs*. The generated spec re-checks `VRT_APIURL`, `VRT_APIKEY`, `VRT_PROJECT`, and `VRT_BRANCHNAME` at run time via an `isVrtEnabled` flag (see [VRT wiring](#generating-the-spec-file)), so a spec recorded with VRT configured degrades to screenshot-only on machines and CI jobs without those vars instead of failing the suite.
 
@@ -192,9 +222,11 @@ Visual regression compares each screenshot against an approved baseline in a sel
 
 **First run / approval flow**: Images with no baseline appear as "new" in the VRT UI. Approving them creates the baseline, keyed by Project + Name + Branch + OS + Browser + Viewport + Device + Custom Tags — so `name` must be reproducible across recordings, otherwise a re-record orphans the approved baseline and shows up as a spurious "new" image. The key has no environment dimension, so give each environment its own `VRT_PROJECT`.
 
+The Playwright agent fills OS, Browser and Viewport itself; the mobile helpers must supply them from the Appium capabilities (see [VRT wiring](#generating-the-spec-file)). A local emulator and a BrowserStack device therefore hold **separate baselines** — both still report into the one `VRT_CIBUILDID` build.
+
 ### Screenshot Options
 
-Every tracked image is captured with `animations: 'disabled'`. The helpers apply it (see [VRT wiring](#generating-the-spec-file)), so it is never spelled out per call.
+Every tracked browser image is captured with `animations: 'disabled'`. The helpers apply it (see [VRT wiring](#generating-the-spec-file)), so it is never spelled out per call.
 
 **IMPORTANT:** The SDK forwards `screenshotOptions` to Playwright's `page.screenshot()`, **not** `toHaveScreenshot()`. `page.screenshot()` defaults to `animations: 'allow'`; only `toHaveScreenshot()` flips it to `'disabled'`. Since VRT bypasses `toHaveScreenshot`, the comparison-safe default is not inherited and MUST be set explicitly — the same trap as `VRT_ENABLESOFTASSERT` above.
 
@@ -204,6 +236,8 @@ Every tracked image is captured with `animations: 'disabled'`. The helpers apply
 - **Element shots**: `trackElementHandle` takes the same options via `elementHandle.screenshot()`, so `trackVisualElement` gets the same default.
 
 Anything passed as `screenshotOptions` in a `[RECORD_VISUAL]` annotation merges **over** this default, so `{ fullPage: true }` still captures with animations disabled. Only an explicit `{ animations: 'allow' }` overrides it.
+
+**Mobile app shots have no equivalent** — `screenshotOptions` is a Playwright option, so never record it for a `driver` or app element target. A device screenshot is stabilised only by *when* it is taken: after the assertion group's last `waitForDisplayed`/`waitForEnabled` has resolved. Content that is never pixel-identical between runs — a playing video, a Lottie or splash animation, a live clock, an auto-advancing carousel — has to be excluded with `ignoreAreas` instead; take each rectangle from the element's `bounds` in the page source XML.
 
 ## Recording Mode (--record flag)
 
@@ -491,8 +525,8 @@ options: { diffTollerancePercent: 1 }
 **Annotation fields:**
 - `step`: The exact Gherkin step text (becomes a comment) — the group's **last** UI assertion step, the same step the shot is captured after, so the recorded `name` stays derivable from it
 - `name`: **Derived, never invented** — see [Deriving the VRT name](#deriving-the-vrt-name) below
-- `target`: `page` for a full-page shot (→ `trackPage`), or a discovered scoped locator for an element shot (→ `trackElementHandle`). Default to `page`; use a locator only when the assertion is scoped to one element and a full-page shot would be noisy. Discover the locator chain per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors. Element shots are **not** collapsed into the group's page shot: each distinct target is a different image, so a group containing element-scoped assertions emits one annotation per target, each recording its own step.
-- `options`: Optional VRT options object — `diffTollerancePercent`, `ignoreAreas`, `screenshotOptions`, `agent`. `screenshotOptions` merges over the helpers' `animations: 'disabled'` default rather than replacing it, so only record it when a shot needs something extra (e.g. `fullPage`) — see [Screenshot Options](#screenshot-options).
+- `target`: the surface being captured — `page` or a scoped locator for a browser, `driver` or a discovered app element for a mobile app. Default to the whole surface (`page` / `driver`); scope to an element only when the assertion is scoped to one element and a whole-surface shot would be noisy. Discover the locator or selector per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors. Element shots are **not** collapsed into the group's whole-surface shot: each distinct target is a different image, so a group containing element-scoped assertions emits one annotation per target, each recording its own step.
+- `options`: Optional VRT options object — `diffTollerancePercent`, `ignoreAreas`, `screenshotOptions`, `agent`. `screenshotOptions` is browser-only: it merges over the helpers' `animations: 'disabled'` default rather than replacing it, so only record it when a shot needs something extra (e.g. `fullPage`) — see [Screenshot Options](#screenshot-options).
 
 **Supported tracking calls:**
 
@@ -500,8 +534,10 @@ options: { diffTollerancePercent: 1 }
 |--------|----------------|
 | `page` | `await trackVisualPage(page, name, options)` |
 | locator | `await trackVisualElement(locator, name, options)` |
+| `driver` | `await trackVisualAppScreen(driver, name, options)` |
+| app element | `await trackVisualAppElement(driver, element, name, options)` |
 
-Both are run-time-guarded helpers defined at the top of the spec, not direct SDK calls — see [VRT wiring](#generating-the-spec-file).
+All four are run-time-guarded helpers defined at the top of the spec, not direct SDK calls — see [VRT wiring](#generating-the-spec-file). The browser and app helpers are named apart because one scenario can track both surfaces; the app element form takes `driver` first, since a WebdriverIO element cannot yield the device metadata on its own.
 
 #### Deriving the VRT name
 
@@ -650,13 +686,15 @@ function verifyColorAtPixel(imagePath, x, y, expectedColor) {
 ```javascript
 const driver = await remote(getAppiumOptions());
 
-// Take screenshot for color verification
-const imagePath = await takeAppScreenshot(driver, "color-verification.png");
+try {
+  // Take screenshot for color verification
+  const imagePath = await takeAppScreenshot(driver, "color-verification.png");
 
-// Then the "Login" button should have background in the primary color "#9933FF"
-verifyColorAtPixel(imagePath, 150, 2110, "#9933FF");
-
-await driver.deleteSession();
+  // Then the "Login" button should have background in the primary color "#9933FF"
+  verifyColorAtPixel(imagePath, 150, 2110, "#9933FF");
+} finally {
+  await driver.deleteSession();
+}
 ```
 
 **ImageMagick crop syntax:** `-crop 1x1+X+Y` extracts a single pixel at coordinates (X, Y).
@@ -1033,10 +1071,13 @@ test.describe('Feature: App Settings', () => {
 
 **VRT wiring (only when the scenario has `@screenshots` and VRT is configured at record time):**
 
-Add the tracker import and derive the env defaults at module scope (the SDK reads the `VRT_*` vars natively when constructed). Construct the tracker per worker in `beforeAll` from the `browserName` fixture, and **only when the VRT backend is fully configured at run time** — a recorded spec must still pass on a machine or CI job that has no VRT credentials. If `VRT_ENABLESOFTASSERT` is unset, set it to `true` explicitly — the SDK's own default is `false`.
+Add the tracker import and derive the env defaults at module scope (the SDK reads the `VRT_*` vars natively when constructed). Construct the tracker per worker in `beforeAll`, and **only when the VRT backend is fully configured at run time** — a recorded spec must still pass on a machine or CI job that has no VRT credentials. If `VRT_ENABLESOFTASSERT` is unset, set it to `true` explicitly — the SDK's own default is `false`.
+
+Emit only the half the scenario drives: a browser scenario gets `vrtWeb` and its two helpers, a mobile app scenario gets `vrtApp` and its two, and a scenario touching both gets everything. The env defaults and `isVrtEnabled` are shared — one copy either way.
 
 ```javascript
 import { PlaywrightVisualRegressionTracker } from '@visual-regression-tracker/agent-playwright';
+import { VisualRegressionTracker } from '@visual-regression-tracker/sdk-js';
 
 const gitOutput = (command) => {
   try {
@@ -1062,8 +1103,9 @@ const isVrtEnabled = Boolean(
     process.env.VRT_BRANCHNAME
 );
 
-// Assigned per worker in beforeAll — the tracker needs the running project's browser name
-let vrt = null;
+// Assigned per worker in beforeAll — the browser tracker needs the running project's browser name
+let vrtWeb = null;
+let vrtApp = null;
 
 // page.screenshot() defaults to animations: 'allow' — see "Screenshot Options"
 const DEFAULT_SCREENSHOT_OPTIONS = { animations: 'disabled' };
@@ -1076,13 +1118,58 @@ function withScreenshotDefaults(options) {
 }
 
 async function trackVisualPage(page, name, options) {
-  if (!vrt) return;
-  await vrt.trackPage(page, name, withScreenshotDefaults(options));
+  if (!vrtWeb) return;
+  await vrtWeb.trackPage(page, name, withScreenshotDefaults(options));
 }
 
 async function trackVisualElement(locator, name, options) {
-  if (!vrt) return;
-  await vrt.trackElementHandle(locator, name, withScreenshotDefaults(options));
+  if (!vrtWeb) return;
+  await vrtWeb.trackElementHandle(locator, name, withScreenshotDefaults(options));
+}
+
+// Baseline-key dimensions the Playwright agent fills in for itself. Read from the REQUESTED
+// capabilities, not the session's returned ones, so the key is identical on every run
+async function appImageMeta(driver) {
+  const capabilities = driver.requestedCapabilities ?? {};
+  const browserstack = capabilities['bstack:options'];
+  const { width, height } = await driver.getWindowSize();
+
+  return {
+    os: [
+      capabilities.platformName,
+      browserstack?.osVersion ?? capabilities['appium:platformVersion'],
+    ]
+      .filter(Boolean)
+      .join(' '),
+    device:
+      browserstack?.deviceName ??
+      capabilities['appium:deviceName'] ??
+      capabilities['appium:udid'],
+    browser: capabilities['appium:automationName'],
+    viewport: `${width}x${height}`,
+  };
+}
+
+// Takes base64, so any screenshot source works — WebdriverIO, or a curl'd
+// GET /session/:sessionId/screenshot when the run is driven through the REST API
+async function trackVisualAppImage(driver, name, imageBase64, options) {
+  if (!vrtApp) return;
+  await vrtApp.track({ name, imageBase64, ...(await appImageMeta(driver)), ...options });
+}
+
+async function trackVisualAppScreen(driver, name, options) {
+  if (!vrtApp) return;
+  await trackVisualAppImage(driver, name, await driver.takeScreenshot(), options);
+}
+
+async function trackVisualAppElement(driver, element, name, options) {
+  if (!vrtApp) return;
+  await trackVisualAppImage(
+    driver,
+    name,
+    await driver.takeElementScreenshot(element.elementId),
+    options
+  );
 }
 ```
 
@@ -1093,15 +1180,22 @@ test.describe('Feature: App Settings', () => {
   // browserName is a worker-scoped fixture, so it is available in beforeAll
   test.beforeAll(async ({ browserName }) => {
     if (!isVrtEnabled) return;
-    // Reads VRT_APIURL / VRT_PROJECT / VRT_APIKEY / VRT_BRANCHNAME / VRT_CIBUILDID / VRT_ENABLESOFTASSERT
-    vrt = new PlaywrightVisualRegressionTracker(browserName);
-    await vrt.start();
+    // Both read VRT_APIURL / VRT_PROJECT / VRT_APIKEY / VRT_BRANCHNAME / VRT_CIBUILDID / VRT_ENABLESOFTASSERT
+    vrtWeb = new PlaywrightVisualRegressionTracker(browserName);
+    await vrtWeb.start();
+    vrtApp = new VisualRegressionTracker();
+    await vrtApp.start();
   });
 
   test.afterAll(async () => {
-    if (!vrt) return;
-    await vrt.stop();
-    vrt = null;
+    if (vrtWeb) {
+      await vrtWeb.stop();
+      vrtWeb = null;
+    }
+    if (vrtApp) {
+      await vrtApp.stop();
+      vrtApp = null;
+    }
   });
 
   test('DAS-01: Finish onboarding @e2e @auth @screenshots', async ({ page, context, baseURL }) => {
@@ -1124,9 +1218,32 @@ test.describe('Feature: App Settings', () => {
 });
 ```
 
-- Keep the import, the helpers, and `vrt.start()`/`vrt.stop()` **conditional on the tag** at record time — specs without a `@screenshots` scenario are unchanged.
-- `isVrtEnabled` is the **run-time** switch layered on top. When it is false the spec still passes: no build is opened, no tracking call fires, and every non-visual assertion in the scenario runs exactly as before. Never call `vrt.trackPage` / `vrt.trackElementHandle` directly from a test body — always go through `trackVisualPage` / `trackVisualElement` so the guard cannot be bypassed.
-- Construct the tracker with the `browserName` worker fixture. Browser is part of the baseline key, so each Playwright project gets its own baseline to approve, while all of them still report into the one `VRT_CIBUILDID` build.
+A mobile app scenario keeps the same `describe`-level build; the driver is per test, so release it in `finally` — otherwise a failed assertion leaks the Appium (or BrowserStack) session:
+
+```javascript
+test('DAS-03: Onboarding on device @e2e @screenshots', async () => {
+  const driver = await remote(getAppiumOptions());
+
+  try {
+    // Then I should see the welcome screen
+    await driver.$('~WelcomeScreen').waitForDisplayed();
+
+    await trackVisualAppScreen(
+      driver,
+      'DAS-03-i-should-see-the-welcome-screen',
+      { diffTollerancePercent: 1 }
+    );
+  } finally {
+    await driver.deleteSession();
+  }
+});
+```
+
+- Keep the imports, the helpers, and `start()`/`stop()` **conditional on the tag** at record time — specs without a `@screenshots` scenario are unchanged.
+- `isVrtEnabled` is the **run-time** switch layered on top. When it is false the spec still passes: no build is opened, no tracking call fires, and every non-visual assertion in the scenario runs exactly as before. Never call `vrtWeb.trackPage` / `vrtWeb.trackElementHandle` / `vrtApp.track` directly from a test body — always go through the four `trackVisual*` helpers so the guard cannot be bypassed.
+- Construct the browser tracker with the `browserName` worker fixture. Browser is part of the baseline key, so each Playwright project gets its own baseline to approve, while all of them still report into the one `VRT_CIBUILDID` build.
+- `vrtWeb` and `vrtApp` are separate trackers because a scenario can drive a browser and a mobile app in the same test. They share `VRT_CIBUILDID`, and the backend upserts a build on (project, ciBuildId), so both still report into one build.
+- `appImageMeta` reads `driver.requestedCapabilities`, not `driver.capabilities`: the returned session capabilities carry values that drift between runs (UDIDs, patch versions) and would orphan the approved baseline. `browser` carries `automationName` — a native app has no browser, and this keeps the Android and iOS keys apart.
 - The `process.env` defaults MUST stay at module scope, which runs **before** `beforeAll` constructs the tracker — the SDK reads them at construction. Use `||=` (not `??=`) for the git-derived ones so an empty env var still falls back. There is deliberately no `main` fallback for `VRT_BRANCHNAME`: outside a git checkout it stays empty and `isVrtEnabled` turns VRT off, rather than silently comparing against the wrong baseline branch.
 - `withScreenshotDefaults` is why `[RECORD_VISUAL]` annotations never need to spell out `animations: 'disabled'` — the choke point applies it. A recorded `screenshotOptions` merges on top; see [Screenshot Options](#screenshot-options).
 

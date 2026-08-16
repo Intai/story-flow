@@ -122,8 +122,11 @@ Browse and install plugins:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `BASE_URL` | Base URL of the app under test | `use.baseURL` in `playwright.config.js` |
-| `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` |
-| `APPIUM_APP_PACKAGE` | Local app package unique identifier | - |
+| `APPIUM_DEVICE_NAME` | Local device name or emulator | `emulator-5554` (Android) |
+| `APPIUM_UDID` | Local iOS device or simulator UDID | - |
+| `APPIUM_APP_PACKAGE` | Local Android app package unique identifier | - |
+| `APPIUM_APP_ACTIVITY` | Local Android app launcher activity | `.MainActivity` |
+| `APPIUM_BUNDLE_ID` | Local iOS app bundle identifier | - |
 | `BROWSERSTACK_USERNAME` | BrowserStack username | - |
 | `BROWSERSTACK_ACCESS_KEY` | BrowserStack access key | - |
 | `BROWSERSTACK_APP_ID` | Uploaded app ID (`bs://...`) | - |
