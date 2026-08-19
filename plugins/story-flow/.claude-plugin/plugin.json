@@ -1,7 +1,7 @@
 {
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"

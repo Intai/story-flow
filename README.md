@@ -99,7 +99,7 @@ Extend the workflow with your own domain knowledge by adding custom skills. \
 Each skill must follow the exact naming convention so the agent can discover and use it.
 
 Example:
-- `.claude/skills/review-story-against-jira/SKILL.md`
+- `.claude/skills/review-story-against-ticket/SKILL.md`
 - `.claude/skills/analyze-task-dependencies/SKILL.md`
 - `.claude/skills/implement-story-markdown/SKILL.md`
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
