@@ -21,7 +21,7 @@ Available topics:
 ### Steps
 
 1. 🤖🧠 **Draft the technical story markdown** \
-   Prompt Claude Code with accept-edits on: \
+   Prompt Claude Code in **plan mode**: \
    `/draft-story @path/to/story.md PROJ-123` to draft from a story tracker, or \
    `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
    `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
