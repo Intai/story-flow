@@ -24,12 +24,14 @@ When the input is a ticket ID (matching a pattern like `PROJ-123`, `86d2uf1mh`, 
 
 - Use the project's story tracker MCP tools (Jira, ClickUp, Azure DevOps) to fetch the story by its ticket ID and download its attachments. If no story tracker MCP tool is available, tell the developer the project has no story tracker MCP server configured (`/mcp` to check status) and ask them to paste the story details or provide a feature description instead — never guess at the story content.
 - Extract:
+  - Type (Story, Task, Bug/Defect, etc.)
   - Summary (user story statement)
   - Description (context and background)
   - Acceptance criteria (requirements)
   - Subtasks (if any)
   - Figma links (URLs matching `figma.com/file/` or `figma.com/design/`)
   - Steps to reproduce, actual and expected behaviour (bug tickets)
+- Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
 - If the ticket is a bug, reproduce it before drafting. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors, and use them to inform the exploration keywords in Phase 2 and the tasks in Phase 3.
 - If the bug does not reproduce, carry on drafting and highlight it as an assumption in Phase 4 for the developer to confirm the environment, version, account or seed data.
 - If the fetch fails, inform the developer and ask them to verify:
