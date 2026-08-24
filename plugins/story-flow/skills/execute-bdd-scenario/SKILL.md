@@ -149,7 +149,6 @@ WebdriverIO options:
       osVersion: "16",
       userName: process.env.BROWSERSTACK_USERNAME,
       accessKey: process.env.BROWSERSTACK_ACCESS_KEY,
-      local: true,  // Enable tunnel for localhost access
     },
     platformName: "Android",
     "appium:app": process.env.BROWSERSTACK_APP_ID,

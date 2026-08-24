@@ -73,7 +73,8 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 8. 🤖🧠 **Execute BDD scenarios** \
    Prompt: `/execute-scenario SCN-01 @path/to/file.feature` in **auto mode**. \
-   Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass.
+   Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass. \
+   The first argument accepts a single scenario, a comma-separated list, or `all`.
 
 9. 🧠 **Create the final pull request** \
    Discuss the fully tested implementation with the team.
