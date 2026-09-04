@@ -14,9 +14,11 @@ This workflow leverages Claude Code to automate and streamline software developm
 ### Steps
 
 1. 🤖🧠 **Create the technical story markdown** \
-   Create a markdown file with requirements and tasks according to the story, e.g. `src/onboarding/docs/onboarding-story.md`
-
-   > 💡 **New to the codebase or short on time?** Use [junior-flow](plugins/junior-flow) to draft a story markdown from the story tracker as a starting point.
+   Prompt Claude Code in **plan mode**: \
+   `/draft-story @path/to/story.md PROJ-123` to draft from a story tracker, or \
+   `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
+   `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
+   Requires the [junior-flow](plugins/junior-flow) plugin. The draft is a starting point—your review turns it into the technical design.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.
