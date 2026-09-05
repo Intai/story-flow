@@ -111,7 +111,9 @@ Create a story markdown with the following structure:
 ## Tasks
 
 - Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
-- Use frontend-developer subagent to [task description] @path/to/component.jsx. [Technical details].
+- Use frontend-developer subagent to [task description] @path/to/component.jsx.
+  - [Technical detail].
+  - [Technical detail].
 - Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
 - Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @path/to/feature.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
@@ -124,6 +126,7 @@ Create a story markdown with the following structure:
   - Technical details about what to implement
   - Relevant Figma links for reference, if available
 - Group related work into single tasks when appropriate
+- Keep each task to a single line. Only when it carries three or more separate technical details, move them into nested bullets under the task line for readability, keeping the agent assignment on the line itself
 - Always include a QA task to **plan** BDD scenarios
 - Always include a final QA task to **verify** the implementation by executing the BDD scenarios (via `/execute-scenario`) and fixing any failure until all scenarios pass
 - Use existing file paths discovered during exploration
@@ -210,10 +213,16 @@ As a user, I want to update my profile name so that my account details are accur
 
 ## Tasks
 
-- Use backend-developer subagent to create `validateDisplayName(name)` function in @src/account/utils/validation.js. Return error message or null. Pure function, no side effects. Max 100 characters.
+- Use backend-developer subagent to create `validateDisplayName(name)` function in @src/account/utils/validation.js.
+  - Return error message or null.
+  - Pure function, no side effects.
+  - Max 100 characters.
 - Use backend-developer subagent to add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Use `validateDisplayName` from @src/account/utils/validation.js.
 - Use backend-developer subagent to update user update API to handle displayName @src/account/api/user-api.js.
-- Use frontend-developer subagent to create EditNameModal component with input field and character counter @src/account/components/edit-name-modal.jsx. Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation. Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
+- Use frontend-developer subagent to create EditNameModal component @src/account/components/edit-name-modal.jsx.
+  - Input field with a character counter below it.
+  - Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation.
+  - Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
 - Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
 - Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
 - Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @src/account/docs/update-profile-name.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
