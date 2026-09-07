@@ -1,0 +1,21 @@
+{
+  "name": "junior-flow",
+  "version": "1.0.15",
+  "description": "Helps junior developers create technical story markdown from a story tracker",
+  "author": { "name": "Intai", "email": "intai.hg@gmail.com" },
+  "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/junior-flow/README.md",
+  "repository": "https://github.com/Intai/story-flow",
+  "license": "MIT",
+  "keywords": ["junior-developer", "story-planning", "jira", "clickup", "azure-devops"],
+  "skills": "./skills/",
+  "mcpServers": { "figma": { "url": "https://mcp.figma.com/mcp", "type": "http" } },
+  "interface": {
+    "displayName": "Junior Flow",
+    "shortDescription": "Draft technical stories and learn story-flow practices.",
+    "longDescription": "Guided workflows for drafting technical story markdown and learning core story-flow concepts.",
+    "developerName": "Intai",
+    "category": "Productivity",
+    "capabilities": ["Write", "Interactive"],
+    "defaultPrompt": ["Draft docs/story.md from PROJ-123", "Draft a story for passwordless login", "Teach me technical design"]
+  }
+}
