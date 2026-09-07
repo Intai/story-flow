@@ -110,11 +110,11 @@ Create a story markdown with the following structure:
 
 ## Tasks
 
+- Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
 - Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
 - Use frontend-developer subagent to [task description] @path/to/component.jsx.
   - [Technical detail].
   - [Technical detail].
-- Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
 - Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @path/to/feature.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
 
@@ -213,6 +213,7 @@ As a user, I want to update my profile name so that my account details are accur
 
 ## Tasks
 
+- Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
 - Use backend-developer subagent to create `validateDisplayName(name)` function in @src/account/utils/validation.js.
   - Return error message or null.
   - Pure function, no side effects.
@@ -224,7 +225,6 @@ As a user, I want to update my profile name so that my account details are accur
   - Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation.
   - Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
 - Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
-- Use qa-tester subagent to plan BDD scenarios @src/account/docs/update-profile-name.feature.
 - Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @src/account/docs/update-profile-name.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
 
