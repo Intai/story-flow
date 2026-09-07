@@ -1,0 +1,26 @@
+{
+  "name": "story-flow",
+  "version": "1.0.45",
+  "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
+  "author": { "name": "Intai", "email": "intai.hg@gmail.com" },
+  "homepage": "https://github.com/Intai/story-flow/blob/main/README.md",
+  "repository": "https://github.com/Intai/story-flow",
+  "license": "MIT",
+  "keywords": ["development-workflow", "development", "workflow"],
+  "skills": "./skills/",
+  "mcpServers": {
+    "context7": { "command": "npx", "args": ["-y", "@upstash/context7-mcp"] },
+    "chrome-devtools": { "command": "npx", "args": ["chrome-devtools-mcp@latest", "--isolated"] },
+    "playwright": { "command": "npx", "args": ["@playwright/mcp@latest", "--browser=chrome", "--isolated", "--no-sandbox"] },
+    "appium": { "command": "npx", "args": ["-y", "appium-mcp-server@latest"] }
+  },
+  "interface": {
+    "displayName": "Story Flow",
+    "shortDescription": "Plan, implement, and verify development stories.",
+    "longDescription": "A workflow for drafting, analyzing, implementing, and reviewing technical stories with BDD verification.",
+    "developerName": "Intai",
+    "category": "Productivity",
+    "capabilities": ["Write", "Automation"],
+    "defaultPrompt": ["Analyze task dependencies in @docs/story.md", "Implement @docs/story.md", "Execute all BDD scenarios in @features/story.feature"]
+  }
+}
