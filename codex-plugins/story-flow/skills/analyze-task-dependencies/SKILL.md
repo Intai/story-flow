@@ -16,11 +16,11 @@ user-invocable: false
   - **Same-file conflicts**: Tasks that modify the same file cannot run in parallel
   - **Parallel agents**: Multiple agents of the same type can work in parallel - focus only on technical dependencies
   - **QA independence**: Test scenario planning tasks depend only on story and can start immediately in parallel with implementation tasks
-- Group tasks into parallel execution batches using these formats:
-  - `**Sequential tasks X-Y:**` for tasks that need to be implemented sequentially with no prerequisites
+- Group tasks into parallel execution batches using these formats. Every heading states its prerequisites, so groups reading "no prerequisites" all start at the same time no matter what order they appear in:
+  - `**Sequential tasks X-Y, no prerequisites:**` for a sequential chain that can start immediately
   - `**Sequential tasks X-Y after task Z completes:**` for a sequential chain that depends on one prerequisite task
   - `**Sequential tasks X-Y after tasks A-B complete:**` for a sequential chain that depends on multiple prerequisite tasks
-  - `**Parallel tasks X-Y:**` for tasks with no dependencies that can start immediately
+  - `**Parallel tasks X-Y, no prerequisites:**` for parallel tasks that can start immediately
   - `**Parallel after task X completes:**` for parallel tasks depending on a single prerequisite task
   - `**Parallel after tasks X-Y complete:**` for parallel tasks depending on multiple prerequisite tasks
 - Number tasks sequentially (1, 2, 3...) across all groups
@@ -48,13 +48,13 @@ Proposed format:
 ```markdown
 ## Tasks
 
-**Sequential tasks 1-3:**
+**Sequential tasks 1-3, no prerequisites:**
 
 1. Use backend-developer subagent to [original task description]
 2. Use backend-developer subagent to [original task description]
 3. Use backend-developer subagent to [original task description]
 
-**Parallel tasks 4-5:**
+**Parallel tasks 4-5, no prerequisites:**
 
 4. Use backend-developer subagent to [original task description]
 5. Use qa-tester subagent to [original task description]
@@ -96,7 +96,7 @@ Proposed format:
 
 ❌ **Over-sequential (incorrect approach):**
 ```
-Sequential tasks 1-3:
+Sequential tasks 1-3, no prerequisites:
 1. Add config value `auth.userId`
 2. Add config value `aws.s3.bucket`
 3. Implement server action that uses both config values
@@ -105,21 +105,21 @@ This creates unnecessary waiting - task 3 can be written assuming configs will e
 
 ✅ **Properly parallel (correct approach):**
 ```
-Sequential tasks 1-2:
+Sequential tasks 1-2, no prerequisites:
 1. Add config value `auth.userId`
 2. Add config value `aws.s3.bucket`
 
-Parallel tasks 3-4:
+Parallel tasks 3-4, no prerequisites:
 3. Implement server action that uses both config values
 4. Initialize S3 bucket
 ```
-Tasks 1-2 are sequential because they modify the same file. Tasks 3-4 can run in parallel with 1-2 because they assume runtime values will exist.
+Tasks 1-2 are sequential because they modify the same file. Tasks 3-4 have no prerequisites because they assume runtime values will exist.
 
 ### Sequential Group Merging
 
 ❌ **Split sequential groups (incorrect approach):**
 ```
-Sequential tasks 1-3:
+Sequential tasks 1-3, no prerequisites:
 1. Create user model
 2. Create user service
 3. Create user controller
@@ -132,7 +132,7 @@ The second group's only prerequisite is the last task of the first group — thi
 
 ✅ **Merged sequential group (correct approach):**
 ```
-Sequential tasks 1-5:
+Sequential tasks 1-5, no prerequisites:
 1. Create user model
 2. Create user service
 3. Create user controller
