@@ -1,6 +1,6 @@
 ---
 name: (Not user invocable) Review a story markdown against a story tracker
-description: Analyze a story from the story tracker to review story.md requirements and tasks.
+description: Review story.md requirements and tasks, optionally against a story from the story tracker.
 user-invocable: false
 ---
 
@@ -8,6 +8,7 @@ user-invocable: false
 
 ## Instructions
 
+- When no ticket ID is given, skip to reading the local story markdown and review it without story tracker comparison.
 - Fetch the story by its ticket ID (e.g. PROJ-123, 86d2uf1mh, 4821, AB#4821) using the project's story tracker MCP tools (Jira, ClickUp, Azure DevOps), to retrieve the complete story details including type, description, acceptance criteria, and subtasks, and download its attachments. If no story tracker MCP tool is available, tell the developer the project has no story tracker MCP server configured (`/mcp` to check status) and ask them to paste the story details or drop the ticket argument — never guess at the story content.
 - Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
 - For a bug ticket, also extract the steps to reproduce, and the actual and expected behaviour. Review the downloaded attachments for details the description omits.
@@ -24,7 +25,7 @@ user-invocable: false
   - **Maintainability & Readability**: Assess whether each task, as scoped, promotes maintainable code. Using the similar existing implementations found during Codebase Verification, flag tasks that would duplicate logic that already exists (should reuse an existing utility/component instead), or that over- or under-engineer relative to the codebase's established patterns. Prefer pure, single-responsibility units with meaningful naming. Do NOT review implemented code here (none exists yet) — only the intent and scope of the planned tasks.
   - **Redundant Unit Testing Tasks**: Flag any tasks that are solely about writing or updating unit tests. Unit testing is automatically handled as part of each implementation task by the `implement-story-markdown` skill — separate testing tasks create duplication and should be removed or merged into the relevant implementation tasks.
   - **Task Dependency Ordering**: Do NOT flag missing explicit task dependency ordering or parallel/sequential grouping. This is handled separately by the `analyze-task-dependencies` skill.
-- Report findings with specific examples of what's missing, incomplete, or misaligned.
+- Report findings with specific examples of what's missing, incomplete, or misaligned. List every finding first, then work through them one at a time, applying each to the story markdown once the developer confirms it.
 - Highlight any requirements from the story that are not reflected in the markdown.
 - Note any tasks in the markdown that don't map to the story requirements.
 - **Task Implementation Summary**: For each task in the markdown, provide a summary of what will be implemented:
