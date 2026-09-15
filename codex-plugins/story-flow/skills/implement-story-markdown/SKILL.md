@@ -29,10 +29,10 @@ user-invocable: false
       - No missing assertions: every test must contain at least one `expect()` that checks a meaningful outcome.
       - Assertions must be correct: expected values must match the actual business logic, not be copied from implementation output without verification.
   - Report back to the orchestrator just "completed" or "failed". On success, strictly nothing else. On failure, include a brief summary of the issues encountered.
-- When a story references the qa-tester subagent for planning BDD scenarios, use the qa-tester subagent and instruct it to load BOTH skills in this order using the Skill tool:
+- When a story references the qa-tester subagent for planning BDD scenarios, use the qa-tester subagent and instruct it to load skills in this order using the Skill tool:
   1. First: `story-flow:plan-bdd-scenarios` (plugin - general BDD planning protocol)
-  2. Then: `plan-bdd-scenarios` (project-level - overrides/extends the plugin)
-  3. Confirm both skills are loaded before continuing with BDD planning.
+  2. Then: `plan-bdd-scenarios` if it exists (project-level - overrides/extends the plugin)
+  3. Confirm which skills are loaded before continuing with BDD planning.
 
 ## Example Inputs
 
