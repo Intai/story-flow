@@ -3,10 +3,10 @@ argument-hint: [@path/to/story.md, ticket ID e.g. PROJ-123, 4821 or feature desc
 description: Generate a draft story markdown from a story tracker or a feature description
 ---
 
-Load BOTH skills in this order using the Skill tool:
+Load skills in this order using the Skill tool:
 1. First: `junior-flow:draft-story-markdown` (plugin - general protocol)
-2. Then: `draft-story-markdown` (project-level - overrides/extends the plugin)
-3. Confirm both skills are loaded before continuing with the draft.
+2. Then: `draft-story-markdown` if it exists (project-level - overrides/extends the plugin)
+3. Confirm which skills are loaded before continuing with the draft.
 
 If $2 matches a ticket ID pattern (e.g. PROJ-123, 86d2uf1mh, 4821, AB#4821):
   Draft a story markdown $1 for story $2.
