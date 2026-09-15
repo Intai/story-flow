@@ -27,10 +27,10 @@ user-invocable: false
   1. Read the feature file to identify all scenario IDs and titles
   2. For each scenario, use the **Task tool** with `subagent_type="general-purpose"` to run it in isolated context sequentially:
      ```
-     Load BOTH skills in this order using the Skill tool:
+     Load skills in this order using the Skill tool:
      1. First: `story-flow:execute-bdd-scenario` (plugin - general BDD framework)
-     2. Then: `execute-bdd-scenario` (project-level - overrides/extends the plugin)
-     3. Confirm both skills are loaded before continuing with the execution.
+     2. Then: `execute-bdd-scenario` if it exists (project-level - overrides/extends the plugin)
+     3. Confirm which skills are loaded before continuing with the execution.
 
      Execute BDD scenario <SCENARIO-ID> in @path/to/file.feature [--record if recording mode is active].
      ```
