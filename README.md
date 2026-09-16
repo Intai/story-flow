@@ -81,7 +81,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 9. 🧠 **Create the final pull request** \
    Discuss the fully tested implementation with the team.
 
-10. 🤖 **Optional: Generate a Playwright script** \
+10. 🤖 **Recommended: Generate a Playwright script** \
     Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
     Generates a Playwright test script that can be run efficiently without Claude for regression testing.
 
