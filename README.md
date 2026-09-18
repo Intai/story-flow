@@ -42,18 +42,17 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Use frontend-developer subagent to add a Display Name input field with validation to the profile form @src/account/components/profile-form.jsx and update state management @src/account/redux/profile-slice.js.
    ```
 
-2. 🤖 **Review the story markdown** \
-   Prompt Claude Code: `/review-story @path/to/story.md PROJ-123` in **plan mode**. \
+2. 🤖🧠 **Review the story markdown** \
+   Prompt Claude Code: `/review-story @path/to/story.md PROJ-123` starting from **plan mode**. \
    This checks the story markdown, optionally against the story in your story tracker.
 
-3. 🧠 **Update the story markdown** \
-   Incorporate feedback to ensure the story markdown is well-defined and detailed.
+   Exit **plan mode** to discuss the findings one at a time, incorporating or skipping each one, to ensure the story markdown is well-defined and detailed.
 
-4. 🤖 **Analyze task dependencies** \
+3. 🤖 **Analyze task dependencies** \
    Prompt: `/analyze-tasks @path/to/story.md` starting from **plan mode**. \
    This identifies tasks that can be executed in parallel and updates the story markdown accordingly.
 
-5. 🧠 **Create an initial pull request** \
+4. 🧠 **Create an initial pull request** \
    Open a PR with the story markdown and discuss requirements, planned tasks, and the execution plan with the team **before any code is written**.
 
    > 💡 **Why now?** Shift-left: a wrong approach caught here costs a review comment; caught after implementation it costs the implementation. Use [junior-flow](plugins/junior-flow) `/learn-story-flow technical-design` to explore why design PRs reduce rework.
@@ -62,39 +61,39 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Include alternatives considered and open questions for reviewers.
    - Designs evolve; update the story markdown when implementation diverges.
 
-6. 🤖 **Implement the story** \
+5. 🤖 **Implement the story** \
    Prompt: `/implement-story @path/to/story.md` in **auto mode**. \
    Executes tasks according to the plan in loops until the acceptance criteria are met. Each task is delegated to a subagent running in an isolated context, keeping the orchestrator lightweight so it can handle larger stories without exhausting its context window. Tasks previously analyzed as independent will be implemented in parallel.
 
-7. 🧠 **Review implementation** \
+6. 🧠 **Review implementation** \
    Check code, unit tests, and BDD scenarios for:
    - Code quality
    - 100% test coverage
    - Full BDD coverage (positive, negative, edge cases)
    - Test assertions match their descriptions (tests actually verify what they claim to test)
 
-8. 🤖🧠 **Execute BDD scenarios** \
+7. 🤖🧠 **Execute BDD scenarios** \
    Prompt: `/execute-scenario SCN-01 @path/to/file.feature` in **auto mode**. \
    Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass. \
    The first argument accepts a single scenario, a comma-separated list, an inclusive range such as `SCN-01..SCN-10`, or `all`.
 
-9. 🧠 **Create the final pull request** \
+8. 🧠 **Create the final pull request** \
    Discuss the fully tested implementation with the team.
 
-10. 🤖 **Recommended: Generate a Playwright script** \
-    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
-    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
+9. 🤖 **Recommended: Generate a Playwright script** \
+   Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
+   Generates a Playwright test script that can be run efficiently without Claude for regression testing.
 
-    **Troubleshoot Recording Issues** \
-    If the recording produces unreliable or incomplete Playwright tests, try the following (in order):
-    1. Make BDD steps more specific \
-       Clarify intent and expected outcomes so Claude doesn’t need to infer behavior.
-    2. Add stable UI selectors \
-       Prefer explicit identifiers such as accessibilityId, data-testid, or similar attributes on key elements.
-    3. Add domain knowledge to Claude skills (last resort) \
-       If ambiguity remains, extend Claude with relevant domain context via [custom skills](#extension).
+   **Troubleshoot Recording Issues** \
+   If the recording produces unreliable or incomplete Playwright tests, try the following (in order):
+   1. Make BDD steps more specific \
+      Clarify intent and expected outcomes so Claude doesn’t need to infer behavior.
+   2. Add stable UI selectors \
+      Prefer explicit identifiers such as accessibilityId, data-testid, or similar attributes on key elements.
+   3. Add domain knowledge to Claude skills (last resort) \
+      If ambiguity remains, extend Claude with relevant domain context via [custom skills](#extension).
 
-    After applying any of the above, simply regenerate the Playwright test cases.
+   After applying any of the above, simply regenerate the Playwright test cases.
 
 ### Extension
 
