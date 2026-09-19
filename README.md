@@ -79,7 +79,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
    > 💡 **Code written outside the workflow?** Plan BDD scenarios from an existing implementation — descriptive, not prescriptive: \
    > `/retrofit-scenarios @path/to/file.feature "feature description"` to retrofit from a described feature, or \
-   > `/retrofit-scenarios @path/to/file.feature @path/to/source/*` to retrofit from source paths.
+   > `/retrofit-scenarios @path/to/file.feature @path/to/source1 @path/to/source2/*` to retrofit from source paths.
 
 8. 🤖 **Recommended: Generate a Playwright script** \
    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
