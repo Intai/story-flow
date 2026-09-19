@@ -74,13 +74,10 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 7. 🤖🧠 **Execute BDD scenarios** \
    Prompt: `/execute-scenario SCN-01 @path/to/file.feature` in **auto mode**. \
-   Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass. \
+   Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass, or skip to step 8 to execute and record in one pass if confident about the scenarios. \
    The first argument accepts a single scenario, a comma-separated list, an inclusive range such as `SCN-01..SCN-10`, or `all`.
 
-8. 🧠 **Create the final pull request** \
-   Discuss the fully tested implementation with the team.
-
-9. 🤖 **Recommended: Generate a Playwright script** \
+8. 🤖 **Recommended: Generate a Playwright script** \
    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
 
@@ -94,6 +91,9 @@ This workflow leverages Claude Code to automate and streamline software developm
       If ambiguity remains, extend Claude with relevant domain context via [custom skills](#extension).
 
    After applying any of the above, simply regenerate the Playwright test cases.
+
+9. 🧠 **Create the final pull request** \
+   Discuss the fully tested implementation with the team.
 
 ### Extension
 
