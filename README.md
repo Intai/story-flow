@@ -77,6 +77,10 @@ This workflow leverages Claude Code to automate and streamline software developm
    Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass, or skip to step 8 to execute and record in one pass if confident about the scenarios. \
    The first argument accepts a single scenario, a comma-separated list, an inclusive range such as `SCN-01..SCN-10`, or `all`.
 
+   > 💡 **Code written outside the workflow?** Plan BDD scenarios from an existing implementation: \
+   > `/retrofit-scenarios @path/to/file.feature @path/to/source/*` to retrofit from source paths, or \
+   > `/retrofit-scenarios @path/to/file.feature "feature description"` to retrofit from a described feature.
+
 8. 🤖 **Recommended: Generate a Playwright script** \
    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
