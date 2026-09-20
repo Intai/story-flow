@@ -11,4 +11,4 @@ Use the qa-tester subagent and instruct it to load skills in this order using th
 If source paths are provided ($2 onwards):
   Plan BDD scenarios in $1 from the implementation in $2 $3 $4 $5 $6.
 If a feature description is provided instead:
-  Locate the implementation of $2 in the codebase, then plan BDD scenarios in $1 from it.
+  Locate the implementation of $2 in the codebase; if it cannot be found or does not settle the behaviour, observe the running app or any other source available. Then plan BDD scenarios in $1 from it.
