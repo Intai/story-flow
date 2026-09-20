@@ -14,4 +14,4 @@ Use the qa-tester subagent and instruct it to load skills in this order:
 
 Confirm which skills are loaded before continuing with BDD planning.
 
-If source paths are present, plan BDD scenarios in the resolved feature file from the implementation in those paths. Otherwise, locate the implementation of the described feature in the codebase, then plan BDD scenarios in the resolved feature file from it.
+If source paths are present, plan BDD scenarios in the resolved feature file from the implementation in those paths. Otherwise, locate the implementation of the described feature in the codebase; if it cannot be found or does not settle the behaviour, observe the running app or any other source available. Then plan BDD scenarios in the resolved feature file from it.
