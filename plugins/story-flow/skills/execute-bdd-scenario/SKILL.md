@@ -48,7 +48,7 @@ effort: medium
      | SMG-03   | Inline edit a string value  | ⊘ SKIPPED |
      ```
 - Save `.feature` files in the same folder as the stories.
-- If a BDD scenario has the `@screenshots` tag, take one screenshot per **assertion group** — a maximal run of consecutive assertion steps with no action or wait step between them, since nothing re-renders in between — captured after the group's **last** UI assertion so every asserted condition has settled, and, in `--record` mode when VRT is configured, emit one visual regression tracking call per group (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). Command and polling assertion steps (S3/CLI/API checks) assert outside the viewport: they take no screenshot and do not break the group. Pass `browser_take_screenshot` a filename explicitly prefixed with `.playwright-mcp/` — e.g. `.playwright-mcp/SMG-01-i-should-see-the-dashboard.png` so it lands in the `.playwright-mcp` output folder — never an absolute path, which writes to the project root.
+- If a BDD scenario has the `@screenshots` tag, take one screenshot per **assertion group** — a maximal run of consecutive assertion steps with no action or wait step between them, since nothing re-renders in between — captured after the group's **last** UI assertion so every asserted condition has settled, and, in `--record` mode when VRT is configured, emit one visual regression tracking call per group (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). Command and polling assertion steps (S3/CLI/API checks) assert outside the viewport: they take no screenshot and do not break the group. Scroll only if necessary before the shot: when any of the group's asserted elements has an edge outside the viewport, scroll it fully in by the smallest amount that does so, and when the group's asserted elements are together taller than the viewport, scroll the topmost one's top edge to the top of the viewport and let the overflow fall outside the shot. Pass `browser_take_screenshot` a filename explicitly prefixed with `.playwright-mcp/` — e.g. `.playwright-mcp/SMG-01-i-should-see-the-dashboard.png` so it lands in the `.playwright-mcp` output folder — never an absolute path, which writes to the project root.
 - If a BDD scenario doesn't have the `@screenshots` tag, do not take any screenshot.
 - If a BDD scenario has the `@purge-data` tag, restore the seed data first (before the Background steps) by executing the `make reseed` command.
 - If a BDD scenario does not have the `@purge-data` tag, do not restore the seed data before running the scenario.
@@ -182,7 +182,7 @@ WebdriverIO options:
     - All non-visual verification steps
   - **Only use screenshots** for:
     - Visual verification (e.g., verifying colors with ImageMagick)
-    - After the last UI assertion of each assertion group, when the scenario has the `@screenshots` tag
+    - After the last UI assertion of each assertion group, when the scenario has the `@screenshots` tag — scroll the asserted elements in first when any edge is outside the viewport
   - Page source is faster and provides structured data; screenshots are only needed when pixel-level visual verification is required.
 - **Multi-finger gestures (3-finger tap, pinch, etc.):**
   - The Appium MCP tools don't have direct multi-finger support, so use the W3C Actions API via HTTP.
@@ -461,6 +461,7 @@ Record `goto`, `waitForURL` and `toHaveURL` values as a **path** (`/settings`), 
 | `keyboardPress` | `await page.keyboard.press(value)` |
 | `keyboardDown` | `await page.keyboard.down(value)` |
 | `keyboardUp` | `await page.keyboard.up(value)` |
+| `scrollIntoView` | `await locator.scrollIntoViewIfNeeded()` |
 | `waitFor` | `await locator.waitFor()` |
 | `waitForURL` | `await page.waitForURL(value)` |
 | `waitForLoadState` | `await page.waitForLoadState(value)` |
@@ -510,7 +511,7 @@ value: 3
 
 ### Recording Visual Regression (VRT)
 
-Only applies when the scenario has the `@screenshots` tag AND VRT is configured at record time (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). The generated calls are additionally guarded at run time, so they no-op when the `VRT_*` env vars are absent. Output one `[RECORD_VISUAL]` annotation per assertion group per target — the same set direct execution captures — placed AFTER the group's **last** UI assertion's `[RECORD_EXPECT]` annotation so the tracking call lands once the whole group has settled:
+Only applies when the scenario has the `@screenshots` tag AND VRT is configured at record time (see [Visual Regression Testing (VRT)](#visual-regression-testing-vrt)). The generated calls are additionally guarded at run time, so they no-op when the `VRT_*` env vars are absent. Output one `[RECORD_VISUAL]` annotation per assertion group per target — the same set direct execution captures — placed AFTER the group's **last** UI assertion's `[RECORD_EXPECT]` annotation so the tracking call lands once the whole group has settled. When the scroll was necessary, record it as a `[RECORD_ACTION]` with `method: scrollIntoView` immediately BEFORE the `[RECORD_VISUAL]` annotation — the scroll offset is part of the image, so it is part of what the baseline approves:
 
 ```
 [RECORD_VISUAL]
@@ -524,7 +525,7 @@ options: { diffTollerancePercent: 1 }
 **Annotation fields:**
 - `step`: The exact Gherkin step text (becomes a comment) — the group's **last** UI assertion step, the same step the shot is captured after, so the recorded `name` stays derivable from it
 - `name`: **Derived, never invented** — see [Deriving the VRT name](#deriving-the-vrt-name) below
-- `target`: the surface being captured — `page` or a scoped locator for a browser, `driver` or a discovered app element for a mobile app. Default to the whole surface (`page` / `driver`); scope to an element only when the assertion is scoped to one element and a whole-surface shot would be noisy. Discover the locator or selector per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors. Element shots are **not** collapsed into the group's whole-surface shot: each distinct target is a different image, so a group containing element-scoped assertions emits one annotation per target, each recording its own step.
+- `target`: the surface being captured — `page` or a scoped locator for a browser, `driver` or a discovered app element for a mobile app. Default to the whole surface (`page` / `driver`); scope to an element only when the assertion is scoped to one element and a whole-surface shot would be noisy. Discover the locator or selector per the [Locator Strategies](#locator-strategies) rules — no fabricated selectors. Element shots are **not** collapsed into the group's whole-surface shot: each distinct target is a different image, so a group containing element-scoped assertions emits one annotation per target, each recording its own step. An element target needs no recorded scroll — `trackVisualElement` and `trackVisualAppElement` scroll the element into view themselves; only a whole-surface `page` or `driver` target does.
 - `options`: Optional VRT options object — `diffTollerancePercent`, `ignoreAreas`, `screenshotOptions`, `agent`. `screenshotOptions` is browser-only: it merges over the helpers' `animations: 'disabled'` default rather than replacing it, so only record it when a shot needs something extra (e.g. `fullPage`) — see [Screenshot Options](#screenshot-options).
 
 **Supported tracking calls:**
