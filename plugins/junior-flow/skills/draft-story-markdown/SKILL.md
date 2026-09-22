@@ -197,7 +197,7 @@ If a requirement cannot be mapped to specific files:
    Please review the draft and let me know if you'd like any changes before I save it.
    ```
 
-5. **Write the file** only after the developer confirms.
+5. **Write the file** only after the developer confirms, then point them to `/story-flow:review-story` as the next step, followed by `/story-flow:analyze-tasks` once the review is done.
 
 ## Example Output
 
