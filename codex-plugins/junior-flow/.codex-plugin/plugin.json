@@ -1,6 +1,6 @@
 {
   "name": "junior-flow",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Helps junior developers create technical story markdown from a story tracker",
   "author": { "name": "Intai", "email": "intai.hg@gmail.com" },
   "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/junior-flow/README.md",
