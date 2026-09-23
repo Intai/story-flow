@@ -66,6 +66,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    Executes tasks according to the plan in loops until the acceptance criteria are met. Each task is delegated to a subagent running in an isolated context, keeping the orchestrator lightweight so it can handle larger stories without exhausting its context window. Tasks previously analyzed as independent will be implemented in parallel.
 
 6. 🧠 **Review implementation** \
+   In parallel with step 7 to save time: review while the scenarios execute. \
    Check code, unit tests, and BDD scenarios for:
    - Code quality
    - 100% test coverage
