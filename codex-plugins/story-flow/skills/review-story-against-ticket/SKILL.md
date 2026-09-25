@@ -22,6 +22,7 @@ user-invocable: false
   - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
   - **Technical Accuracy**: Validate that the technical approach and implementation details match the story specifications.
   - **Root Cause Coverage** (bug tickets): Using the reproduction findings, verify the tasks address the failing step and any console or network errors observed — flag tasks that only treat the symptom described in the ticket.
+  - **Resolution Markers**: Raise every `[Risk: …]` and `[Discuss: …]` bullet as a finding. For Discuss, propose one of the viable approaches found during Codebase Verification and write the decision into the task; for Risk, propose a safeguard (a technical detail on the task or a BDD scenario covering the regression). Delete the marker once the developer confirms. None may survive the review.
   - **Maintainability & Readability**: Assess whether each task, as scoped, promotes maintainable code. Using the similar existing implementations found during Codebase Verification, flag tasks that would duplicate logic that already exists (should reuse an existing utility/component instead), or that over- or under-engineer relative to the codebase's established patterns. Prefer pure, single-responsibility units with meaningful naming. Do NOT review implemented code here (none exists yet) — only the intent and scope of the planned tasks.
   - **Redundant Unit Testing Tasks**: Flag any tasks that are solely about writing or updating unit tests. Unit testing is automatically handled as part of each implementation task by the `implement-story-markdown` skill — separate testing tasks create duplication and should be removed or merged into the relevant implementation tasks.
   - **Task Dependency Ordering**: Do NOT flag missing explicit task dependency ordering or parallel/sequential grouping. This is handled separately by the `analyze-task-dependencies` skill.
@@ -37,7 +38,7 @@ user-invocable: false
     - For dependencies: Check that referenced modules, components, or APIs exist
     - Identify similar existing implementations as reference patterns
   - **Implementability Assessment**: Mark each task as:
-    - ✅ **Doable** - Can be implemented as described
+    - ✅ **Doable** - Can be implemented as described, with no `[Risk: …]` or `[Discuss: …]` marker left
     - ⚠️  **Needs Adjustment** - Feasible with modifications (explain what)
     - ❌ **Blocked** - Cannot be implemented (list blockers)
 
