@@ -112,7 +112,7 @@ Create a story markdown with the following structure:
 
 - Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
 - Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
-  - **Risk:** [reason].
+  - [Risk: reason]
 - Use frontend-developer subagent to [task description] @path/to/component.jsx.
   - [Technical detail].
   - [Technical detail].
@@ -128,7 +128,7 @@ Create a story markdown with the following structure:
   - Relevant Figma links for reference, if available
 - Group related work into single tasks when appropriate
 - Keep each task to a single line. Only when it carries three or more separate technical details, move them into nested bullets under the task line for readability, keeping the agent assignment on the line itself. Risk and Discuss markers are always nested bullets and do not count toward the three
-- Add a nested **Risk:** [reason] bullet under a task when a mistake in it would break behaviour beyond this story, such as changing a schema, data migration or public API contract, or authentication, authorisation or payments. Add a nested **Discuss:** [question] bullet when the task has a decision the story doesn't settle, such as exploration finding two or more viable approaches or no existing pattern to follow, or the requirement it serves having more than one reading. Leave every other task unmarked
+- Add a nested [Risk: reason] bullet under a task when a mistake in it would break behaviour beyond this story, such as changing a schema, data migration or public API contract, or authentication, authorisation or payments. Add a nested [Discuss: question] bullet when the task has a decision the story doesn't settle, such as exploration finding two or more viable approaches or no existing pattern to follow, or the requirement it serves having more than one reading. Leave every other task unmarked. The developer resolves and deletes each marker before implementing the story
 - Always include a QA task to **plan** BDD scenarios
 - Always include a final QA task to **verify** the implementation by executing the BDD scenarios (via `/execute-scenario`) and fixing any failure until all scenarios pass
 - Use existing file paths discovered during exploration
@@ -187,7 +187,7 @@ If a requirement cannot be mapped to specific files:
    - Tasks where file paths were uncertain (marked with assumptions)
    - Requirements that may need clarification
    - Any gaps between the story acceptance criteria and generated tasks
-   - Tasks marked **Risk:** or **Discuss:**
+   - Tasks marked [Risk: …] or [Discuss: …], to resolve and delete before implementing
 
 3. **Suggest output path:**
    - If an output path was provided, use it
@@ -222,14 +222,14 @@ As a user, I want to update my profile name so that my account details are accur
   - Pure function, no side effects.
   - Max 100 characters.
 - Use backend-developer subagent to add `displayName: String` field to user schema @src/account/schemas/user-schema.js. Use `validateDisplayName` from @src/account/utils/validation.js.
-  - **Risk:** changes the user schema shared by every account API; check existing records without displayName still load.
+  - [Risk: changes the user schema shared by every account API; check existing records without displayName still load]
 - Use backend-developer subagent to update user update API to handle displayName @src/account/api/user-api.js.
 - Use frontend-developer subagent to create EditNameModal component @src/account/components/edit-name-modal.jsx.
   - Input field with a character counter below it.
   - Use `validateDisplayName` from @src/account/utils/validation.js for client-side validation.
   - Match the modal design from Figma https://figma.com/design/abc123/ProfileEdit?node-id=1-234.
 - Use frontend-developer subagent to update profile state management @src/account/redux/profile-slice.js.
-  - **Discuss:** update the slice optimistically or after the API responds?
+  - [Discuss: update the slice optimistically or after the API responds?]
 - Use qa-tester subagent to verify the implementation meets the acceptance criteria by executing all BDD scenarios @src/account/docs/update-profile-name.feature via the /execute-scenario command. If any scenario fails, fix the implementation with the appropriate developer subagent and re-run until every scenario passes.
 ```
 
