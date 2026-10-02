@@ -29,8 +29,9 @@ When the input is a ticket ID (matching a pattern like `PROJ-123`, `86d2uf1mh`, 
   - Description (context and background)
   - Acceptance criteria (requirements)
   - Subtasks (if any)
-  - Figma links (URLs matching `figma.com/file/` or `figma.com/design/`)
+  - Figma links (any `figma.com` URL, keeping its `node-id`), searching the ticket's comments, custom fields and attachments as well as its description
   - Steps to reproduce, actual and expected behaviour (bug tickets)
+- Fetch each Figma link with `mcp__plugin_junior-flow_figma__get_design_context` and `mcp__plugin_junior-flow_figma__get_screenshot`, and note its frame and component names for Phase 3. If the fetch fails, keep the link for the tasks anyway and tell the developer to check the Figma MCP login (`/mcp`).
 - Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
 - If the ticket is a bug, reproduce it before drafting. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors, and use them to inform the exploration keywords in Phase 2 and the tasks in Phase 3.
 - If the bug does not reproduce, carry on drafting and highlight it as an assumption in Phase 4 for the developer to confirm the environment, version, account or seed data.
@@ -46,7 +47,7 @@ When the input is a feature description (not a ticket ID):
 - Ask the developer clarifying questions if the description is too vague to derive requirements from, such as:
   - What is the expected user flow?
   - Are there specific acceptance criteria?
-  - Are there any Figma designs to reference?
+- Ask the developer for Figma links when the feature changes UI and the description has none, then fetch them as in Option A.
 - Derive a user story summary, context, and initial requirements from the description and any clarifications.
 
 ### Phase 2: Explore Codebase
@@ -125,7 +126,7 @@ Create a story markdown with the following structure:
   - Clear action description
   - Specific file path(s) using `@path/to/file` format
   - Technical details about what to implement
-  - Relevant Figma links for reference, if available
+  - The Figma link of each frame a frontend-developer or mobile-developer task builds or changes, matched by `node-id`. Every Figma link from Phase 1 appears on at least one task
 - Group related work into single tasks when appropriate
 - Keep each task to a single line. Only when it carries three or more separate technical details, move them into nested bullets under the task line for readability, keeping the agent assignment on the line itself. Risk and Discuss markers are always nested bullets and do not count toward the three
 - Add a nested [Risk: reason] bullet under a task when a mistake in it would break behaviour beyond this story, such as changing a schema, data migration or public API contract, or authentication, authorisation or payments. Add a nested [Discuss: question] bullet when the task has a decision the story doesn't settle, such as exploration finding two or more viable approaches or no existing pattern to follow, or the requirement it serves having more than one reading. Leave every other task unmarked. The developer resolves and deletes each marker before implementing the story
@@ -141,7 +142,7 @@ Create a story markdown with the following structure:
 
 **Using Figma design to inform content:**
 
-When Figma design information is available:
+When the story has Figma links:
 
 1. **Derive requirements from design:**
    - Identify UI elements that imply requirements (e.g., an input field implies data storage)
@@ -152,7 +153,6 @@ When Figma design information is available:
    - Use component names from Figma (e.g., "ProfileCard", "EditNameModal")
    - Reference specific UI elements when describing frontend tasks
    - Identify new components that need to be created vs. existing ones to modify
-   - Always include the Figma link for reference
 
 **Agent assignment guide:**
 - `Use backend-developer subagent to`: APIs, schemas, database models, server-side logic, backend services
@@ -187,6 +187,7 @@ If a requirement cannot be mapped to specific files:
    - Tasks where file paths were uncertain (marked with assumptions)
    - Requirements that may need clarification
    - Any gaps between the story acceptance criteria and generated tasks
+   - Any Figma link from Phase 1 that no task references
    - Tasks marked [Risk: …] or [Discuss: …], to resolve and delete before implementing
 
 3. **Suggest output path:**

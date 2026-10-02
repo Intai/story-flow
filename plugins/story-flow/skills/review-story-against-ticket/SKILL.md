@@ -9,7 +9,7 @@ user-invocable: false
 ## Instructions
 
 - When no ticket ID is given, skip to reading the local story markdown and review it without story tracker comparison.
-- Fetch the story by its ticket ID (e.g. PROJ-123, 86d2uf1mh, 4821, AB#4821) using the project's story tracker MCP tools (Jira, ClickUp, Azure DevOps), to retrieve the complete story details including type, description, acceptance criteria, and subtasks, and download its attachments. If no story tracker MCP tool is available, tell the developer the project has no story tracker MCP server configured (`/mcp` to check status) and ask them to paste the story details or drop the ticket argument — never guess at the story content.
+- Fetch the story by its ticket ID (e.g. PROJ-123, 86d2uf1mh, 4821, AB#4821) using the project's story tracker MCP tools (Jira, ClickUp, Azure DevOps), to retrieve the complete story details including type, description, acceptance criteria, subtasks and Figma links (any `figma.com` URL, searching the ticket's comments, custom fields and attachments as well as its description), and download its attachments. If no story tracker MCP tool is available, tell the developer the project has no story tracker MCP server configured (`/mcp` to check status) and ask them to paste the story details or drop the ticket argument — never guess at the story content.
 - Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
 - For a bug ticket, also extract the steps to reproduce, and the actual and expected behaviour. Review the downloaded attachments for details the description omits.
 - If the ticket is a bug, reproduce it before reviewing. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors.
@@ -18,6 +18,7 @@ user-invocable: false
 - Compare the story content against the markdown file and identify discrepancies.
 - Review the following aspects:
   - **Requirements Completeness**: Verify all acceptance criteria and requirements from the story are documented in the markdown.
+  - **Design Coverage**: Flag every Figma link from the ticket that no task references, and every frontend-developer or mobile-developer task building a frame without its Figma link. Propose the task each link belongs on, matched by `node-id`.
   - **Task Breakdown**: Check that tasks in the markdown align with the story requirements and subtasks.
   - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
   - **Technical Accuracy**: Validate that the technical approach and implementation details match the story specifications.
