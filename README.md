@@ -71,7 +71,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Code quality
      - Zero lint errors or warnings (e.g. ESLint)
      - Zero type errors (e.g. `tsc --noEmit`, mypy)
-     - No function exceeds the project's cyclomatic or cognitive complexity threshold (e.g. ESLint `complexity`, SonarQube, radon, gocyclo, PMD)
+     - No function exceeds the project's cyclomatic or cognitive complexity threshold (e.g. ESLint complexity, SonarQube, radon, gocyclo, PMD)
      - No duplicated code blocks (e.g. jscpd, SonarQube)
      - No unused exports, files, or dependencies (e.g. knip, ts-prune)
      - No new high or critical dependency vulnerabilities (e.g. `npm audit`)
