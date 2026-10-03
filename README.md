@@ -69,9 +69,16 @@ This workflow leverages Claude Code to automate and streamline software developm
    In parallel with step 7 to save time: review while the scenarios execute. \
    Check code, unit tests, and BDD scenarios for:
    - Code quality
+     - Zero lint errors or warnings (e.g. ESLint)
+     - Zero type errors (e.g. `tsc --noEmit`, mypy)
+     - No function exceeds the project's cyclomatic or cognitive complexity threshold (e.g. ESLint `complexity`, SonarQube, radon, gocyclo, PMD)
+     - No duplicated code blocks (e.g. jscpd, SonarQube)
+     - No unused exports, files, or dependencies (e.g. knip, ts-prune)
+     - No new high or critical dependency vulnerabilities (e.g. `npm audit`)
    - 100% test coverage
    - Full BDD coverage (positive, negative, edge cases)
    - Test assertions match their descriptions (tests actually verify what they claim to test)
+     - No surviving mutants in changed code: tests fail when the logic is altered (e.g. Stryker, PIT, mutmut, cargo-mutants)
 
 7. 🤖🧠 **Execute BDD scenarios** \
    Prompt: `/execute-scenario SCN-01 @path/to/file.feature` in **auto mode**. \
