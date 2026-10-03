@@ -387,8 +387,9 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
-        <Text bold wrap="truncate-end">
-          {storyTitle(current.storyPath)} · {completed}/{total}
+        <Text wrap="truncate-end">
+          <Text bold>{storyTitle(current.storyPath)}</Text> · <Text color={TASK_MARKS.completed.color}>✓</Text>
+          {completed}/{total}
           {current.isDone ? ' · done' : ''}
         </Text>
         {current.groups.map(group => (

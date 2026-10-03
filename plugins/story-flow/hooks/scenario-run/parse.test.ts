@@ -123,7 +123,7 @@ describe('run', () => {
 
   test('counts describe passes, failures and skips', () => {
     expect(describeCounts(countResults(skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))))).toBe(
-      '✓1 ✗0 ⊘2',
+      '✓1/3 ✗0 ⊘2',
     )
   })
 
@@ -134,13 +134,13 @@ describe('run', () => {
     expect([claimed.ownerAgentId, claimOwner(started, 'other').ownerAgentId]).toEqual(['qa-agent', 'qa-agent'])
   })
 
-  test('the status shows the running scenario and its place, and nothing once done', () => {
+  test('the status shows the running scenario and how many passed, and nothing once done', () => {
     const passed = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed')
 
     expect([
       describeScenarioStatus(markRunning(passed, 'SMG-02')),
       describeScenarioStatus(passed),
       describeScenarioStatus(skipPending(passed)),
-    ]).toEqual(['execute-scenario ▶ SMG-02 2/3 ✓1 ✗0', 'execute-scenario 1/3 ✓1 ✗0', undefined])
+    ]).toEqual(['execute-scenario ▶ SMG-02 ✓1/3 ✗0', 'execute-scenario ✓1/3 ✗0', undefined])
   })
 })

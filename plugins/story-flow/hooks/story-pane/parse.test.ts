@@ -128,7 +128,13 @@ describe('story run', () => {
       recordTaskResult(dispatched, task?.number ?? 0, 'failed'),
     )
 
-    expect([task?.number, describeProgress(countTasks(done)), done.isDone]).toEqual([1, 'implement-story 2/3 tasks ✗1', true])
+    expect([task?.number, describeProgress(countTasks(done)), done.isDone]).toEqual([1, 'implement-story ✓2/3 ✗1', true])
+  })
+
+  test('the progress shows the running tasks and how many completed', () => {
+    const running = [2, 3].reduce((current, number) => markTaskRunning(current, number, ''), recordTaskResult(markTaskRunning(run, 1, ''), 1, 'completed'))
+
+    expect(describeProgress(countTasks(running))).toBe('implement-story ▶ Task 2,3 ✓1/3')
   })
 
   test('lists a dispatched task the story does not name', () => {

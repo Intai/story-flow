@@ -1,7 +1,7 @@
 import type { StoryRun, StoryTask, StoryTaskStatus } from '../../types'
 import type { ParsedGroup, TaskResult } from './parse'
 
-export type TaskCounts = { total: number; completed: number; failed: number; running: number }
+export type TaskCounts = { total: number; completed: number; failed: number; runningNumbers: number[] }
 
 const UNLISTED_HEADING = 'Not in the story'
 
@@ -93,12 +93,13 @@ export function countTasks(run: StoryRun): TaskCounts {
     total: tasks.length,
     completed: count('completed'),
     failed: count('failed'),
-    running: count('running'),
+    runningNumbers: tasks.filter(task => task.status === 'running').map(task => task.number),
   }
 }
 
-export function describeProgress({ total, completed, failed }: TaskCounts): string {
-  const progress = `implement-story ${completed}/${total} tasks`
+export function describeProgress({ total, completed, failed, runningNumbers }: TaskCounts): string {
+  const running = runningNumbers.length > 0 ? `▶ Task ${runningNumbers.join(',')} ` : ''
+  const progress = `implement-story ${running}✓${completed}/${total}`
 
   return failed > 0 ? `${progress} ✗${failed}` : progress
 }

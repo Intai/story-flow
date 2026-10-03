@@ -1,7 +1,7 @@
 import type { Scenario, ScenarioRun } from '../../types'
 import type { ScenarioHeading, ScenarioResult } from './parse'
 
-export type RunCounts = { passed: number; failed: number; unknown: number; skipped: number }
+export type RunCounts = { total: number; passed: number; failed: number; unknown: number; skipped: number }
 
 export function startRun(
   featurePath: string,
@@ -86,6 +86,7 @@ export function countResults(run: ScenarioRun): RunCounts {
     run.scenarios.filter(one => one.status === status).length
 
   return {
+    total: run.scenarios.length,
     passed: count('passed'),
     failed: count('failed'),
     unknown: count('unknown'),
@@ -97,18 +98,15 @@ export function countResults(run: ScenarioRun): RunCounts {
 export function describeScenarioStatus(run: ScenarioRun): string | undefined {
   if (run.isDone) return undefined
 
-  const total = run.scenarios.length
-  const runningIndex = run.scenarios.findIndex(one => one.status === 'running')
-  const running = run.scenarios[runningIndex]
-  const settled = run.scenarios.filter(one => one.status !== 'pending' && one.status !== 'running').length
-  const position = running ? `▶ ${running.id} ${runningIndex + 1}/${total}` : `${settled}/${total}`
+  const running = run.scenarios.find(one => one.status === 'running')
+  const position = running ? `▶ ${running.id} ` : ''
 
-  return `execute-scenario ${position} ${describeCounts(countResults(run))}`
+  return `execute-scenario ${position}${describeCounts(countResults(run))}`
 }
 
-export function describeCounts({ passed, failed, unknown, skipped }: RunCounts): string {
+export function describeCounts({ total, passed, failed, unknown, skipped }: RunCounts): string {
   return [
-    `✓${passed} ✗${failed}`,
+    `✓${passed}/${total} ✗${failed}`,
     unknown > 0 ? `?${unknown}` : '',
     skipped > 0 ? `⊘${skipped}` : '',
   ]
