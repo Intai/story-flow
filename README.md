@@ -105,7 +105,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    After applying any of the above, simply regenerate the Playwright test cases.
 
 9. 🧠 **Create the final pull request** \
-   Discuss the fully tested implementation with the team.
+   Share the fully tested implementation with the team.
 
 ### Extension
 
