@@ -10,7 +10,7 @@ user-invocable: false
 
 - The story should have tasks grouped by dependencies using the format from `story-flow:analyze-task-dependencies` skill.
   - Launch every group whose prerequisites are complete concurrently in a single message, without waiting for the other groups to finish. Group order in the file is not execution order — all groups headed "no prerequisites" start together.
-  - Dispatch one task at a time within a `**Sequential ...**` group; dispatch every task of a `**Parallel ...**` group concurrently in a single message.
+  - Dispatch one task at a time within a `**Sequential ...**` group; dispatch every task of a `**Parallel ...**` group concurrently in a single message. Start each subagent prompt with `Task <N>:`, N being the task's number in the story.
 - You are an **orchestrator**, not an implementer.
   - **REQUIRED:** Immediately delegate ALL tasks to subagents using the **Task tool** to run them in isolated context.
   - **FORBIDDEN tools for orchestrator (NEVER use directly):**
