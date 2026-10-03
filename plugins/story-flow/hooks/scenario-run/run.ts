@@ -7,6 +7,7 @@ export function startRun(
   featurePath: string,
   requested: 'all' | string[],
   headings: ScenarioHeading[],
+  ownerAgentId?: string,
 ): ScenarioRun {
   const chosen =
     requested === 'all'
@@ -16,6 +17,7 @@ export function startRun(
   return {
     featurePath,
     scenarios: chosen.map(({ id, title }) => ({ id, title, status: 'pending' })),
+    ownerAgentId,
     isDone: false,
   }
 }
@@ -45,7 +47,7 @@ export function findByAgent(run: ScenarioRun, agentId: string): Scenario | undef
 
 export function recordResult(run: ScenarioRun, id: string, result: ScenarioResult): ScenarioRun {
   const scenarios = run.scenarios.map(one =>
-    one.id === id && one.status === 'running' ? { ...one, status: result } : one,
+    one.id === id && (one.status === 'running' || one.status === 'unknown') ? { ...one, status: result } : one,
   )
   const recorded = { ...run, scenarios }
 
@@ -58,6 +60,15 @@ export function skipPending(run: ScenarioRun): ScenarioRun {
   )
 
   return finishWhenSettled({ ...run, scenarios })
+}
+
+// A run started from a skill's prompt does not know which loop runs it; its first dispatch does.
+export function claimOwner(run: ScenarioRun, agentId: string | undefined): ScenarioRun {
+  return hasStarted(run) ? run : { ...run, ownerAgentId: agentId }
+}
+
+export function hasStarted(run: ScenarioRun): boolean {
+  return run.scenarios.some(one => one.status !== 'pending')
 }
 
 export function hasRunning(run: ScenarioRun): boolean {
@@ -80,6 +91,19 @@ export function countResults(run: ScenarioRun): RunCounts {
     unknown: count('unknown'),
     skipped: count('skipped'),
   }
+}
+
+// The scenario part of the plugin's status line while a run is going; none once it is done.
+export function describeScenarioStatus(run: ScenarioRun): string | undefined {
+  if (run.isDone) return undefined
+
+  const total = run.scenarios.length
+  const runningIndex = run.scenarios.findIndex(one => one.status === 'running')
+  const running = run.scenarios[runningIndex]
+  const settled = run.scenarios.filter(one => one.status !== 'pending' && one.status !== 'running').length
+  const position = running ? `▶ ${running.id} ${runningIndex + 1}/${total}` : `${settled}/${total}`
+
+  return `execute-scenario ${position} ${describeCounts(countResults(run))}`
 }
 
 export function describeCounts({ passed, failed, unknown, skipped }: RunCounts): string {

@@ -7,7 +7,16 @@ import {
   parseScenarioDispatch,
   parseScenarioResult,
 } from './parse'
-import { countResults, describeCounts, markRunning, recordResult, skipPending, startRun } from './run'
+import {
+  claimOwner,
+  countResults,
+  describeCounts,
+  describeScenarioStatus,
+  markRunning,
+  recordResult,
+  skipPending,
+  startRun,
+} from './run'
 
 const FEATURE = `Feature: Strings
   @screenshots
@@ -29,6 +38,22 @@ describe('parseScenarioDispatch', () => {
     expect(
       parseScenarioDispatch('Execute BDD scenario SMG-02 in @a/b.feature [--record if recording mode is active].'),
     ).toEqual({ ids: 'SMG-02', featurePath: 'a/b.feature' })
+  })
+
+  test('reads the ids and feature path from the command arguments as typed', () => {
+    expect(parseScenarioDispatch('Execute BDD scenario TGC-02,TGC-03 @src/a.feature --record.')).toEqual({
+      ids: 'TGC-02,TGC-03',
+      featurePath: 'src/a.feature',
+    })
+  })
+
+  test('reads all from the command arguments as typed', () => {
+    const dispatch = parseScenarioDispatch('Execute BDD scenario all @src/a.feature.')
+
+    expect([dispatch, isMultiScenarioRun(dispatch?.ids ?? '')]).toEqual([
+      { ids: 'all', featurePath: 'src/a.feature' },
+      true,
+    ])
   })
 
   test('ignores unrelated prompts', () => {
@@ -100,5 +125,22 @@ describe('run', () => {
     expect(describeCounts(countResults(skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))))).toBe(
       '✓1 ✗0 ⊘2',
     )
+  })
+
+  test('takes its owner from the loop of its first dispatch only', () => {
+    const claimed = claimOwner(run, 'qa-agent')
+    const started = markRunning(claimed, 'SMG-01')
+
+    expect([claimed.ownerAgentId, claimOwner(started, 'other').ownerAgentId]).toEqual(['qa-agent', 'qa-agent'])
+  })
+
+  test('the status shows the running scenario and its place, and nothing once done', () => {
+    const passed = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed')
+
+    expect([
+      describeScenarioStatus(markRunning(passed, 'SMG-02')),
+      describeScenarioStatus(passed),
+      describeScenarioStatus(skipPending(passed)),
+    ]).toEqual(['execute-scenario ▶ SMG-02 2/3 ✓1 ✗0', 'execute-scenario 1/3 ✓1 ✗0', undefined])
   })
 })

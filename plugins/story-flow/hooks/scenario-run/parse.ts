@@ -2,7 +2,7 @@ export type ScenarioDispatch = { ids: string; featurePath: string }
 export type ScenarioHeading = { id: string; title: string }
 export type ScenarioResult = 'passed' | 'failed' | 'unknown'
 
-const DISPATCH = /Execute BDD scenario (\S+) in @?(\S+?\.feature)\b/
+const DISPATCH = /Execute BDD scenario (\S+) (?:in )?@?(\S+?\.feature)\b/
 const HEADING = /^\s*Scenario(?: Outline)?:\s*([A-Za-z][\w]*-\d+):\s*(.+?)\s*$/gm
 const RESULT_LINE = /RESULT:\s*(PASSED|FAILED)/gi
 
@@ -11,6 +11,13 @@ export function parseScenarioDispatch(text: string): ScenarioDispatch | undefine
   const [, ids, featurePath] = match ?? []
 
   return ids && featurePath ? { ids, featurePath } : undefined
+}
+
+// Every dispatch a prompt names, in order: a skill's own examples name placeholder paths too.
+export function parseScenarioDispatches(text: string): ScenarioDispatch[] {
+  return [...text.matchAll(new RegExp(DISPATCH, 'g'))].flatMap(([, ids, featurePath]) =>
+    ids && featurePath ? [{ ids, featurePath }] : [],
+  )
 }
 
 export function isMultiScenarioRun(ids: string): boolean {

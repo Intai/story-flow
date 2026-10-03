@@ -9,4 +9,4 @@ Load skills in this order using the Skill tool:
 2. Then: `execute-bdd-scenario` if it exists (project-level - overrides/extends the plugin)
 3. Confirm which skills are loaded before continuing with the execution.
 
-Execute BDD scenario $1 in $2 $3 $4 $5 $6.
+Execute BDD scenario $ARGUMENTS.
