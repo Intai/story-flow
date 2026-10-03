@@ -34,6 +34,7 @@ effort: medium
      3. Confirm which skills are loaded before continuing with the execution.
 
      Execute BDD scenario <SCENARIO-ID> in @path/to/file.feature [--record if recording mode is active].
+     End your reply with `RESULT: PASSED` or `RESULT: FAILED`.
      ```
      **IMPORTANT:** Replace `<SCENARIO-ID>` with the individual scenario ID (e.g., `ARMR-01`), NOT "all". Each subagent executes exactly one scenario.
      **Recording Mode:** When executing multiple scenarios with `--record`, pass the `--record` flag to each subagent prompt. Each subagent is responsible for generating/updating the `.spec.js` file after executing its scenario — do NOT defer spec file generation to the parent orchestrator.

@@ -1,0 +1,104 @@
+import { describe, expect, test } from 'claude-code/testing'
+
+import {
+  isMultiScenarioRun,
+  parseFeatureScenarios,
+  parseRequestedIds,
+  parseScenarioDispatch,
+  parseScenarioResult,
+} from './parse'
+import { countResults, describeCounts, markRunning, recordResult, skipPending, startRun } from './run'
+
+const FEATURE = `Feature: Strings
+  @screenshots
+  Scenario: SMG-01: Display available languages
+    Given I am on the strings page
+  Scenario Outline: SMG-02: Search and filter strings
+    When I search "<term>"
+  Scenario: SMG-03: Inline edit a string value
+`
+
+describe('parseScenarioDispatch', () => {
+  test('reads the ids and feature path from the expanded command', () => {
+    expect(
+      parseScenarioDispatch('Execute BDD scenario all in @src/strings/docs/strings.feature --record.'),
+    ).toEqual({ ids: 'all', featurePath: 'src/strings/docs/strings.feature' })
+  })
+
+  test('reads one scenario id from a subagent prompt', () => {
+    expect(
+      parseScenarioDispatch('Execute BDD scenario SMG-02 in @a/b.feature [--record if recording mode is active].'),
+    ).toEqual({ ids: 'SMG-02', featurePath: 'a/b.feature' })
+  })
+
+  test('ignores unrelated prompts', () => {
+    expect(parseScenarioDispatch('Implement the login form')).toBeUndefined()
+  })
+})
+
+describe('isMultiScenarioRun', () => {
+  test('treats all and comma lists as multi-scenario runs', () => {
+    expect([isMultiScenarioRun('all'), isMultiScenarioRun('A-01,A-02'), isMultiScenarioRun('A-01')]).toEqual([
+      true,
+      true,
+      false,
+    ])
+  })
+})
+
+describe('parseRequestedIds', () => {
+  test('splits a comma list of ids', () => {
+    expect(parseRequestedIds('A-01,A-02')).toEqual(['A-01', 'A-02'])
+  })
+})
+
+describe('parseFeatureScenarios', () => {
+  test('reads scenario and outline headings in order', () => {
+    expect(parseFeatureScenarios(FEATURE)).toEqual([
+      { id: 'SMG-01', title: 'Display available languages' },
+      { id: 'SMG-02', title: 'Search and filter strings' },
+      { id: 'SMG-03', title: 'Inline edit a string value' },
+    ])
+  })
+})
+
+describe('parseScenarioResult', () => {
+  test('prefers the last RESULT line', () => {
+    expect(parseScenarioResult('Step ✓ passed\nRESULT: FAILED')).toBe('failed')
+  })
+
+  test('falls back to failure marks', () => {
+    expect(parseScenarioResult('SMG-02 ✗ FAILED at line 12')).toBe('failed')
+  })
+
+  test('falls back to pass marks', () => {
+    expect(parseScenarioResult('SMG-01 ✓ PASSED')).toBe('passed')
+  })
+
+  test('answers unknown without a verdict', () => {
+    expect(parseScenarioResult('Done.')).toBe('unknown')
+  })
+})
+
+describe('run', () => {
+  const run = startRun('a.feature', 'all', parseFeatureScenarios(FEATURE))
+
+  test('a failure skips the scenarios not yet run and finishes the run', () => {
+    const failed = recordResult(markRunning(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'), 'SMG-02'), 'SMG-02', 'failed')
+
+    expect(failed.scenarios.map(one => one.status)).toEqual(['passed', 'failed', 'skipped'])
+    expect(failed.isDone).toBe(true)
+  })
+
+  test('requested ids keep only those scenarios', () => {
+    expect(startRun('a.feature', ['SMG-03'], parseFeatureScenarios(FEATURE)).scenarios).toEqual([
+      { id: 'SMG-03', title: 'Inline edit a string value', status: 'pending' },
+    ])
+  })
+
+  test('counts describe passes, failures and skips', () => {
+    expect(describeCounts(countResults(skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))))).toBe(
+      '✓1 ✗0 ⊘2',
+    )
+  })
+})

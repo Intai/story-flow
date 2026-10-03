@@ -1,7 +1,7 @@
 {
   "name": "story-flow",
   "description": "Agentic development workflow covering planning, analysis, implementation, and QA automation",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
@@ -14,6 +14,7 @@
     "development",
     "workflow"
   ],
+  "types": "./types/index.d.ts",
   "mcpServers": {
     "context7": {
       "command": "npx",
