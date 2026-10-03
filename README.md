@@ -46,7 +46,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    Prompt Claude Code: `/review-story @path/to/story.md PROJ-123` starting from **plan mode**. \
    This checks the story markdown, optionally against the story in your story tracker.
 
-   Exit **plan mode** to discuss the findings one at a time, incorporating or skipping each one, to ensure the story markdown is well-defined and detailed.
+   Exit **plan mode** to discuss the findings one at a time, incorporating or skipping each one, to refine the story markdown into a well-defined and detailed technical design.
 
 3. 🤖 **Analyze task dependencies** \
    Prompt: `/analyze-tasks @path/to/story.md` starting from **plan mode**. \
