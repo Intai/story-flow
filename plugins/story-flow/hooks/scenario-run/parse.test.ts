@@ -8,12 +8,14 @@ import {
   parseScenarioResult,
 } from './parse'
 import {
+  canResume,
   claimOwner,
   countResults,
   describeCounts,
   describeScenarioStatus,
   markRunning,
   recordResult,
+  resumeRun,
   skipPending,
   startRun,
 } from './run'
@@ -142,5 +144,24 @@ describe('run', () => {
       describeScenarioStatus(passed),
       describeScenarioStatus(skipPending(passed)),
     ]).toEqual(['execute-scenario ▶ SMG-02 ✓1/3 ✗0', 'execute-scenario ✓1/3 ✗0', undefined])
+  })
+
+  test('a retry after a failure keeps the passes and runs the failed and skipped scenarios again', () => {
+    const failed = recordResult(markRunning(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'), 'SMG-02'), 'SMG-02', 'failed')
+    const resumed = resumeRun(failed)
+
+    expect(resumed.scenarios.map(one => one.status)).toEqual(['passed', 'pending', 'pending'])
+    expect(resumed.isDone).toBe(false)
+  })
+
+  test('only a run that failed on the same feature can resume', () => {
+    const passed = skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))
+    const failed = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'failed')
+
+    expect([canResume(failed, 'a.feature'), canResume(failed, 'b.feature'), canResume(passed, 'a.feature')]).toEqual([
+      true,
+      false,
+      false,
+    ])
   })
 })

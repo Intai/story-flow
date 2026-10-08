@@ -13,6 +13,7 @@ import {
 import type { ScenarioResult } from './scenario-run/parse'
 import {
   assignAgent,
+  canResume,
   claimOwner,
   countResults,
   describeCounts,
@@ -22,6 +23,7 @@ import {
   hasStarted,
   markRunning,
   recordResult,
+  resumeRun,
   skipPending,
   startRun,
 } from './scenario-run/run'
@@ -129,7 +131,9 @@ async function dispatchScenario($: EngineInterface, e: AgentDispatch): Promise<s
 
   const current = await read($, scenarioRun)
 
-  if (current === null || current.isDone) {
+  if (current !== null && canResume(current, dispatch.featurePath)) {
+    await update($, scenarioRun, active => (active === null ? null : resumeRun(active)))
+  } else if (current === null || current.isDone) {
     const headings = parseFeatureScenarios(await readProjectFile($, dispatch.featurePath))
     await update($, scenarioRun, () => startRun(dispatch.featurePath, 'all', headings, e.agentId))
   }

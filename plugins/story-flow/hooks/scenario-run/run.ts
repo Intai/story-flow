@@ -62,6 +62,19 @@ export function skipPending(run: ScenarioRun): ScenarioRun {
   return finishWhenSettled({ ...run, scenarios })
 }
 
+// A retry after a fix dispatches the failed scenario again; the run it ended picks up from there.
+export function canResume(run: ScenarioRun, featurePath: string): boolean {
+  return run.isDone && run.featurePath === featurePath && run.scenarios.some(one => one.status === 'failed')
+}
+
+export function resumeRun(run: ScenarioRun): ScenarioRun {
+  const scenarios = run.scenarios.map(one =>
+    one.status === 'passed' ? one : { ...one, status: 'pending' as const },
+  )
+
+  return { ...run, scenarios, isDone: false }
+}
+
 // A run started from a skill's prompt does not know which loop runs it; its first dispatch does.
 export function claimOwner(run: ScenarioRun, agentId: string | undefined): ScenarioRun {
   return hasStarted(run) ? run : { ...run, ownerAgentId: agentId }
