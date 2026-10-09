@@ -33,6 +33,7 @@ import {
   parseTaskGroups,
   parseTaskNumber,
   parseTaskResult,
+  parseTaskVerdict,
 } from './story-pane/parse'
 import type { TaskResult } from './story-pane/parse'
 import {
@@ -291,7 +292,7 @@ async function closeStoryTurn($: EngineInterface, e: SubagentTurn) {
 
   // A subagent ends a turn each time it waits on agents of its own; only a verdict settles it.
   if (task !== undefined) {
-    const result = parseTaskResult(e.answer)
+    const result = parseTaskVerdict(e.answer)
     if (result !== 'unknown') await settleTask($, task.number, result)
   } else if (e.agentId === current.ownerAgentId && hasStartedTask(current) && !hasRunningTask(current)) {
     const finished = await update($, storyRun, active => (active === null ? null : finishStory(active)))

@@ -85,3 +85,11 @@ export function parseTaskResult(text: string): TaskResult {
 
   return 'unknown'
 }
+
+// A turn's answer is a verdict only when it leads with one, as the skill asks; a turn that waits on
+// agents of its own may mention a failure it is still fixing.
+export function parseTaskVerdict(text: string): TaskResult {
+  const verdict = /^\W*(completed|failed)\b/i.exec(text.trim())?.[1]?.toLowerCase()
+
+  return verdict === 'completed' || verdict === 'failed' ? verdict : 'unknown'
+}

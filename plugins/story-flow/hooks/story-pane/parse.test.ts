@@ -1,6 +1,13 @@
 import { describe, expect, test } from 'claude-code/testing'
 
-import { describeTask, parseStoryDispatches, parseTaskGroups, parseTaskNumber, parseTaskResult } from './parse'
+import {
+  describeTask,
+  parseStoryDispatches,
+  parseTaskGroups,
+  parseTaskNumber,
+  parseTaskResult,
+  parseTaskVerdict,
+} from './parse'
 import {
   assignTaskAgent,
   claimStoryOwner,
@@ -114,6 +121,16 @@ describe('parseTaskResult', () => {
       'failed',
       'unknown',
     ])
+  })
+})
+
+describe('parseTaskVerdict', () => {
+  test('reads a reply that leads with completed or failed', () => {
+    expect([parseTaskVerdict('completed'), parseTaskVerdict('failed: lint errors')]).toEqual(['completed', 'failed'])
+  })
+
+  test('passes over a turn that mentions a failure it is still fixing', () => {
+    expect(parseTaskVerdict('SL-03 failed, dispatching frontend-developer to fix')).toBe('unknown')
   })
 })
 
