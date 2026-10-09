@@ -64,18 +64,39 @@ describe('parseScenarioDispatch', () => {
 })
 
 describe('isMultiScenarioRun', () => {
-  test('treats all and comma lists as multi-scenario runs', () => {
-    expect([isMultiScenarioRun('all'), isMultiScenarioRun('A-01,A-02'), isMultiScenarioRun('A-01')]).toEqual([
-      true,
-      true,
-      false,
-    ])
+  test('treats all, comma lists and ranges as multi-scenario runs', () => {
+    expect([
+      isMultiScenarioRun('all'),
+      isMultiScenarioRun('A-01,A-02'),
+      isMultiScenarioRun('A-01..A-03'),
+      isMultiScenarioRun('A-01'),
+    ]).toEqual([true, true, true, false])
   })
 })
 
 describe('parseRequestedIds', () => {
   test('splits a comma list of ids', () => {
-    expect(parseRequestedIds('A-01,A-02')).toEqual(['A-01', 'A-02'])
+    expect(parseRequestedIds('A-01,A-02', [])).toEqual(['A-01', 'A-02'])
+  })
+
+  test('expands a range to the feature headings between its ends', () => {
+    expect(parseRequestedIds('SMG-01..SMG-03', parseFeatureScenarios(FEATURE))).toEqual([
+      'SMG-01',
+      'SMG-02',
+      'SMG-03',
+    ])
+  })
+
+  test('expands ranges within a comma list', () => {
+    expect(parseRequestedIds('SMG-01..SMG-02,SMG-03', parseFeatureScenarios(FEATURE))).toEqual([
+      'SMG-01',
+      'SMG-02',
+      'SMG-03',
+    ])
+  })
+
+  test('keeps the ends of a range the feature does not hold', () => {
+    expect(parseRequestedIds('SMG-01..SMG-09', parseFeatureScenarios(FEATURE))).toEqual(['SMG-01', 'SMG-09'])
   })
 })
 

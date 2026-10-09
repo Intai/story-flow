@@ -117,7 +117,7 @@ async function startScenarioRunFromPrompt($: EngineInterface, text: string) {
     const headings = parseFeatureScenarios(await readProjectFile($, dispatch.featurePath))
 
     if (headings.length > 0) {
-      const requested = parseRequestedIds(dispatch.ids)
+      const requested = parseRequestedIds(dispatch.ids, headings)
       await update($, scenarioRun, () => startRun(dispatch.featurePath, requested, headings))
       await refreshStatus($)
       return

@@ -1,5 +1,5 @@
 ---
-argument-hint: [ST-01 or all, @path/to/file.feature (use * for wildcard), ..., --record (optional)]
+argument-hint: [ST-01, ST-01,ST-03, ST-01..ST-05 or all, @path/to/file.feature (use * for wildcard), ..., --record (optional)]
 description: Execute BDD test scenarios in a .feature file using browser automation. Use --record to generate a Playwright .spec.js file.
 effort: medium
 ---

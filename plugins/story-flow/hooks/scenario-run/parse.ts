@@ -21,11 +21,28 @@ export function parseScenarioDispatches(text: string): ScenarioDispatch[] {
 }
 
 export function isMultiScenarioRun(ids: string): boolean {
-  return ids === 'all' || ids.includes(',')
+  return ids === 'all' || ids.includes(',') || ids.includes('..')
 }
 
-export function parseRequestedIds(ids: string): 'all' | string[] {
-  return ids === 'all' ? 'all' : ids.split(',').filter(id => id !== '')
+export function parseRequestedIds(ids: string, headings: ScenarioHeading[]): 'all' | string[] {
+  return ids === 'all'
+    ? 'all'
+    : ids
+        .split(',')
+        .filter(id => id !== '')
+        .flatMap(id => expandRange(id, headings))
+}
+
+// A range spans the feature's headings from one id to the other, so ids that skip numbers still count.
+export function expandRange(id: string, headings: ScenarioHeading[]): string[] {
+  const [first = '', last] = id.split('..')
+  const firstIndex = headings.findIndex(one => one.id === first)
+  const lastIndex = headings.findIndex(one => one.id === last)
+
+  if (last === undefined) return [id]
+  if (firstIndex < 0 || lastIndex < firstIndex) return [first, last]
+
+  return headings.slice(firstIndex, lastIndex + 1).map(one => one.id)
 }
 
 export function parseFeatureScenarios(text: string): ScenarioHeading[] {
