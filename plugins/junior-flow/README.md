@@ -1,6 +1,6 @@
 ## Agentic Development Workflow Helpers for Junior Developers
 
-A Claude plugin that helps junior developers create technical story markdown from a story tracker or a feature description. This plugin automates the most challenging part of the story-flow workflow for developers who are new to a codebase.
+A Claude plugin that helps junior developers learn the story-flow workflow.
 
 ### Prerequisites
 
@@ -8,7 +8,6 @@ A Claude plugin that helps junior developers create technical story markdown fro
   - [code-review@claude-plugins-official](https://github.com/anthropics/claude-code/blob/main/plugins/code-review)
   - [story-flow](https://github.com/Intai/story-flow#installation)
 - Review story-flow's [prerequisites](https://github.com/Intai/story-flow#prerequisite).
-- If you use Figma, login to Figma MCP and run `/mcp` to verify the connection status.
 
 ### Learning Resources
 
@@ -18,30 +17,14 @@ Available topics:
 - Why review implementation even with 100% test coverage?
 - What defines effective, complete BDD scenarios?
 
-### Steps
+### Review Implementation
 
-1. 🤖🧠 **Draft the technical story markdown** \
-   Prompt Claude Code in **plan mode**: \
-   `/draft-story @path/to/story.md PROJ-123` to draft from a story tracker, or \
-   `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
-   `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
-   This generates a draft story markdown as a starting point.
+🤖🧠 Stage your changes with `git add`, then prompt: `/code-review:code-review for staged changes` in **plan mode**. \
+This audits changes by launching multiple agents independently from different perspectives as a starting point.
 
-   **Then:**
-   1. Understand the drafted tasks technically by reading the codebase.
-   2. Continue on story-flow [step 1](https://github.com/Intai/story-flow#steps) to review and refine the story markdown.
-
-… 2-6. Follow story-flow [steps 2-6](https://github.com/Intai/story-flow#steps)
-
-7. 🤖🧠 **Review implementation** \
-   Stage your changes with `git add`, then prompt: `/code-review:code-review for staged changes` in **plan mode**. \
-   This audits changes by launching multiple agents independently from different perspectives as a starting point.
-
-   **Then:**
-   1. Understand the suggestions by reading the codebase.
-   2. Continue on story-flow [step 7](https://github.com/Intai/story-flow#steps) to review the implementation.
-
-… 8-10. Follow story-flow [steps 8-10](https://github.com/Intai/story-flow#steps)
+**Then:**
+1. Understand the suggestions by reading the codebase.
+2. Continue on story-flow [step 6](https://github.com/Intai/story-flow#steps) to review the implementation.
 
 ### Installation
 

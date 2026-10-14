@@ -10,6 +10,7 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 - Team alignment: All scrum team members understand the feature, including edge cases, error handling, and expected outcomes.
 - If you use a story tracker, add its MCP server to your project's `.mcp.json`. Then run `/mcp` to login and verify the connection status.
+- If you use Figma, login to Figma MCP and run `/mcp` to verify the connection status.
 
 ### Steps
 
@@ -18,7 +19,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    `/draft-story @path/to/story.md PROJ-123` to draft from a story tracker, or \
    `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
    `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
-   Requires the [junior-flow](plugins/junior-flow) plugin. The draft is a starting point—your review turns it into the technical design.
+   The draft is a starting point—your review turns it into the technical design.
 
    **Important:**
    - Include a QA task to plan BDD scenarios.

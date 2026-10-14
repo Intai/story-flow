@@ -4,7 +4,7 @@ description: Generate a draft story markdown from a story tracker or a feature d
 ---
 
 Load skills in this order using the Skill tool:
-1. First: `junior-flow:draft-story-markdown` (plugin - general protocol)
+1. First: `story-flow:draft-story-markdown` (plugin - general protocol)
 2. Then: `draft-story-markdown` if it exists (project-level - overrides/extends the plugin)
 3. Confirm which skills are loaded before continuing with the draft.
 

@@ -1,7 +1,7 @@
 {
   "name": "junior-flow",
-  "description": "Helps junior developers create technical story markdown from a story tracker",
-  "version": "1.0.23",
+  "description": "Interactive guidance that helps junior developers learn story-flow practices",
+  "version": "1.0.24",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
@@ -11,15 +11,6 @@
   "license": "MIT",
   "keywords": [
     "junior-developer",
-    "story-planning",
-    "jira",
-    "clickup",
-    "azure-devops"
-  ],
-  "mcpServers": {
-    "figma": {
-      "url": "https://mcp.figma.com/mcp",
-      "type": "http"
-    }
-  }
+    "learning"
+  ]
 }

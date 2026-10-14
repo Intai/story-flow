@@ -40,17 +40,14 @@
     {
       "name": "junior-flow",
       "source": "./plugins/junior-flow",
-      "description": "Helps junior developers create technical story markdown from a story tracker",
+      "description": "Interactive guidance that helps junior developers learn story-flow practices",
       "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/junior-flow/README.md",
       "repository": "https://github.com/Intai/story-flow",
       "license": "MIT",
       "category": "productivity",
       "keywords": [
         "junior-developer",
-        "story-planning",
-        "jira",
-        "clickup",
-        "azure-devops"
+        "learning"
       ]
     }
   ]
