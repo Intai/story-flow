@@ -7,7 +7,6 @@ A Claude plugin that helps junior developers learn the story-flow workflow.
 - Install the Claude Code plugins:
   - [code-review@claude-plugins-official](https://github.com/anthropics/claude-code/blob/main/plugins/code-review)
   - [story-flow](https://github.com/Intai/story-flow#installation)
-- Review story-flow's [prerequisites](https://github.com/Intai/story-flow#prerequisite).
 
 ### Learning Resources
 
@@ -19,8 +18,7 @@ Available topics:
 
 ### Review Implementation
 
-🤖🧠 Stage your changes with `git add`, then prompt: `/code-review:code-review for staged changes` in **plan mode**. \
-This audits changes by launching multiple agents independently from different perspectives as a starting point.
+🤖🧠 Stage your changes with `git add`, then prompt: `/code-review:code-review for staged changes` in **plan mode**. This audits changes by launching multiple agents independently from different perspectives as a starting point.
 
 **Then:**
 1. Understand the suggestions by reading the codebase.
