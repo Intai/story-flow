@@ -8,7 +8,7 @@ user-invocable: false
 
 ## Overview
 
-This skill helps junior developers create technical story markdown by:
+This skill helps developers create technical story markdown by:
 1. Gathering requirements from a story tracker or a provided feature description
 2. Fetching Figma designs linked in the story (when applicable)
 3. Exploring the codebase to discover relevant files and patterns
@@ -31,7 +31,7 @@ When the input is a ticket ID (matching a pattern like `PROJ-123`, `86d2uf1mh`, 
   - Subtasks (if any)
   - Figma links (any `figma.com` URL, keeping its `node-id`), searching the ticket's comments, custom fields and attachments as well as its description
   - Steps to reproduce, actual and expected behaviour (bug tickets)
-- Fetch each Figma link with `mcp__plugin_junior-flow_figma__get_design_context` and `mcp__plugin_junior-flow_figma__get_screenshot`, and note its frame and component names for Phase 3. If the fetch fails, keep the link for the tasks anyway and tell the developer to check the Figma MCP login (`/mcp`).
+- Fetch each Figma link with `mcp__plugin_story-flow_figma__get_design_context` and `mcp__plugin_story-flow_figma__get_screenshot`, and note its frame and component names for Phase 3. If the fetch fails, keep the link for the tasks anyway and tell the developer to check the Figma MCP login (`/mcp`).
 - Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
 - If the ticket is a bug, reproduce it before drafting. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors, and use them to inform the exploration keywords in Phase 2 and the tasks in Phase 3.
 - If the bug does not reproduce, carry on drafting and highlight it as an assumption in Phase 4 for the developer to confirm the environment, version, account or seed data.
