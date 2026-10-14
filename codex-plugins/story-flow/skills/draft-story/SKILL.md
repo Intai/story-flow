@@ -9,7 +9,7 @@ Resolve an optional output story path and optional source from the user's reques
 
 Load skills in this order:
 
-1. `junior-flow:draft-story-markdown` — plugin protocol
+1. `story-flow:draft-story-markdown` — plugin protocol
 2. `draft-story-markdown` if it exists — project-level override or extension
 
 Confirm which skills are loaded before continuing with the draft.
