@@ -18,4 +18,4 @@ For each failed scenario, decide the cause against the current code and its stor
 Re-record with the `story-flow:execute-scenario` skill for the scenario ID and its feature file in `--record` mode, at the failing project's form factor.
 Confirm each re-recorded scenario passes on its failing project: `npx playwright test <spec file> --project=<project> --grep "<ID>:"`.
 If it still fails, triage it again rather than re-recording a second time.
-Then summarise each failure's cause and action, plus any flaky passes.
+Then summarise each failure's cause, action and scenario author (`git blame` on its lines in the feature file), plus any flaky passes.
