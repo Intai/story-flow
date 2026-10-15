@@ -5,7 +5,7 @@ description: Run the Playwright specs and triage each failing scenario — delet
 
 # Triage Failed Scenarios
 
-Resolve optional `npx playwright test` arguments (such as a spec path or `--grep "DAS-01:|DAS-02:"`) from the user's request.
+Resolve optional `npx playwright test` arguments (such as `--grep "DAS-01:|DAS-02:"`, or the failed scenarios in an issue URL) from the user's request.
 
 Execute the Playwright specs: `npx playwright test` with the resolved arguments.
 For each failed scenario, decide the cause against the current code and its story (the ticket ID in the feature file, or in its git log), fetched with the project's story tracker MCP tools when available:
