@@ -1,5 +1,5 @@
 ---
-argument-hint: [npx playwright test arguments, e.g. path/to/file.spec.js --grep "DAS-01:|DAS-02:" (optional)]
+argument-hint: [npx playwright test arguments or where the failed scenarios are listed, e.g. --grep "DAS-01:|DAS-02:" or "failed scenarios in <issue URL>" (optional)]
 description: Run the Playwright specs and triage each failing scenario — delete, update and re-record, or report as a defect
 effort: medium
 ---
