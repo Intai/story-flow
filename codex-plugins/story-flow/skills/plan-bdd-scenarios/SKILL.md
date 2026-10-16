@@ -9,7 +9,7 @@ user-invocable: false
 ## Instructions
 
 - While planning test scenarios, create ONLY detailed BDD scenarios in `.feature` files. Do not implement Playwright test code.
-- Write comments only when they help record the Playwright script, e.g. which request to stub and how. Do not explain the feature or repeat the story markdown.
+- Write comments only when they help record the Playwright script, e.g. which request to stub and how. Do not put in a comment anything a `Given` step can state, explain the feature or repeat the story markdown.
 
 ## Example Inputs
 
