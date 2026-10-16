@@ -86,10 +86,6 @@ This workflow leverages Claude Code to automate and streamline software developm
    Executes the BDD scenarios directly in the browser without coding. Confirm all scenarios pass, or skip to step 8 to execute and record in one pass if confident about the scenarios. \
    The first argument accepts a single scenario, a comma-separated list, an inclusive range such as `SCN-01..SCN-10`, or `all`.
 
-   > 💡 **Code written outside the workflow?** Plan BDD scenarios from an existing implementation — descriptive, not prescriptive: \
-   > `/retrofit-scenarios @path/to/file.feature "feature description"` to retrofit from a described feature, or \
-   > `/retrofit-scenarios @path/to/file.feature @path/to/source1 @path/to/source2/*` to retrofit from source paths.
-
 8. 🤖 **Recommended: Generate a Playwright script** \
    Prompt: `/execute-scenario all @path/to/file.feature --record` in **auto mode**. \
    Generates a Playwright test script that can be run efficiently without Claude for regression testing.
@@ -107,6 +103,19 @@ This workflow leverages Claude Code to automate and streamline software developm
 
 9. 🧠 **Create the final pull request** \
    Share the fully tested implementation with the team.
+
+### Outside the Workflow
+
+- **Triage failed scenarios in recorded Playwright specs** \
+  Prompt in **auto mode**: \
+  `/triage-failed-scenarios --grep "SCN-01:|SCN-02:"` to triage specific scenarios, or \
+  `/triage-failed-scenarios "failed scenarios in <issue URL>"` to triage the failures listed in an issue raised by a regression pipeline. \
+  Resolves each failure: deletes the scenario if the behaviour was removed, updates the steps and re-records if it changed intentionally, re-records if the spec is stale, or reports a defect if the app is wrong.
+
+- **Retrofit BDD scenarios** \
+  For code written without scenarios. Prefer planning them from the story — retrofitted scenarios describe what the code does, bugs included, not what it should do. \
+  `/retrofit-scenarios @path/to/file.feature "feature description"`, or \
+  `/retrofit-scenarios @path/to/file.feature @path/to/source1 @path/to/source2/*`
 
 ### Extension
 
