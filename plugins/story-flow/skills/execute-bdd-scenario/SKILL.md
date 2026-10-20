@@ -54,6 +54,7 @@ effort: medium
 - If a BDD scenario has the `@purge-data` tag, restore the seed data first (before the Background steps) by executing the `make reseed` command.
 - If a BDD scenario does not have the `@purge-data` tag, do not restore the seed data before running the scenario.
 - If a BDD scenario has the `@timeout-*` tag, extend the scenario and expect timeout to be longer. e.g. `@timeout-600s` means timeout for the scenario and every expect step is 600s(10m).
+- `@non-parallel` has no effect on direct execution, which already runs scenarios sequentially (see Executing Multiple Scenarios). It only changes the recorded spec; see [Non-parallel Scenarios](#non-parallel-scenarios).
 - Use `mcp__plugin_story-flow_playwright__browser_run_code_unsafe` to set the browser offline.
 - Reference the @Makefile for local development workflows.
 - Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Never hardcode a host.
@@ -1069,6 +1070,37 @@ test.describe('Feature: App Settings', () => {
 - **Self-contained tests**: Each test shows its full setup, making debugging easier
 - **Return values**: If scenario needs a Background value (e.g., `appId`), capture it from the helper
 - **No inline URLs or credentials**: navigations use relative paths resolved against `use.baseURL`; hosts, endpoints and secrets come from `process.env`
+
+#### Non-parallel Scenarios
+
+`@non-parallel` marks scenarios that write state only one of them can hold at a time — the same account, record or draft — so they must never run in parallel workers.
+
+Record it as `test.describe.configure({ mode: 'default' })`, not `'serial'`: the scenarios are independent, so one failing must not skip the rest, and a retry re-runs only itself.
+
+- A feature-level `@non-parallel` configures the feature's own `describe`.
+- Scenario-level `@non-parallel` moves every tagged scenario in the file into **one** nested, tag-free `describe` that configures it. A group only orders the tests inside it, so tagged scenarios split across two groups still overlap.
+- When re-recording, keep the group in step with the tags: a newly tagged scenario moves in, an untagged one moves out, and an empty group is removed.
+
+```javascript
+test.describe('Feature: Orders', () => {
+  test.describe('Non-parallel scenarios', () => {
+    // One draft per account - parallel workers would overwrite each other's.
+    test.describe.configure({ mode: 'default' });
+
+    test('ORD-01: Submit a draft @non-parallel', async ({ page }) => {
+      // ...
+    });
+
+    test('ORD-03: Discard a draft @non-parallel', async ({ page }) => {
+      // ...
+    });
+  });
+
+  test('ORD-02: View order history', async ({ page }) => {
+    // ...
+  });
+});
+```
 
 **VRT wiring (only when the scenario has `@screenshots` and VRT is configured at record time):**
 

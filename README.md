@@ -181,6 +181,7 @@ Tags on a `Feature:` or `Scenario:` line control execution behaviour.
 
 | Tag | Effect |
 |-----|--------|
+| `@non-parallel` | Keeps the scenario out of parallel workers in the recorded spec |
 | `@purge-data` | Restores seed data (`make reseed`) before the scenario runs |
 | `@screenshots` | Takes one screenshot per assertion group — consecutive assertion steps with no action between them share a shot, captured after the last of them; tracked for visual regression when the `VRT_*` variables are set |
 | `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes |
