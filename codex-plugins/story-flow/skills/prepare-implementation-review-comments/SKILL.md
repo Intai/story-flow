@@ -56,7 +56,7 @@ Helps reviewers by posting, as one review on each pull request:
 
 ### Phase 4: Draft
 
-Write each PR's review to files in the scratchpad.
+Write each PR's review to files in the scratchpad. Refer to a PR in another repository as `<owner>/<repo>#<number>` or its URL, never a bare `#<number>`, which the host links to the current repository.
 
 - **Inline comments**, each ending with `<!-- story-flow:prepare-implementation-review:<kind> -->`:
 
