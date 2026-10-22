@@ -1,5 +1,5 @@
 ---
-argument-hint: [PR URLs or number (optional, defaults to the current branch's PR), @path/to/story.md (optional), --dry-run (optional)]
+argument-hint: [PR URLs or ID (optional, defaults to the current branch's PR), @path/to/story.md (optional), --dry-run (optional)]
 description: Post reviewer-facing evidence on a pull request
 ---
 
