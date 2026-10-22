@@ -53,12 +53,13 @@ This workflow leverages Claude Code to automate and streamline software developm
    Prompt: `/analyze-tasks @path/to/story.md` starting from **plan mode**. \
    This identifies tasks that can be executed in parallel and updates the story markdown accordingly.
 
-4. 🧠 **Create an initial pull request** \
+4. 🧠 **Create the technical design pull request** — the review that matters most \
    Open a PR with the story markdown and discuss requirements, planned tasks, and the execution plan with the team **before any code is written**.
 
    > 💡 **Why now?** Shift-left: a wrong approach caught here costs a review comment; caught after implementation it costs the implementation. Use [junior-flow](plugins/junior-flow) `/learn-story-flow technical-design` to explore why design PRs reduce rework.
 
    **Important:**
+   - Don't rush this review or take it lightly. Bounce ideas around and challenge the approach until the team agrees on the design.
    - Include alternatives considered and open questions for reviewers.
    - Designs evolve; update the story markdown when implementation diverges.
 
