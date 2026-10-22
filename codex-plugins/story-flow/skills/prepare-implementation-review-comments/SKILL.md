@@ -9,8 +9,8 @@ user-invocable: false
 ## Overview
 
 Helps reviewers by posting, as one review on each pull request:
-- inline comments on the lines they concern: risks, discussion points, screenshots, API calls, BDD results and coverage gaps
-- a summary of what belongs to no single line: reading order, requirement traceability and coverage
+- inline comments on the lines they concern: risks, discussion points, screenshots, API calls, failed BDD scenarios and coverage gaps
+- a summary of what belongs to no single line: reading order, requirement traceability, BDD results and coverage
 
 ## Instructions
 
@@ -52,7 +52,7 @@ Helps reviewers by posting, as one review on each pull request:
   - Run the matching request from a changed scenario when one exists. Otherwise trace the changed code up to its endpoint (e.g. a controller action or function route) and build a request that exercises the change.
   - Send it with the base URL and token the project skills or environment provide. When neither is available, write it as a ready-to-run `curl` instead.
   - Keep the method, path, status and the part of the response body the change affects (e.g. the ordering, a new field, a status code). Redact the `Authorization` header and any token.
-- **Unit coverage**: run the project's coverage command scoped to the changed non-test source files (e.g. `npx vitest run --coverage --coverage.include=<file>`, `dotnet test --collect:"XPlat Code Coverage"`). Keep the tool's raw per-file text table (lines, branches, functions, uncovered line numbers), cut to the changed files.
+- **Unit coverage**: run only the unit tests related to the changed non-test source files, not the whole suite, which already ran when the PR was created, with coverage scoped to those files (e.g. `npx vitest related <files> --run --coverage --coverage.include=<file>`, `npx jest --findRelatedTests <files> --coverage --collectCoverageFrom=<file>`, `dotnet test --filter "FullyQualifiedName~<Class>Tests" --collect:"XPlat Code Coverage"`). Keep the tool's raw per-file text table (lines, branches, functions, uncovered line numbers), cut to the changed files.
 
 ### Phase 4: Draft
 
@@ -66,7 +66,7 @@ Write each PR's review to files in the scratchpad.
   | `discussion` | The hunk that makes the choice |
   | `screenshot` | The last changed line of the hunk, with one line saying what it shows, then the image |
   | `api` | The last changed line of the hunk, with one line saying what the response shows, then the request and the trimmed response, or the `curl` to run |
-  | `bdd` | The scenario's `Scenario:` line, with ✅ or ❌ and how it ran. Scenarios whose line isn't in the diff go together in one file-level comment on the `.feature` |
+  | `bdd` | Only a ❌ scenario: its `Scenario:` line, with how it ran and what failed |
   | `coverage` | The first uncovered line of a changed file under 100%, listing its other uncovered ranges |
 
   An item whose line isn't in the diff, and that the host can't put in a file-level comment, goes in the summary instead.
@@ -74,7 +74,7 @@ Write each PR's review to files in the scratchpad.
 - **Summary**, ending with `<!-- story-flow:prepare-implementation-review -->`:
   1. Reading order
   2. Requirement traceability
-  3. BDD results, only for scenarios that ran but whose `.feature` isn't in the PR
+  3. BDD results: one table of every scenario that ran, with ✅ or ❌ and how it ran, in the summary of the PR holding the `.feature`. The other PRs link to it rather than repeat it
   4. Coverage in one line (e.g. "9 files, all 100%", or the count under 100% linking to their inline comments), then a `<details>` block with the exact command, the commit it ran on and the raw table
   5. The number of inline comments of each kind
   6. Links to the other PRs of the story
