@@ -29,7 +29,7 @@ Helps reviewers by posting, as one review on each pull request:
 
 ### Phase 2: Gather
 
-- Resolve the PRs: each given URL (ignoring trailing segments such as `/changes` or `/files`) or number, else the PR whose source branch is the current branch. Several PRs are one story split across repositories; prepare them together.
+- Resolve the PRs: each given URL (ignoring trailing segments such as `/changes` or `/files`) or ID, else the PR whose source branch is the current branch. Several PRs are one story split across repositories; prepare them together.
 - For a URL in another repository, find its local clone: a sibling of the current repository whose `git remote get-url origin` matches it. If there is none, ask the developer for its path. Run everything for that PR in its clone.
 - Read each PR. If `git rev-parse HEAD` in its clone isn't its head commit, ask the developer to check it out (e.g. `git checkout <head commit>` for a merged PR whose branch is gone) and stop — never switch branches or stash on their behalf.
 - Find the story markdown and `.feature` files among the changed files of all the PRs, or use the story path given.

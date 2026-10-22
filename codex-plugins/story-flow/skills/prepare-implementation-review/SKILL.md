@@ -5,7 +5,7 @@ description: Post reviewer-facing evidence on a pull request.
 
 # Prepare a Pull Request for Review
 
-Resolve optional PR URLs or a PR number, an optional story markdown path and an optional `--dry-run` flag from the user's request. Without either, use the current branch's PR.
+Resolve optional PR URLs or a PR ID, an optional story markdown path and an optional `--dry-run` flag from the user's request. Without either, use the current branch's PR.
 
 Load skills in this order:
 
