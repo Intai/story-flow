@@ -9,7 +9,7 @@ user-invocable: false
 ## Overview
 
 Helps reviewers by posting, as one review on each pull request:
-- inline comments on the lines they concern: risks, discussion points, screenshots, API calls, failed BDD scenarios and coverage gaps
+- inline comments on the lines they concern: risks, discussion points, screenshots, accessibility violations, API calls, failed BDD scenarios and coverage gaps
 - a summary of what belongs to no single line: TL;DR, reading order, requirement traceability, BDD results and coverage
 
 ## Instructions
@@ -36,7 +36,7 @@ Helps reviewers by posting, as one review on each pull request:
 - Every item below belongs to the PR whose diff holds its line. Requirement traceability and reading order span all the PRs: a requirement met in another PR links there rather than being marked ❌, and the reading order starts at the PR holding the `.feature`.
 - **Risks**: changes where a mistake would break behaviour beyond this story, such as a schema or public API contract, a data migration or persisted-state shape, authentication, authorisation or payments, or a shared component or utility with other callers. Each risk is anchored to the changed line that carries it and says what could break.
 - **Blast radius**: for each changed export imported outside the PR, Grep for its callers. Give the caller count and up to five caller paths. Attach it to the risk on that export, or make it a risk when there are callers the PR doesn't touch.
-- **Discussion points**: choices in the change a reviewer could reasonably dispute, such as departing from an existing pattern or a sibling implementation that does the same job, a new pattern, abstraction or dependency, fetching more data than it displays, a TODO, workaround or temporary check, or meeting a requirement in only one of its readings. In a web app, also each axe-core violation on markup the hunk changes, naming the rule and the element. Each is a question for reviewers, anchored to the hunk that makes the choice.
+- **Discussion points**: choices in the change a reviewer could reasonably dispute, such as departing from an existing pattern or a sibling implementation that does the same job, a new pattern, abstraction or dependency, fetching more data than it displays, a TODO, workaround or temporary check, or meeting a requirement in only one of its readings. Each is a question for reviewers, anchored to the hunk that makes the choice.
 - **Requirement traceability** (only with a story markdown): for each requirement, the hunks that implement it (linked) and the scenario IDs that prove it. Mark ❌ a requirement with no code or no scenario, and ⚠️ a hunk that maps to no requirement.
 - **Reading order**: changed files in the order to review them — `.feature` scenarios (the intended behaviour), then contracts and types, logic, UI, and unit tests. Start at contracts when no `.feature` changed. List skim-only files separately with the reason: recorded `.spec.js` files, lockfiles, generated code, snapshots, pure renames or moves (`git diff -M --stat`) and whitespace-only changes (`git diff -w`).
 
@@ -48,6 +48,7 @@ Helps reviewers by posting, as one review on each pull request:
   - Drive the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app, signed in as the scenario's user, with the base URL and project skills `/execute-scenario` would use.
   - When the hunk only renders inside another PR's app (e.g. a shared package), run that app with this PR's clone linked in, as the project skills describe.
   - Take an element screenshot of the changed component, not the full page. Save it to the scratchpad as `<component>-<state>.png`.
+  - In a web app, run axe-core on the same component and state, and keep each violation on markup the hunk changes, naming the rule and the element.
 - **API calls**: one for each changed hunk whose behaviour an API response shows, such as a service, handler or query change, and one more for each error branch the hunk adds (e.g. validation returning 400, a missing record returning 404).
   - Run the matching request from a changed scenario when one exists. Otherwise trace the changed code up to its endpoint (e.g. a controller action or function route) and build a request that exercises the change.
   - Send it with the base URL and token the project skills or environment provide. When neither is available, write it as a ready-to-run `curl` instead.
@@ -65,6 +66,7 @@ Write each PR's review to files in the scratchpad. Refer to a PR in another repo
   | `risk` | The changed line carrying the risk, with its blast radius |
   | `discussion` | The hunk that makes the choice |
   | `screenshot` | The last changed line of the hunk, with one line saying what it shows, then the image |
+  | `accessibility` | The changed line rendering the element, naming the axe-core rule and what fails |
   | `api` | The last changed line of the hunk, with one line saying what the response shows, then the request and the trimmed response, or the `curl` to run |
   | `bdd` | Only a ❌ scenario: its `Scenario:` line, with how it ran and what failed |
   | `coverage` | The first uncovered line of a changed file under 100%, listing its other uncovered ranges |
