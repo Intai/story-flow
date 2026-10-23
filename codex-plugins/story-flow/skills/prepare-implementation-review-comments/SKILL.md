@@ -83,7 +83,7 @@ Write each PR's review to files in the scratchpad. Refer to a PR in another repo
 
 ### Phase 5: Post
 
-- Show the drafts for all the PRs to the developer, with screenshots as their local paths. Stop here with `--dry-run`; otherwise ask once before posting, since a posted review is public to the team.
+- With `--dry-run`, show the drafts for all the PRs to the developer, with screenshots as their local paths, and stop.
 - Host the screenshots, then put their links into the drafts.
 - When an earlier run's comments exist, edit the summary and each inline comment whose kind and anchor still apply, and post the rest fresh.
 - Post the rest of each PR's comments as one review where the host supports it, then give the review URLs.
