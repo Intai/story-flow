@@ -10,7 +10,7 @@ user-invocable: false
 
 Helps reviewers by posting, as one review on each pull request:
 - inline comments on the lines they concern: risks, discussion points, screenshots, API calls, failed BDD scenarios and coverage gaps
-- a summary of what belongs to no single line: reading order, requirement traceability, BDD results and coverage
+- a summary of what belongs to no single line: TL;DR, reading order, requirement traceability, BDD results and coverage
 
 ## Instructions
 
@@ -36,7 +36,7 @@ Helps reviewers by posting, as one review on each pull request:
 - Every item below belongs to the PR whose diff holds its line. Requirement traceability and reading order span all the PRs: a requirement met in another PR links there rather than being marked ❌, and the reading order starts at the PR holding the `.feature`.
 - **Risks**: changes where a mistake would break behaviour beyond this story, such as a schema or public API contract, a data migration or persisted-state shape, authentication, authorisation or payments, or a shared component or utility with other callers. Each risk is anchored to the changed line that carries it and says what could break.
 - **Blast radius**: for each changed export imported outside the PR, Grep for its callers. Give the caller count and up to five caller paths. Attach it to the risk on that export, or make it a risk when there are callers the PR doesn't touch.
-- **Discussion points**: choices in the change a reviewer could reasonably dispute, such as departing from an existing pattern or a sibling implementation that does the same job, a new pattern, abstraction or dependency, fetching more data than it displays, a TODO, workaround or temporary check, or meeting a requirement in only one of its readings. Each is a question for reviewers, anchored to the hunk that makes the choice.
+- **Discussion points**: choices in the change a reviewer could reasonably dispute, such as departing from an existing pattern or a sibling implementation that does the same job, a new pattern, abstraction or dependency, fetching more data than it displays, a TODO, workaround or temporary check, or meeting a requirement in only one of its readings. In a web app, also each axe-core violation on markup the hunk changes, naming the rule and the element. Each is a question for reviewers, anchored to the hunk that makes the choice.
 - **Requirement traceability** (only with a story markdown): for each requirement, the hunks that implement it (linked) and the scenario IDs that prove it. Mark ❌ a requirement with no code or no scenario, and ⚠️ a hunk that maps to no requirement.
 - **Reading order**: changed files in the order to review them — `.feature` scenarios (the intended behaviour), then contracts and types, logic, UI, and unit tests. Start at contracts when no `.feature` changed. List skim-only files separately with the reason: recorded `.spec.js` files, lockfiles, generated code, snapshots, pure renames or moves (`git diff -M --stat`) and whitespace-only changes (`git diff -w`).
 
@@ -48,7 +48,7 @@ Helps reviewers by posting, as one review on each pull request:
   - Drive the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app, signed in as the scenario's user, with the base URL and project skills `/execute-scenario` would use.
   - When the hunk only renders inside another PR's app (e.g. a shared package), run that app with this PR's clone linked in, as the project skills describe.
   - Take an element screenshot of the changed component, not the full page. Save it to the scratchpad as `<component>-<state>.png`.
-- **API calls**: one for each changed hunk whose behaviour an API response shows, such as a service, handler or query change.
+- **API calls**: one for each changed hunk whose behaviour an API response shows, such as a service, handler or query change, and one more for each error branch the hunk adds (e.g. validation returning 400, a missing record returning 404).
   - Run the matching request from a changed scenario when one exists. Otherwise trace the changed code up to its endpoint (e.g. a controller action or function route) and build a request that exercises the change.
   - Send it with the base URL and token the project skills or environment provide. When neither is available, write it as a ready-to-run `curl` instead.
   - Keep the method, path, status and the part of the response body the change affects (e.g. the ordering, a new field, a status code). Redact the `Authorization` header and any token.
@@ -72,12 +72,13 @@ Write each PR's review to files in the scratchpad. Refer to a PR in another repo
   An item whose line isn't in the diff, and that the host can't put in a file-level comment, goes in the summary instead.
 
 - **Summary**, ending with `<!-- story-flow:prepare-implementation-review -->`:
-  1. Reading order
-  2. Requirement traceability
-  3. BDD results: one table of every scenario that ran, with ✅ or ❌ and how it ran, in the summary of the PR holding the `.feature`. The other PRs link to it rather than repeat it
-  4. Coverage in one line (e.g. "9 files, all 100%", or the count under 100% linking to their inline comments), then a `<details>` block with the exact command, the commit it ran on and the raw table
-  5. The number of inline comments of each kind
-  6. Links to the other PRs of the story
+  1. TL;DR: what the change does and why in one or two lines, from the story markdown or the story's tracker item, linking the tracker item
+  2. Reading order
+  3. Requirement traceability
+  4. BDD results: one table of every scenario that ran, with ✅ or ❌ and how it ran, in the summary of the PR holding the `.feature`. The other PRs link to it rather than repeat it
+  5. Coverage in one line (e.g. "9 files, all 100%", or the count under 100% linking to their inline comments), then a `<details>` block with the exact command, the commit it ran on and the raw table
+  6. The number of inline comments of each kind
+  7. Links to the other PRs of the story
 
   Use `<details>` for any section longer than about ten lines. Leave out a section with nothing in it.
 
