@@ -119,7 +119,7 @@ This workflow leverages Claude Code to automate and streamline software developm
   `/retrofit-scenarios @path/to/file.feature "feature description"`, or \
   `/retrofit-scenarios @path/to/file.feature @path/to/source1 @path/to/source2/*`
 
-- **Prepare a pull request for review** \
+- **Prepare the final pull request for review** \
   Prompt in **auto mode**: \
   `/prepare-implementation-review` to prepare the current branch's PR, or \
   `/prepare-implementation-review 123 @path/to/story.md` to prepare a PR by ID, with an optional story markdown for requirement traceability, or \
