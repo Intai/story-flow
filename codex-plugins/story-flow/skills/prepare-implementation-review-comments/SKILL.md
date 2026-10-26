@@ -43,8 +43,9 @@ Helps reviewers by posting, as one review on each pull request:
 ### Phase 3: Evidence
 
 - **BDD results**: the scenarios added or changed in the PR's `.feature` files. Run them through their recorded `.spec.js` filtered to their IDs (e.g. `npx playwright test <spec> --grep "<ID>:"`), or through `/execute-scenario` for scenarios not recorded yet. Note which way each ran.
-- **Screenshots**: one for each changed hunk that renders something, such as a change to a component's markup. Logic-only hunks get none.
+- **Screenshots**: one for each changed hunk whose effect a user can see: a change to what renders (e.g. a component's markup), or to when or whether it shows (e.g. a condition, timer or event handler that decides when a toast, banner or dialog appears). Only hunks with no visible effect, such as a pure refactor, a type or a log line, get none.
   - Trace the component's usages up to the screen that shows it. Reach that screen and state through the steps and stubs of a changed scenario that passes through it, else navigate there directly. When the hunk adds a state, such as an error, empty or loading view, bring the app into that state.
+  - For a change to when or whether something shows, capture each state that a changed scenario's `Then` steps check, in the scenario's order, including an absence (e.g. the area where the toast appears, empty after it's closed).
   - Drive the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app, signed in as the scenario's user, with the base URL and project skills `/execute-scenario` would use.
   - When the hunk only renders inside another PR's app (e.g. a shared package), run that app with this PR's clone linked in, as the project skills describe.
   - Take an element screenshot of the changed component, not the full page. Save it to the scratchpad as `<component>-<state>.png`.
