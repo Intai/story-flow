@@ -106,6 +106,14 @@ This workflow leverages Claude Code to automate and streamline software developm
 9. 🧠 **Create the final pull request** \
    Share the fully tested implementation with the team.
 
+   **Recommended: Prepare the pull request for review** \
+   Prompt in **auto mode**: \
+   `/prepare-implementation-review` to prepare the current branch's PR, or \
+   `/prepare-implementation-review 123 @path/to/story.md` to prepare a PR by ID, with an optional story markdown for requirement traceability, or \
+   `/prepare-implementation-review <package PR URL> <app PR URL>` to prepare one story split across repositories together.
+
+   Helps reviewers by posting comments and evidence on the pull requests. Run it again after pushing changes: it updates its earlier comments and resolves the ones that no longer apply.
+
 ### Outside the Workflow
 
 - **Triage failed scenarios in recorded Playwright specs** \
@@ -118,13 +126,6 @@ This workflow leverages Claude Code to automate and streamline software developm
   For code written without scenarios. Prefer planning them from the story — retrofitted scenarios describe what the code does, bugs included, not what it should do. \
   `/retrofit-scenarios @path/to/file.feature "feature description"`, or \
   `/retrofit-scenarios @path/to/file.feature @path/to/source1 @path/to/source2/*`
-
-- **Prepare the final pull request for review** \
-  Prompt in **auto mode**: \
-  `/prepare-implementation-review` to prepare the current branch's PR, or \
-  `/prepare-implementation-review 123 @path/to/story.md` to prepare a PR by ID, with an optional story markdown for requirement traceability, or \
-  `/prepare-implementation-review <package PR URL> <app PR URL>` to prepare one story split across repositories together. \
-  Helps reviewers by posting comments and evidence on the pull requests. Run it again after pushing changes: it updates its earlier comments and resolves the ones that no longer apply.
 
 ### Extension
 
