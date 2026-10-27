@@ -24,6 +24,8 @@ Helps reviewers by posting, as one review on each pull request:
   - Post a review: a summary body with inline comments, each on a file and a line on the new side of the diff. Where the host has no single review, post the summary and each inline comment separately (e.g. Azure DevOps threads, GitLab discussions).
   - Post a file-level comment, where the host supports one (e.g. GitHub `subject_type: file`).
   - Edit a comment.
+  - Reply to a comment's thread.
+  - Resolve a thread (e.g. GitHub `resolveReviewThread` through GraphQL, Azure DevOps thread status `fixed`, GitLab `resolved=true`).
   - Link to a file and line in the PR.
   - Host an image for a comment. Use the host's upload where it has one (e.g. Azure DevOps PR attachments, GitLab project uploads). Otherwise (e.g. GitHub), commit it to a `pr-evidence` orphan branch through a temporary `git worktree`, so the developer's checkout is untouched, push, and link the raw file at that commit.
 
@@ -89,7 +91,8 @@ Write each PR's review to files in the scratchpad. Refer to a PR in another repo
 
 - With `--dry-run`, show the drafts for all the PRs to the developer, with screenshots as their local paths, and stop.
 - Host the screenshots, then put their links into the drafts.
-- When an earlier run's comments exist, edit the summary and each inline comment whose kind and anchor still apply, and post the rest fresh.
+- When an earlier run's comments exist, replace the body of the summary and of each inline comment whose kind and anchor still apply with this run's draft — or, when its thread has a reply without the marker, post the draft as a reply instead — and post the rest fresh.
+- Resolve each earlier inline comment whose kind and anchor match no draft, first replying, with the comment's marker, that it no longer applies after this run's head commit when its thread has a reply without the marker.
 - Post the rest of each PR's comments as one review where the host supports it, then give the review URLs.
 
 ## Example Inputs
