@@ -16,10 +16,11 @@ This workflow leverages Claude Code to automate and streamline software developm
 ### Steps
 
 1. 🤖🧠 **Create the technical story markdown** \
-   Prompt Claude Code in **plan mode**: \
+   Prompt in **plan mode**: \
    `/draft-story @path/to/story.md PROJ-123` to draft from a story tracker, or \
    `/draft-story @path/to/story.md "feature description"` to draft from a feature description, or \
-   `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude. \
+   `/draft-story @path/to/story.md` to draft according to a plan discussed with Claude.
+
    The draft is a starting point—your review turns it into the technical design.
 
    **Important:**
@@ -45,7 +46,7 @@ This workflow leverages Claude Code to automate and streamline software developm
    ```
 
 2. 🤖🧠 **Review the story markdown** \
-   Prompt Claude Code: `/review-story @path/to/story.md PROJ-123` starting from **plan mode**. \
+   Prompt: `/review-story @path/to/story.md PROJ-123` starting from **plan mode**. \
    This checks the story markdown, optionally against the story in your story tracker.
 
    Exit **plan mode** to discuss the findings one at a time, incorporating or skipping each one, to refine the story markdown into a well-defined and detailed technical design.
@@ -119,7 +120,8 @@ This workflow leverages Claude Code to automate and streamline software developm
 - **Triage failed scenarios in recorded Playwright specs** \
   Prompt in **auto mode**: \
   `/triage-failed-scenarios --grep "SCN-01:|SCN-02:"` to triage specific scenarios, or \
-  `/triage-failed-scenarios "failed scenarios in <issue URL>"` to triage the failures listed in an issue raised by a regression pipeline. \
+  `/triage-failed-scenarios "failed scenarios in <issue URL>"` to triage the failures listed in an issue raised by a regression pipeline.
+
   Keeps the regression suite autonomously maintained: deletes the scenario if the behaviour was removed, updates the steps and re-records if it changed intentionally, re-records if the spec is stale, or reports a defect for human review if the app no longer meets the story.
 
 - **Retrofit BDD scenarios** \
