@@ -124,7 +124,7 @@ This workflow leverages Claude Code to automate and streamline software developm
   `/prepare-implementation-review` to prepare the current branch's PR, or \
   `/prepare-implementation-review 123 @path/to/story.md` to prepare a PR by ID, with an optional story markdown for requirement traceability, or \
   `/prepare-implementation-review <package PR URL> <app PR URL>` to prepare one story split across repositories together. \
-  Helps reviewers by posting comments and evidence on the pull requests.
+  Helps reviewers by posting comments and evidence on the pull requests. Run it again after pushing changes: it updates its earlier comments and resolves the ones that no longer apply.
 
 ### Extension
 
