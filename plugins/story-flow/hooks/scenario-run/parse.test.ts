@@ -175,14 +175,25 @@ describe('run', () => {
     expect(resumed.isDone).toBe(false)
   })
 
-  test('only a run that failed on the same feature can resume', () => {
-    const passed = skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))
+  test('only a run on the same feature with scenarios left to pass can resume', () => {
     const failed = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'failed')
+    const allPassed = ['SMG-01', 'SMG-02', 'SMG-03'].reduce(
+      (current, id) => recordResult(markRunning(current, id), id, 'passed'),
+      run,
+    )
 
-    expect([canResume(failed, 'a.feature'), canResume(failed, 'b.feature'), canResume(passed, 'a.feature')]).toEqual([
+    expect([canResume(failed, 'a.feature'), canResume(failed, 'b.feature'), canResume(allPassed, 'a.feature')]).toEqual([
       true,
       false,
       false,
     ])
+  })
+
+  test('a dispatch after the run closed early keeps the passes', () => {
+    const closed = skipPending(recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'passed'))
+    const resumed = markRunning(resumeRun(closed), 'SMG-02')
+
+    expect(canResume(closed, 'a.feature')).toBe(true)
+    expect(describeScenarioStatus(resumed)).toBe('execute-scenario ▶ SMG-02 ✓1/3 ✗0')
   })
 })

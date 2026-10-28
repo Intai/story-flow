@@ -62,9 +62,10 @@ export function skipPending(run: ScenarioRun): ScenarioRun {
   return finishWhenSettled({ ...run, scenarios })
 }
 
-// A retry after a fix dispatches the failed scenario again; the run it ended picks up from there.
+// A dispatch after the run closed with scenarios left to pass, a retry after a fix or the next of
+// one-at-a-time dispatches, picks the run up from there.
 export function canResume(run: ScenarioRun, featurePath: string): boolean {
-  return run.isDone && run.featurePath === featurePath && run.scenarios.some(one => one.status === 'failed')
+  return run.isDone && run.featurePath === featurePath && run.scenarios.some(one => one.status !== 'passed')
 }
 
 export function resumeRun(run: ScenarioRun): ScenarioRun {
