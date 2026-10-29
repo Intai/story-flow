@@ -92,7 +92,7 @@ Write each PR's review to files in the scratchpad. Refer to a PR in another repo
 - With `--dry-run`, show the drafts for all the PRs to the developer, with screenshots as their local paths, and stop.
 - Host the screenshots, then put their links into the drafts.
 - When an earlier run's comments exist, replace the body of the summary and of each inline comment whose kind and anchor still apply with this run's draft — or, when its thread has a reply without the marker, post the draft as a reply instead — and post the rest fresh.
-- Resolve each earlier inline comment whose kind and anchor match no draft, first replying, with the comment's marker, that it no longer applies after this run's head commit when its thread has a reply without the marker.
+- Resolve each earlier inline comment whose kind and anchor match no draft (an outdated comment, whose line the host no longer places on the diff, has no anchor), first replying, with the comment's marker, that it no longer applies after this run's head commit when its thread has a reply without the marker.
 - Post the rest of each PR's comments as one review where the host supports it, then give the review URLs.
 
 ## Example Inputs
