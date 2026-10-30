@@ -124,6 +124,12 @@ This workflow leverages Claude Code to automate and streamline software developm
 
   Keeps the regression suite autonomously maintained: deletes the scenario if the behaviour was removed, updates the steps and re-records if it changed intentionally, re-records if the spec is stale, or reports a defect for human review if the app no longer meets the story.
 
+  **Recommended: Run it from a regression pipeline** \
+  Have the pipeline that runs the recorded specs raise an issue listing the failed scenarios and linking the run, then start a triage job when the run fails. The job can launch Claude Code headless with a command that:
+  1. Runs `/triage-failed-scenarios "failed scenarios in <issue URL>"`.
+  2. Comments the triage summary on the issue, mentioning the team only when a scenario is reported as a defect, and labels the issue as triaged.
+  3. Opens a draft pull request referencing the issue when the triage changed any files, so stale scenarios are fixed through review.
+
 - **Retrofit BDD scenarios** \
   For code written without scenarios. Prefer planning them from the story — retrofitted scenarios describe what the code does, bugs included, not what it should do. \
   `/retrofit-scenarios @path/to/file.feature "feature description"`, or \
