@@ -16,7 +16,7 @@ For each failed scenario, decide the cause against the current code and its stor
 - Behaviour removed: delete the scenario from both the feature file and the Playwright spec file.
 - Behaviour changed intentionally: update the feature file steps, then re-record.
 - Spec stale (locators, timing): re-record.
-- App behaviour is wrong: do not change the scenario; report it as a defect. If it passes once a proposed change is applied, report the defect as fixed by that change, linking its comment.
+- App behaviour is wrong: do not change the scenario; report it as a defect. If a proposed change for the defect is applied, don't try to check the change, since the specs run against the deployed app. Link the change's comment.
 
 Re-record with the `story-flow:execute-scenario` skill for the scenario ID and its feature file in `--record` mode, at the failing project's form factor.
 Confirm each re-recorded scenario passes on its failing project: `npx playwright test <spec file> --project=<project> --grep "<ID>:"`.
