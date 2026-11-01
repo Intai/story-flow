@@ -5,7 +5,7 @@ effort: medium
 ---
 
 When the failed scenarios are listed in an issue, find the most recent earlier issue with the same title prefix that has a triage comment.
-Apply the changes proposed in its later comments (e.g. a diff fixing a reported defect) that the checkout doesn't already have, and leave them uncommitted.
+Apply the changes proposed in its later comments (e.g. a diff fixing a reported defect) that the checkout doesn't already have, and leave them uncommitted. Skip a proposed change a human disapproved: a 👎 reaction on its comment, or a later comment rejecting or replacing it.
 
 Execute the Playwright specs: `npx playwright test $ARGUMENTS`.
 For each failed scenario, decide the cause against the current code and its story (the ticket ID in the feature file, or in its git log), fetched with the project's story tracker MCP tools when available:
@@ -13,9 +13,10 @@ For each failed scenario, decide the cause against the current code and its stor
 - Behaviour removed: delete the scenario from both the feature file and the Playwright spec file.
 - Behaviour changed intentionally: update the feature file steps, then re-record.
 - Spec stale (locators, timing): re-record.
-- App behaviour is wrong: do not change the scenario; report it as a defect. If a proposed change for the defect is applied, don't try to check the change, since the specs run against the deployed app. Link the change's comment.
+- App behaviour is wrong: do not change the scenario; report it as a defect. If a proposed change for the defect is applied, don't try to check the change, since the specs run against the deployed app. Link the change's comment. Otherwise, when the fix is very safe and small (a few lines that follow directly from the cause, changing nothing beyond the defect), propose it as a diff, without applying it.
 
 Re-record with `/story-flow:execute-scenario <ID> @<feature file> --record`, at the failing project's form factor.
 Confirm each re-recorded scenario passes on its failing project: `npx playwright test <spec file> --project=<project> --grep "<ID>:"`.
 If it still fails, triage it again rather than re-recording a second time.
-Then summarise each failure's cause, action and scenario author (`git blame` on its lines in the feature file), plus any flaky passes and the proposed changes applied.
+Then summarise each failure's cause, action and scenario author (`git blame` on its lines in the feature file), plus any flaky passes and the proposed changes applied or skipped as disapproved.
+List each proposed diff after the summary, separately, headed with its scenario, so it can be posted as its own comment.
