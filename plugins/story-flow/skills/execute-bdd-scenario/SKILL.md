@@ -100,6 +100,7 @@ WebdriverIO options — Android:
     "appium:autoGrantPermissions": true,
     "appium:noReset": true,
     "appium:fullReset": false,
+    "appium:forceAppLaunch": true,
   },
 }
 ```
@@ -121,9 +122,12 @@ WebdriverIO options — iOS:
     "appium:bundleId": process.env.APPIUM_BUNDLE_ID,
     "appium:noReset": true,
     "appium:fullReset": false,
+    "appium:forceAppLaunch": true,
   },
 }
 ```
+
+`appium:noReset` keeps the app's data — a signed-in session — between runs; `appium:forceAppLaunch` still relaunches it, so each scenario starts from a fresh launch as it does on BrowserStack, not wherever the last run left it.
 
 `appium:autoGrantPermissions` and `appium:appActivity` are Android-only — never carry them into the iOS capabilities. Do not add `appium:autoAcceptAlerts` either: it swallows alerts a scenario asserts on.
 
