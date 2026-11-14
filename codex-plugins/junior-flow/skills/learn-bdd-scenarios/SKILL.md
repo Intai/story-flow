@@ -23,8 +23,8 @@ Present the following content interactively. After each section, use `AskUserQue
 
 Explain that in story-flow, BDD scenarios serve two purposes:
 
-1. **Executable specifications** - Claude uses Playwright MCP to execute these scenarios directly in a browser
-2. **Regression test generation** - With `--record` flag, scenarios become Playwright `.spec.js` files
+1. **Executable specifications** - Claude executes these scenarios directly: in a browser with Playwright MCP, in a mobile app with Appium MCP, or in the shell when no step drives a UI
+2. **Regression test generation** - With `--record` flag, scenarios become Playwright `.spec.js` files (or a test for the project's own runner, e.g. pytest, when it has no Node toolchain)
 
 This means scenarios must be:
 - **Precise enough** for automated execution
@@ -121,7 +121,7 @@ This approach:
 - Makes feature files self-contained and runnable in isolation
 
 ```gherkin
-@purge-data  # Ensures clean state for this feature file
+@purge-data
 Scenario: FEAT-01: Create a new project
   When I click "New Project"
   And I enter "My App" in the "Project Name" field
@@ -129,13 +129,13 @@ Scenario: FEAT-01: Create a new project
   Then I should see "My App" in the project list
 
 Scenario: FEAT-02: Add an image to the project
-  # Builds on FEAT-01 - "My App" already exists
-  Given I am viewing the "My App" project
+  Given the "My App" project exists
+  And I am viewing the "My App" project
   When I upload "logo.png"
   Then the image should appear in the gallery
 
 Scenario: FEAT-03: Delete the project
-  # Builds on previous scenarios
+  Given the "My App" project has "logo.png"
   When I click "Delete Project" on "My App"
   And I confirm the deletion
   Then "My App" should not appear in the project list
@@ -175,8 +175,10 @@ Explain the supported tags:
 
 | Tag | Effect | When to Use |
 |-----|--------|-------------|
+| `@integration` | On a command-line scenario: `--record` records it. Without the tag, it isn't recorded and its assertions must be covered by unit tests | When the scenario reaches real external services or needs real credentials |
+| `@non-parallel` | Keeps the scenario out of parallel workers in the recorded spec | When it shares state another scenario could change mid-run |
 | `@purge-data` | Runs `make reseed` before scenario | When scenario needs clean/known state |
-| `@screenshots` | Takes one screenshot per assertion group — consecutive assertions with no action between them share a shot | For visual verification or debugging |
+| `@screenshots` | Takes one screenshot per assertion group — consecutive assertions with no action between them share a shot; tracked for visual regression when the `VRT_*` variables are set | For visual verification or debugging |
 | `@timeout-*` | Extends the scenario timeout, e.g. `@timeout-600s` for 10 minutes | When a scenario is genuinely slow, not to paper over flakiness |
 | Any other tag | No effect on execution; carried into the generated Playwright test name | Labels for `--grep` filtering, e.g. `@staging`, `@prod` |
 
@@ -256,6 +258,10 @@ Then I should see "Form submitted" success message
 And I should be redirected to the confirmation page
 And the submitted data should appear in the list
 ```
+
+### Mistake 5: Explaining in Comments
+
+Don't explain in a comment what a `Given` step can state. Keep comments for hints that help record the Playwright script, such as which request to stub.
 
 ---
 
