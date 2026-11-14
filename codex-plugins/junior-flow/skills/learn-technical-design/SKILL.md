@@ -146,12 +146,12 @@ Present the recommended structure:
 
 **2. Planned Tasks**
 - Ordered list of implementation steps
-- Dependencies between tasks
-- Which tasks can run in parallel
+- Dependencies and parallel tasks, added by `/analyze-tasks` after the story review rather than written by hand
 - Each task includes technical approach details:
   - Key design decisions
   - Pseudo code for complex logic
   - Example payloads or API contracts
+- `[Risk: reason]` and `[Discuss: question]` markers that `/draft-story` adds under a task: a Risk marks a task whose mistake would break behaviour beyond this story (schema, migration, public API, auth, payments); a Discuss marks a decision the story doesn't settle. Raise them with reviewers, then resolve and delete each one before implementing
 
 ```typescript
 // Example task with embedded technical approach:
@@ -261,17 +261,19 @@ Present this checklist for the developer to keep:
 
 - [ ] Story requirements are clearly documented
 - [ ] Tasks are specific and ordered
-- [ ] Dependencies between tasks are identified
+- [ ] `/analyze-tasks` has added the task dependencies
 - [ ] Technical approach includes concrete examples
 - [ ] Pseudo code or payload examples for complex logic
 - [ ] Alternatives were considered and documented
 - [ ] Questions for reviewers are highlighted
+- [ ] Every `[Risk: …]` and `[Discuss: …]` marker is raised with reviewers
 - [ ] Related ticket ID is mentioned
 
 **During review:**
 
 - [ ] Respond to all comments
 - [ ] Update design based on feedback
+- [ ] Resolve and delete every `[Risk: …]` and `[Discuss: …]` marker before implementing
 - [ ] Resolve addressed conversations
 - [ ] Wait for at least one approval
 

@@ -1,6 +1,6 @@
 {
   "name": "junior-flow",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "Interactive guidance that helps junior developers learn story-flow practices",
   "author": { "name": "Intai", "email": "intai.hg@gmail.com" },
   "homepage": "https://github.com/Intai/story-flow/blob/main/plugins/junior-flow/README.md",

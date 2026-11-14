@@ -307,6 +307,8 @@ console.log(processed);
 
 Present the review perspective:
 
+Before reading the code, confirm the tools are clean: lint, type check, complexity threshold, duplication (e.g. jscpd), unused exports (e.g. knip) and `npm audit`. Spend review time on what tools can't judge — the questions below.
+
 ### Readability Questions
 
 Ask yourself:
@@ -345,6 +347,7 @@ Present this checklist for the developer to keep:
 
 **During implementation review, check:**
 
+- [ ] Zero lint, type, complexity, duplication, unused-export and audit findings
 - [ ] Variable names describe their purpose clearly
 - [ ] Function names indicate what they do
 - [ ] Complex logic is broken into understandable steps
