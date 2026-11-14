@@ -106,6 +106,7 @@ async function settleScenario($: EngineInterface, id: string, result: ScenarioRe
   )
 
   if (result === 'failed') $.ui.toast(`✗ ${id} failed`)
+  if (result === 'unit-test-gap') $.ui.toast(`⚠ ${id} unit test gap`)
   if (settled?.isDone) $.ui.toast(`Scenarios done: ${describeCounts(countResults(settled))}`)
   await refreshStatus($)
 }

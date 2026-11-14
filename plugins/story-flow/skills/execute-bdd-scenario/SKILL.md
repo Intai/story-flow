@@ -34,11 +34,11 @@ effort: medium
      3. Confirm which skills are loaded before continuing with the execution.
 
      Execute BDD scenario <SCENARIO-ID> in @path/to/file.feature [--record if recording mode is active].
-     End your reply with `RESULT: PASSED` or `RESULT: FAILED`.
+     End your reply with `RESULT: PASSED`, `RESULT: FAILED`, `RESULT: UNIT TESTED` or `RESULT: UNIT TEST GAP`.
      ```
      **IMPORTANT:** Replace `<SCENARIO-ID>` with the individual scenario ID (e.g., `ARMR-01`), NOT "all". Each subagent executes exactly one scenario.
      **Recording Mode:** When executing multiple scenarios with `--record`, pass the `--record` flag to each subagent prompt. Each subagent is responsible for generating/updating the `.spec.js` file after executing its scenario — do NOT defer spec file generation to the parent orchestrator.
-  3. Wait for subagent completion, record PASS/FAIL result
+  3. Wait for subagent completion, record its result
   4. **If the scenario FAILED:** STOP immediately and print the summary table with remaining scenarios marked as "⊘ SKIPPED". Do NOT proceed to the next scenario.
   5. Print summary table:
      ```
@@ -70,7 +70,7 @@ A scenario is command-line when none of its steps, Background included, drives a
 - `@integration` marks a command-line scenario that reaches real external services or needs real credentials. Execute a scenario without it as usual, but `--record` writes no test for it. Instead, search the project's unit tests for each of its `Then` assertions, and for each `Examples` row of an outline. A test that only calls the same function does not count; it must assert the same outcome.
   - When every assertion is covered, report "not recorded: covered by" followed by the test IDs, e.g. `apps/x/tests/test_settle.py::test_reporter_edit_restarts_wait`.
   - When an assertion is not covered, report it as a gap, naming the step and its line number. Don't record a scenario test to fill it; a unit test fills it.
-  - In the summary table of a multi-scenario run, mark the row `− UNIT TESTED` or `⚠ UNIT TEST GAP`. Neither counts as passed or failed, and a gap does not stop the run.
+  - In the summary table of a multi-scenario run, mark the row `↳ UNIT TESTED` or `⚠ UNIT TEST GAP`. Neither counts as passed or failed, and a gap does not stop the run.
 - `--record` for an `@integration` scenario in a project with no Node toolchain writes a test for the project's own runner, e.g. pytest, instead of a `.spec.js`. The recording rules carry over unchanged: tags first, Background as helpers, replace the test with the same ID and keep the rest. `[RECORD_COMMAND]` and `[RECORD_POLL]` become the language's subprocess call with an argument list rather than a shell string, asserting on exit code, stdout and stderr. A project-level `execute-bdd-scenario` skill names the file, test naming, tag mapping and the commands to run and lint it.
 
 ## Mobile App Instructions

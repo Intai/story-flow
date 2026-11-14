@@ -123,6 +123,13 @@ describe('parseScenarioResult', () => {
     expect(parseScenarioResult('SMG-01 ✓ PASSED')).toBe('passed')
   })
 
+  test('reads the unit-test verdicts of an integration scenario', () => {
+    expect([
+      parseScenarioResult('Covered by tests/test_settle.py\nRESULT: UNIT TESTED'),
+      parseScenarioResult('Gap at line 12 ✗\nRESULT: UNIT TEST GAP'),
+    ]).toEqual(['unit-tested', 'unit-test-gap'])
+  })
+
   test('answers unknown without a verdict', () => {
     expect(parseScenarioResult('Done.')).toBe('unknown')
   })
@@ -136,6 +143,27 @@ describe('run', () => {
 
     expect(failed.scenarios.map(one => one.status)).toEqual(['passed', 'failed', 'skipped'])
     expect(failed.isDone).toBe(true)
+  })
+
+  test('a unit test gap keeps the run going', () => {
+    const gap = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'unit-test-gap')
+
+    expect(gap.scenarios.map(one => one.status)).toEqual(['unit-test-gap', 'pending', 'pending'])
+    expect(gap.isDone).toBe(false)
+  })
+
+  test('counts describe unit-tested scenarios and unit test gaps', () => {
+    const tested = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'unit-tested')
+    const gap = recordResult(markRunning(tested, 'SMG-02'), 'SMG-02', 'unit-test-gap')
+
+    expect(describeCounts(countResults(gap))).toBe('✓0/3 ✗0 ↳1 ⚠1')
+  })
+
+  test('a retry keeps the unit-tested scenarios and runs a unit test gap again', () => {
+    const tested = recordResult(markRunning(run, 'SMG-01'), 'SMG-01', 'unit-tested')
+    const closed = skipPending(recordResult(markRunning(tested, 'SMG-02'), 'SMG-02', 'unit-test-gap'))
+
+    expect(resumeRun(closed).scenarios.map(one => one.status)).toEqual(['unit-tested', 'pending', 'pending'])
   })
 
   test('requested ids keep only those scenarios', () => {

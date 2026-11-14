@@ -1,7 +1,20 @@
 import type { Scenario, ScenarioRun } from '../../types'
 import type { ScenarioHeading, ScenarioResult } from './parse'
 
-export type RunCounts = { total: number; passed: number; failed: number; unknown: number; skipped: number }
+export type RunCounts = {
+  total: number
+  passed: number
+  failed: number
+  unitTested: number
+  unitTestGap: number
+  unknown: number
+  skipped: number
+}
+
+// A scenario covered by unit tests needs no rerun, as one that passed; a gap does once tests fill it.
+function isSettledForGood(one: Scenario): boolean {
+  return one.status === 'passed' || one.status === 'unit-tested'
+}
 
 export function startRun(
   featurePath: string,
@@ -65,12 +78,12 @@ export function skipPending(run: ScenarioRun): ScenarioRun {
 // A dispatch after the run closed with scenarios left to pass, a retry after a fix or the next of
 // one-at-a-time dispatches, picks the run up from there.
 export function canResume(run: ScenarioRun, featurePath: string): boolean {
-  return run.isDone && run.featurePath === featurePath && run.scenarios.some(one => one.status !== 'passed')
+  return run.isDone && run.featurePath === featurePath && !run.scenarios.every(isSettledForGood)
 }
 
 export function resumeRun(run: ScenarioRun): ScenarioRun {
   const scenarios = run.scenarios.map(one =>
-    one.status === 'passed' ? one : { ...one, status: 'pending' as const },
+    isSettledForGood(one) ? one : { ...one, status: 'pending' as const },
   )
 
   return { ...run, scenarios, isDone: false }
@@ -103,6 +116,8 @@ export function countResults(run: ScenarioRun): RunCounts {
     total: run.scenarios.length,
     passed: count('passed'),
     failed: count('failed'),
+    unitTested: count('unit-tested'),
+    unitTestGap: count('unit-test-gap'),
     unknown: count('unknown'),
     skipped: count('skipped'),
   }
@@ -118,9 +133,11 @@ export function describeScenarioStatus(run: ScenarioRun): string | undefined {
   return `execute-scenario ${position}${describeCounts(countResults(run))}`
 }
 
-export function describeCounts({ total, passed, failed, unknown, skipped }: RunCounts): string {
+export function describeCounts({ total, passed, failed, unitTested, unitTestGap, unknown, skipped }: RunCounts): string {
   return [
     `✓${passed}/${total} ✗${failed}`,
+    unitTested > 0 ? `↳${unitTested}` : '',
+    unitTestGap > 0 ? `⚠${unitTestGap}` : '',
     unknown > 0 ? `?${unknown}` : '',
     skipped > 0 ? `⊘${skipped}` : '',
   ]

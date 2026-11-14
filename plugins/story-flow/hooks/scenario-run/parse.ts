@@ -1,10 +1,16 @@
 export type ScenarioDispatch = { ids: string; featurePath: string }
 export type ScenarioHeading = { id: string; title: string }
-export type ScenarioResult = 'passed' | 'failed' | 'unknown'
+export type ScenarioResult = 'passed' | 'failed' | 'unit-tested' | 'unit-test-gap' | 'unknown'
 
 const DISPATCH = /Execute BDD scenario (\S+) (?:in )?@?(\S+?\.feature)\b/
 const HEADING = /^\s*Scenario(?: Outline)?:\s*([A-Za-z][\w]*-\d+):\s*(.+?)\s*$/gm
-const RESULT_LINE = /RESULT:\s*(PASSED|FAILED)/gi
+const RESULT_LINE = /RESULT:\s*(PASSED|FAILED|UNIT TESTED|UNIT TEST GAP)/gi
+const VERDICTS: Record<string, ScenarioResult> = {
+  PASSED: 'passed',
+  FAILED: 'failed',
+  'UNIT TESTED': 'unit-tested',
+  'UNIT TEST GAP': 'unit-test-gap',
+}
 
 export function parseScenarioDispatch(text: string): ScenarioDispatch | undefined {
   const match = DISPATCH.exec(text)
@@ -53,8 +59,7 @@ export function parseScenarioResult(text: string): ScenarioResult {
   const verdicts = [...text.matchAll(RESULT_LINE)]
   const lastVerdict = verdicts.at(-1)?.[1]?.toUpperCase()
 
-  if (lastVerdict === 'PASSED') return 'passed'
-  if (lastVerdict === 'FAILED') return 'failed'
+  if (lastVerdict !== undefined) return VERDICTS[lastVerdict] ?? 'unknown'
   if (/✗|\bFAILED\b/.test(text)) return 'failed'
   if (/✓|\bPASSED\b/.test(text)) return 'passed'
 

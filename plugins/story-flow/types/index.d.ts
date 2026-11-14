@@ -1,4 +1,12 @@
-export type ScenarioStatus = 'pending' | 'running' | 'passed' | 'failed' | 'unknown' | 'skipped'
+export type ScenarioStatus =
+  | 'pending'
+  | 'running'
+  | 'passed'
+  | 'failed'
+  | 'unit-tested'
+  | 'unit-test-gap'
+  | 'unknown'
+  | 'skipped'
 
 export type Scenario = {
   id: string
