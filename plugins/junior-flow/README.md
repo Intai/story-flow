@@ -22,7 +22,7 @@ Available topics:
 **Then:**
 1. Understand the suggestions by reading the codebase.
 2. Continue on story-flow [step 6](https://github.com/Intai/story-flow#steps) to review the implementation.
-3. When opening the PR, run `/prepare-implementation-review` (story-flow [step 9](https://github.com/Intai/story-flow#steps)) to help reviewers with discussion points, risks and evidence.
+3. When opening the final PR, run `/prepare-implementation-review` [step 9](https://github.com/Intai/story-flow#steps) to help reviewers with discussion points, risks and evidence.
 
 ### Installation
 
