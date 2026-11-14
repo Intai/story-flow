@@ -8,7 +8,7 @@ user-invocable: false
 
 ## Instructions
 
-- Use `mcp__plugin_story-flow_playwright__*` tools to manipulate browser to EXECUTE the BDD scenarios directly without generating any Playwright test file.
+- Use `mcp__plugin_story-flow_playwright__*` tools to manipulate browser to EXECUTE the BDD scenarios directly without generating any Playwright test file. A scenario with no browser or app step runs in the shell instead; see [Command-line Scenarios](#command-line-scenarios).
 - **Test Execution Protocol:**
   - **Before executing:** Read the feature file and confirm the exact line numbers, scenario title, background sections and all "Then" and "And" assertions.
   - **Execution order is CRITICAL:**
@@ -19,7 +19,7 @@ user-invocable: false
   - **During execution:** Compare actual behavior against expected behavior at each assertion step.
   - **On failure:** STOP immediately and provide a summary including:
     - Expected behavior (with line numbers from feature file)
-    - Actual behavior (with evidence from page snapshot)
+    - Actual behavior (with evidence from the page snapshot, or the command output for a command-line scenario)
     - Root cause analysis
     - **CRITICAL: Do NOT continue to subsequent test steps after a failure**
 - **Executing Multiple Scenarios:**
@@ -57,6 +57,16 @@ user-invocable: false
 - Use `mcp__plugin_story-flow_playwright__browser_run_code_unsafe` to set the browser offline.
 - Reference the @Makefile for local development workflows.
 - Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Never hardcode a host.
+
+## Command-line Scenarios
+
+A scenario is command-line when none of its steps, Background included, drives a UI: every step runs a command, calls an API, or reads a file or service. Decide from the steps. A project without `package.json` or `playwright.config.js` usually has only command-line scenarios, but a web app in another language still needs a browser.
+
+- Execute each step in the shell. Never load the `mcp__plugin_story-flow_playwright__*`, `mcp__plugin_story-flow_appium__*` or `mcp__plugin_story-flow_chrome-devtools__*` tools.
+- `BASE_URL`, `playwright.config.js`, screenshots, `@screenshots`, VRT, locator discovery and the browser wait strategies don't apply.
+- On failure, the evidence is the command, its exit code and an excerpt of its stdout and stderr.
+- Commands read secrets from the project's env file or tooling. Never pass a key as an argument, where it lands in the shell history and the transcript. Never print a secret or write it into a `.feature` file, a report or a recorded test. Report "credentials found" without the value.
+- `--record` in a project with no Node toolchain writes a test for the project's own runner, e.g. pytest, instead of a `.spec.js`. The recording rules carry over unchanged: tags first, Background as helpers, replace the test with the same ID and keep the rest. `[RECORD_COMMAND]` and `[RECORD_POLL]` become the language's subprocess call with an argument list rather than a shell string, asserting on exit code, stdout and stderr. A project-level `execute-bdd-scenario` skill names the file, test naming, tag mapping and the commands to run and lint it.
 
 ## Mobile App Instructions
 
