@@ -1,7 +1,7 @@
 {
   "name": "junior-flow",
   "description": "Interactive guidance that helps junior developers learn story-flow practices",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "author": {
     "name": "Intai",
     "email": "intai.hg@gmail.com"
