@@ -2,6 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, ToolCallResult } from 'claude-code'
 
 import type { StoryRun, StoryTaskStatus } from '../types'
+import { candidatePaths } from './project-file/resolve'
 import {
   isMultiScenarioRun,
   parseFeatureScenarios,
@@ -73,9 +74,11 @@ const TASK_MARKS: Record<StoryTaskStatus, { mark: string; color?: string }> = {
 
 async function readProjectFile($: EngineInterface, path: string): Promise<string> {
   try {
-    const cwd = await $.session.cwd()
+    for (const candidate of candidatePaths(await $.session.root(), path)) {
+      if (await $.fs.exists(candidate)) return await $.fs.read(candidate)
+    }
 
-    return await $.fs.read(path.startsWith('/') ? path : `${cwd}/${path}`)
+    return ''
   } catch {
     return ''
   }
