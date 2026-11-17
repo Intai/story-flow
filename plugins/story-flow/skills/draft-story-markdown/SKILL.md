@@ -111,7 +111,11 @@ Create a story markdown with the following structure:
 
 ## Tasks
 
-- Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature.
+- Use qa-tester subagent to plan BDD scenarios @path/to/feature.feature. Scenario ideas:
+  - Real data. Assert behaviour that holds for any data:
+    - [Behaviour that holds for any data]
+  - Stubbed [request], for behaviour that needs specific data and for visual regression scenarios:
+    - [Behaviour that needs specific data]
 - Use backend-developer subagent to [task description] @path/to/file.js. [Technical details].
   - [Risk: reason]
 - Use frontend-developer subagent to [task description] @path/to/component.jsx.
@@ -128,9 +132,9 @@ Create a story markdown with the following structure:
   - Technical details about what to implement
   - The Figma link of each frame a frontend-developer or mobile-developer task builds or changes, matched by `node-id`. Every Figma link from Phase 1 appears on at least one task
 - Group related work into single tasks when appropriate
-- Keep each task to a single line. Only when it carries three or more separate technical details, move them into nested bullets under the task line for readability, keeping the agent assignment on the line itself. Risk and Discuss markers are always nested bullets and do not count toward the three
+- Keep each task to a single line. Only when it carries three or more separate technical details, move them into nested bullets under the task line for readability, keeping the agent assignment on the line itself. Risk and Discuss markers are always nested bullets and do not count toward the three, and neither do scenario ideas
 - Add a nested [Risk: reason] bullet under a task when a mistake in it would break behaviour beyond this story, such as changing a schema, data migration or public API contract, or authentication, authorisation or payments. Add a nested [Discuss: question] bullet when the task has a decision the story doesn't settle, such as exploration finding two or more viable approaches or no existing pattern to follow, the task requesting data for more items than it displays, or the requirement it serves having more than one reading. Leave every other task unmarked. The developer resolves and deletes each marker before implementing the story
-- Always include a QA task to **plan** BDD scenarios
+- Always include a QA task to **plan** BDD scenarios, with scenario ideas as nested bullets grouped as in the template. Each idea is a behaviour worth checking: a user journey, a business behaviour, or an edge case such as a limit, tie, empty state or filtered-out item. Between them, the ideas cover every requirement. A requirement can need several ideas, and it needs none when an existing scenario already covers it. For a bug ticket, one idea is the reproduced failure
 - Always include a final QA task to **verify** the implementation by executing the BDD scenarios (via `/execute-scenario`) and fixing any failure until all scenarios pass
 - Use existing file paths discovered during exploration
 - For new files, follow the naming conventions discovered
