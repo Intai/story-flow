@@ -26,11 +26,11 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
    Iterate with Claude to review and finalise design details.
 
 5. 🤖🧠 **Create epics and stories in your story tracker** (skip if already tracked) \
-   Use the story tracker MCP to create epics for the feature and break it into stories from the product design and UI designs, so the work is ready for grooming. \
-   Review the breakdown collaboratively with Claude before continuing. As you repeat this across features, your epics form the project roadmap.
+   Use the story tracker MCP to create epics for the feature and break it into stories from the product design, UI designs, meeting transcripts, and video recordings, story-pointed against your project's reference stories, so the work is ready for grooming. \
+   Review the breakdown and story points collaboratively with Claude before continuing. As you repeat this across features, your epics form the project roadmap.
 
    **Then:**
-   1. Groom, refine, and story point the feature with the team before continuing to development.
+   1. Groom, refine, and confirm the story points with the team before continuing to development.
    2. Continue on story-flow [step 1](https://github.com/Intai/story-flow#steps) to create the technical story markdown according to the designs and team discussions.
 
 ### Installation
