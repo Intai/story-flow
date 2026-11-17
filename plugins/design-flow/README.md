@@ -6,6 +6,7 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 
 - Chrome DevTools MCP: Run `/mcp` to verify connection status.
 - Story tracker MCP (optional): If you use a story tracker, add its MCP server to your project's `.mcp.json`. Then run `/mcp` to login and verify the connection status.
+- ffmpeg (optional): Extracts frames from video recordings when creating stories.
 
 ### Steps
 
@@ -28,6 +29,11 @@ A Claude plugin for collaborative product and UI design exploration. This plugin
 5. 🤖🧠 **Create epics and stories in your story tracker** (skip if already tracked) \
    Use the story tracker MCP to create epics for the feature and break it into stories from the product design, UI designs, meeting transcripts, and video recordings, story-pointed against your project's reference stories, so the work is ready for grooming. \
    Review the breakdown and story points collaboratively with Claude before continuing. As you repeat this across features, your epics form the project roadmap.
+
+   Prompt: \
+   `/create-stories @path/to/product-design.md path/to/kickoff.mp4 path/to/kickoff.vtt` to create an epic, or \
+   `/create-stories @path/to/product-design.md PROJ-120` to add stories under an existing epic. \
+   Sources can be paths, folders, design URLs, and ticket IDs.
 
    **Then:**
    1. Groom, refine, and confirm the story points with the team before continuing to development.

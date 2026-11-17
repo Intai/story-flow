@@ -147,6 +147,7 @@ Example:
 - `.claude/skills/plan-bdd-scenarios/SKILL.md`
 - `.claude/skills/execute-bdd-scenario/SKILL.md`
 - `.claude/skills/prepare-implementation-review-comments/SKILL.md`
+- `.claude/skills/create-epic-stories/SKILL.md`
 
 ### Installation
 
