@@ -31,10 +31,10 @@ When the input is a ticket ID (matching a pattern like `PROJ-123`, `86d2uf1mh`, 
   - Subtasks (if any)
   - Figma links (any `figma.com` URL, keeping its `node-id`), searching the ticket's comments, custom fields and attachments as well as its description
   - Steps to reproduce, actual and expected behaviour (bug tickets)
-- Fetch each Figma link with `mcp__plugin_story-flow_figma__get_design_context` and `mcp__plugin_story-flow_figma__get_screenshot`, and note its frame and component names for Phase 3. If the fetch fails, keep the link for the tasks anyway and tell the developer to check the Figma MCP login (`/mcp`).
+- Fetch each Figma link with `mcp__plugin_story-flow_figma__get_design_context` and `mcp__plugin_story-flow_figma__get_screenshot`, and note its frame and component names for Phase 4. If the fetch fails, keep the link for the tasks anyway and tell the developer to check the Figma MCP login (`/mcp`).
 - Treat the ticket as a bug when its type is `Bug`, `Defect`, `Incident` or equivalent, or when it carries steps to reproduce with actual and expected behaviour.
-- If the ticket is a bug, reproduce it before drafting. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors, and use them to inform the exploration keywords in Phase 2 and the tasks in Phase 3.
-- If the bug does not reproduce, carry on drafting and highlight it as an assumption in Phase 4 for the developer to confirm the environment, version, account or seed data.
+- If the ticket is a bug, reproduce it before drafting. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors, and use them to inform the exploration keywords in Phase 2 and the tasks in Phase 4.
+- If the bug does not reproduce, carry on drafting and highlight it as an assumption in Phase 5 for the developer to confirm the environment, version, account or seed data.
 - If the fetch fails, inform the developer and ask them to verify:
   - The ticket ID is correct
   - The project's `.mcp.json` defines a story tracker MCP server, and they are logged into it (`/mcp` to check status)
@@ -94,7 +94,16 @@ Find:
 Provide specific file paths and patterns discovered.
 ```
 
-### Phase 3: Generate Draft
+### Phase 3: Size the Story
+
+- Estimate the draft from the requirements and the exploration. Offer a split when it would have more than 8 tasks, or when its requirements contain two or more observable behaviours that can each ship alone.
+- Split vertically. Each slice delivers one behaviour its consumer can observe through the system's outer interface (a UI flow, an API endpoint, a CLI command, a published event, a job's output), end to end through every layer it needs. A slice qualifies when its own BDD scenarios pass with only the earlier slices merged, and merging it leaves nothing half-wired. Never split by layer (e.g. a backend story and a frontend story) or by task type.
+- Cut along workflow steps, business rule variations, data or interface variations, or the happy path before its edge cases and errors.
+- Order the slices so the first builds the shared foundation (route, schema, API client, shared utility) and later slices build on it.
+- Each requirement belongs to exactly one slice. Each Figma link appears on at least one slice.
+- Use AskUserQuestion to propose the slices, giving each a one-line outcome and its requirements, with "Keep as one story" as an option. Draft one story unless the developer accepts the split.
+
+### Phase 4: Generate Draft
 
 **Important:** Do not include unit test requirements or tasks in the story. Unit tests are automatically created during implementation with 100% coverage for every source file. Only include QA tasks for BDD scenario planning and for verifying the implementation against the acceptance criteria.
 
@@ -164,7 +173,12 @@ When the story has Figma links:
 - `Use mobile-developer subagent to`: React Native, iOS, Android native code, mobile-specific features
 - `Use qa-tester subagent to`: BDD scenarios, test planning, feature files, executing/verifying scenarios against acceptance criteria and coordinating fixes on failure
 
-### Phase 3b: Handle Unknown Files
+**Split stories:**
+- Draft each slice as its own story markdown with the structure above. Each slice has its own plan and verify QA tasks, against its own `.feature` file or extending an earlier slice's `.feature` file when it reaches the same state.
+- A later slice opens, under its summary, with one line naming what an earlier slice already builds, so its tasks don't rebuild it.
+- Do not add ordering annotations between stories.
+
+### Phase 4b: Handle Unknown Files
 
 If a requirement cannot be mapped to specific files:
 
@@ -183,9 +197,9 @@ If a requirement cannot be mapped to specific files:
 
 3. Document assumptions made for the developer to review.
 
-### Phase 4: Present to Developer
+### Phase 5: Present to Developer
 
-1. **Show the complete draft markdown** in a code block.
+1. **Show the complete draft markdown** in a code block, one per slice when split.
 
 2. **Highlight areas needing review:**
    - Tasks where file paths were uncertain (marked with assumptions)
@@ -197,6 +211,7 @@ If a requirement cannot be mapped to specific files:
 3. **Suggest output path:**
    - If an output path was provided, use it
    - Otherwise, suggest based on codebase structure (e.g., `src/[module]/docs/[feature]-story.md`)
+   - When split, suggest one path per slice side by side, `src/[module]/docs/[feature]-[index]-[slice]-story.md`, numbered from 1 in slice order, with `[slice]` naming its behaviour (e.g., `invoices-2-export-csv-story.md`)
 
 4. **Ask for confirmation** before writing the file:
    ```
@@ -205,7 +220,7 @@ If a requirement cannot be mapped to specific files:
    Please review the draft and let me know if you'd like any changes before I save it.
    ```
 
-5. **Write the file** only after the developer confirms, then point them to `/story-flow:review-story` as the next step, followed by `/story-flow:analyze-tasks` once the review is done.
+5. **Write the file** only after the developer confirms, asking once for all slices when split, then point them to `/story-flow:review-story` for each file, starting with the first slice, as the next step, followed by `/story-flow:analyze-tasks` once the review is done.
 
 ## Example Output
 
@@ -244,5 +259,6 @@ As a user, I want to update my profile name so that my account details are accur
 - Create story markdown from PROJ-456
 - Generate technical story for PROJ-789 @src/feature/docs/story.md
 - Draft PROJ-100 to @path/to/output.md
+- Draft story for PROJ-123 and split it if it's too big
 - Draft story for "Add dark mode support to the settings page"
 - Draft story for "Implement user profile image upload"
