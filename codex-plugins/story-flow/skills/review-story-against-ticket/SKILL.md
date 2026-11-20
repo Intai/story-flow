@@ -15,9 +15,14 @@ user-invocable: false
 - If the ticket is a bug, reproduce it before reviewing. Follow its steps to reproduce by driving the app with `mcp__plugin_story-flow_playwright__*` tools, or `mcp__plugin_story-flow_appium__*` for a mobile app. Navigate relative to the base URL from `BASE_URL`, falling back to `use.baseURL` in the project's @playwright.config.js. Note the failing step, the actual behaviour and any console or network errors.
 - If the bug does not reproduce, carry on reviewing and report it as a finding for the developer to confirm the environment, version, account or seed data.
 - Read the local story markdown file using the Read tool.
+- When the story is named `[feature]-[index]-[slice]-story.md`, also read its sibling slices: the files in the same directory named `[feature]-[n]-*-story.md`.
 - Compare the story content against the markdown file and identify discrepancies.
 - Review the following aspects:
-  - **Requirements Completeness**: Verify all acceptance criteria and requirements from the story are documented in the markdown.
+  - **Requirements Completeness**: Verify all acceptance criteria and requirements from the story are documented in the markdown. A ticket requirement that a sibling slice carries is not a gap; name that sibling in the summary instead of raising it as a finding.
+  - **Slice Boundaries** (sibling slices only, with or without a ticket ID):
+    - Flag any requirement that more than one slice carries.
+    - Flag a slice that isn't vertical, judged by the criteria in `draft-story-markdown` Phase 3, such as one slice holding the backend tasks and another the frontend, or a slice whose behaviour can't be observed or verified without a slice with a higher index.
+    - Flag a task that rebuilds something the opening line says a lower-indexed slice builds, and an opening line that names something no lower-indexed slice builds.
   - **Design Coverage**: Flag every Figma link from the ticket that no task references, and every frontend-developer or mobile-developer task building a frame without its Figma link. Propose the task each link belongs on, matched by `node-id`.
   - **Task Breakdown**: Check that tasks in the markdown align with the story requirements and subtasks.
   - **Agent Assignments**: Ensure tasks have appropriate agent assignments (Use backend-developer subagent to, Use frontend-developer subagent to, etc.).
@@ -49,3 +54,4 @@ user-invocable: false
 - Compare story 86d2uf1mh with @path/to/story.md
 - Validate that @path/to/story.md matches the requirements for 4821
 - Check if the story file matches PROJ-123
+- Review @path/to/invoices-2-export-csv-story.md against story PROJ-123
