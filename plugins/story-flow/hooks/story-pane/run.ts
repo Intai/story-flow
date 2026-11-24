@@ -68,6 +68,10 @@ export function hasRunningTask(run: StoryRun): boolean {
   return allTasks(run).some(task => task.status === 'running')
 }
 
+export function hasWaitingTask(run: StoryRun): boolean {
+  return allTasks(run).some(task => task.status === 'waiting')
+}
+
 export function recordTaskResult(run: StoryRun, number: number, result: TaskResult): StoryRun {
   const recorded = mapTasks(run, task =>
     task.number === number && (task.status === 'running' || task.status === 'unknown')

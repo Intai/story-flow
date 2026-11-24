@@ -14,6 +14,8 @@ import {
   countTasks,
   describeProgress,
   findTaskByAgent,
+  hasRunningTask,
+  hasWaitingTask,
   markTaskRunning,
   recordTaskResult,
   startStory,
@@ -152,6 +154,15 @@ describe('story run', () => {
     const running = [2, 3].reduce((current, number) => markTaskRunning(current, number, ''), recordTaskResult(markTaskRunning(run, 1, ''), 1, 'completed'))
 
     expect(describeProgress(countTasks(running))).toBe('implement-story ▶ Task 2,3 ✓1/3')
+  })
+
+  test('between waves no task runs but a later one still waits, so the story is not done', () => {
+    const betweenWaves = [1, 2].reduce(
+      (current, number) => recordTaskResult(markTaskRunning(current, number, ''), number, 'completed'),
+      run,
+    )
+
+    expect([hasRunningTask(betweenWaves), hasWaitingTask(betweenWaves), betweenWaves.isDone]).toEqual([false, true, false])
   })
 
   test('lists a dispatched task the story does not name', () => {

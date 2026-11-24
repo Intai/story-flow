@@ -46,6 +46,7 @@ import {
   findTaskByAgent,
   hasRunningTask,
   hasStartedTask,
+  hasWaitingTask,
   markTaskRunning,
   recordTaskResult,
   startStory,
@@ -298,7 +299,7 @@ async function closeStoryTurn($: EngineInterface, e: SubagentTurn) {
   if (task !== undefined) {
     const result = parseTaskVerdict(e.answer)
     if (result !== 'unknown') await settleTask($, task.number, result)
-  } else if (e.agentId === current.ownerAgentId && hasStartedTask(current) && !hasRunningTask(current)) {
+  } else if (e.agentId === current.ownerAgentId && hasStartedTask(current) && !hasRunningTask(current) && !hasWaitingTask(current)) {
     const finished = await update($, storyRun, active => (active === null ? null : finishStory(active)))
     if (finished !== null) await showStoryProgress($, finished)
   }
