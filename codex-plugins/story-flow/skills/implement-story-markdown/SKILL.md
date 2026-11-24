@@ -8,6 +8,7 @@ user-invocable: false
 
 ## Instructions
 
+- When given several slices of one story, named `[feature]-[index]-[slice]-story.md`, implement them one after another in index order. Start a slice only after every task of the previous one, including its final QA verify task, has completed. The parallel grouping below applies only within a slice.
 - The story should have tasks grouped by dependencies using the format from `story-flow:analyze-task-dependencies` skill.
   - Launch every group whose prerequisites are complete concurrently in a single message, without waiting for the other groups to finish. Group order in the file is not execution order — all groups headed "no prerequisites" start together.
   - Dispatch one task at a time within a `**Sequential ...**` group; dispatch every task of a `**Parallel ...**` group concurrently in a single message. Start each subagent prompt with `Task <N>:`, N being the task's number in the story.
