@@ -151,7 +151,7 @@ Present the recommended structure:
   - Key design decisions
   - Pseudo code for complex logic
   - Example payloads or API contracts
-- `[Risk: reason]` and `[Discuss: question]` markers that `/draft-story` adds under a task: a Risk marks a task whose mistake would break behaviour beyond this story (schema, migration, public API, auth, payments); a Discuss marks a decision the story doesn't settle. Raise them with reviewers, then resolve and delete each one before implementing
+- `[Risk: reason]` and `[Discuss: question]` markers that `/draft-story` adds under a task: a Risk marks a task whose mistake would break behaviour beyond this story (schema, migration, public API, auth, payments); a Discuss marks a decision the story doesn't settle. Raise them with reviewers, then resolve each one before implementing, replacing it with the chosen approach as a technical detail on the task, with no alternatives or reasoning
 
 ```typescript
 // Example task with embedded technical approach:
@@ -273,7 +273,7 @@ Present this checklist for the developer to keep:
 
 - [ ] Respond to all comments
 - [ ] Update design based on feedback
-- [ ] Resolve and delete every `[Risk: …]` and `[Discuss: …]` marker before implementing
+- [ ] Replace every `[Risk: …]` and `[Discuss: …]` marker with the chosen approach, without alternatives or reasoning, before implementing
 - [ ] Resolve addressed conversations
 - [ ] Wait for at least one approval
 
