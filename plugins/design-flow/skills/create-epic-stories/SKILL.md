@@ -40,11 +40,12 @@ Sort each source argument by type. Expand a folder into the files inside it, the
 Split the feature into vertical slices, each deliverable and demoable on its own. For each story:
 - Summary (user story statement)
 - Acceptance criteria
+- High-level technical decisions stated in the sources that affect security, performance, data integrity, compatibility, maintainability or readability, never code-level details such as files, functions or libraries
 - Design references (design file paths, Figma links, frames)
 - Dependencies on other stories
 - Out of scope
 
-List the open questions from the subagents and sources that the breakdown could not resolve.
+List the open questions from the subagents and sources that the breakdown could not resolve, including technical decisions raised but not settled.
 
 ## Phase 4: Estimate Story Points
 
@@ -58,6 +59,6 @@ List the open questions from the subagents and sources that the breakdown could 
 
 ## Phase 6: Create
 
-- Create the epic if needed, then each story with its acceptance criteria, design references and points, linked to the epic.
+- Create the epic if needed, then each story with its acceptance criteria, technical decisions, design references and points, linked to the epic.
 - Report each created item's ID and URL.
 - If the tracker MCP is missing or cannot create items, output the approved breakdown as markdown for manual entry.
