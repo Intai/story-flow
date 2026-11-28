@@ -2,7 +2,9 @@ export type ParsedTask = { number: number; label: string }
 export type ParsedGroup = { heading: string; tasks: ParsedTask[] }
 export type TaskResult = 'completed' | 'failed' | 'unknown'
 
-const STORY_DISPATCH = /(?:Execute tasks according to|Implement(?: story)?(?: markdown)?(?: according to)?)\s+@(\S+?\.md)\b/g
+const STORY_DISPATCH =
+  /(?:Execute tasks according to|Implement(?: story)?(?: markdown)?(?: according to)?)\s+(@\S+?\.md\b(?:(?:\s*,\s*|\s+)(?:and\s+)?@\S+?\.md\b)*)/g
+const STORY_PATH = /@(\S+?\.md)\b/g
 const TASK_PREFIX = /^\s*Task (\d+):/
 const TASKS_SECTION = /^##\s+Tasks\s*$/
 const NEXT_SECTION = /^##\s/
@@ -13,9 +15,12 @@ const AGENT_TASK = /^Use\s+(\S+?)\s+subagent\s+to\s+(.+)$/i
 const AGENT_ROLE_SUFFIX = /-(developer|tester|automator)$/
 const DANGLING_PREPOSITION = /\s+(in|at|to|for|from|of|on)$/i
 
-// Every story path a prompt names, in order: a skill's own examples name placeholder paths too.
-export function parseStoryDispatches(text: string): string[] {
-  return [...text.matchAll(STORY_DISPATCH)].flatMap(([, storyPath]) => (storyPath ? [storyPath] : []))
+// The story paths of each dispatch a prompt names, in order: one dispatch may name several slices of
+// a story, and a skill's own examples name placeholder paths too.
+export function parseStoryDispatches(text: string): string[][] {
+  return [...text.matchAll(STORY_DISPATCH)].map(([, paths]) =>
+    [...(paths ?? '').matchAll(STORY_PATH)].flatMap(([, storyPath]) => (storyPath ? [storyPath] : [])),
+  )
 }
 
 export function parseTaskNumber(prompt: string): number | undefined {

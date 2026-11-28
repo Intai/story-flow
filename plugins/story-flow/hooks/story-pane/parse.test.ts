@@ -16,6 +16,7 @@ import {
   findTaskByAgent,
   hasRunningTask,
   hasWaitingTask,
+  isSliceOver,
   markTaskRunning,
   recordTaskResult,
   startStory,
@@ -48,14 +49,20 @@ const STORY = `As a farmer I want orders to open instantly.
 describe('parseStoryDispatches', () => {
   test('reads the story path from the expanded command', () => {
     expect(parseStoryDispatches('Execute tasks according to @src/docs/orders-story.md using subagents.')).toEqual([
-      'src/docs/orders-story.md',
+      ['src/docs/orders-story.md'],
     ])
   })
 
-  test("lists every story path, a skill's placeholder examples included", () => {
+  test('reads every slice the command names, in order', () => {
+    const command = 'Execute tasks according to @docs/a-1-x-story.md @docs/a-2-y-story.md, and @docs/a-3-z-story.md using subagents.'
+
+    expect(parseStoryDispatches(command)).toEqual([['docs/a-1-x-story.md', 'docs/a-2-y-story.md', 'docs/a-3-z-story.md']])
+  })
+
+  test("lists every dispatch, a skill's placeholder examples included", () => {
     expect(parseStoryDispatches('Implement story @a/b.md\n- Implement story according to @path/to/story.md')).toEqual([
-      'a/b.md',
-      'path/to/story.md',
+      ['a/b.md'],
+      ['path/to/story.md'],
     ])
   })
 
@@ -188,5 +195,28 @@ describe('story run', () => {
     const replaced = recordTaskResult(unknown, 3, 'completed')
 
     expect(replaced.groups.at(-1)?.tasks.at(-1)?.status).toBe('completed')
+  })
+})
+
+describe('story slices', () => {
+  const slice = startStory('docs/a-1-x-story.md', parseTaskGroups(STORY), undefined, ['docs/a-2-y-story.md'])
+  const completeTask = (run: typeof slice, number: number) =>
+    recordTaskResult(markTaskRunning(run, number, ''), number, 'completed')
+
+  test('the next slice begins once this one is done or a task it completed is dispatched again', () => {
+    const done = [1, 2, 3].reduce(completeTask, slice)
+    const firstDone = completeTask(slice, 1)
+
+    expect([slice.nextSlicePaths, isSliceOver(done, 1), isSliceOver(firstDone, 1)]).toEqual([
+      ['docs/a-2-y-story.md'],
+      true,
+      true,
+    ])
+  })
+
+  test('a live slice, or the last one, does not begin another', () => {
+    const lastDone = [1, 2, 3].reduce(completeTask, startStory('docs/a-4-z-story.md', parseTaskGroups(STORY)))
+
+    expect([isSliceOver(completeTask(slice, 1), 2), isSliceOver(lastDone, 1)]).toEqual([false, false])
   })
 })

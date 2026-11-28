@@ -5,7 +5,12 @@ export type TaskCounts = { total: number; completed: number; failed: number; run
 
 const UNLISTED_HEADING = 'Not in the story'
 
-export function startStory(storyPath: string, groups: ParsedGroup[], ownerAgentId?: string): StoryRun {
+export function startStory(
+  storyPath: string,
+  groups: ParsedGroup[],
+  ownerAgentId?: string,
+  nextSlicePaths: string[] = [],
+): StoryRun {
   return {
     storyPath,
     groups: groups.map(({ heading, tasks }) => ({
@@ -13,8 +18,17 @@ export function startStory(storyPath: string, groups: ParsedGroup[], ownerAgentI
       tasks: tasks.map(({ number, label }) => ({ number, label, status: 'waiting' })),
     })),
     ownerAgentId,
+    nextSlicePaths,
     isDone: false,
   }
+}
+
+// The next slice has begun once this one is done, or once a task it already completed is dispatched
+// again: the next slice numbers its tasks from 1, and a task left unknown keeps this one from settling.
+export function isSliceOver(run: StoryRun, number: number): boolean {
+  const isDispatchedAgain = allTasks(run).some(task => task.number === number && task.status === 'completed')
+
+  return (run.nextSlicePaths ?? []).length > 0 && (run.isDone || isDispatchedAgain)
 }
 
 function mapTasks(run: StoryRun, change: (task: StoryTask) => StoryTask): StoryRun {

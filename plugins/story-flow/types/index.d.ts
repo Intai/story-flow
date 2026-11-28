@@ -40,6 +40,7 @@ export type StoryRun = {
   storyPath: string
   groups: StoryGroup[]
   ownerAgentId?: string
+  nextSlicePaths?: string[]
   isDone: boolean
 }
 

@@ -47,6 +47,7 @@ import {
   hasRunningTask,
   hasStartedTask,
   hasWaitingTask,
+  isSliceOver,
   markTaskRunning,
   recordTaskResult,
   startStory,
@@ -232,19 +233,40 @@ async function settleTask($: EngineInterface, number: number, result: TaskResult
   if (settled !== null) await showStoryProgress($, settled)
 }
 
-// Starts from the first story the prompt names that holds tasks, passing over a skill's placeholder
-// examples.
-async function startStoryFromPrompt($: EngineInterface, text: string) {
-  for (const storyPath of parseStoryDispatches(text)) {
-    const groups = parseTaskGroups(await readProjectFile($, storyPath))
+async function readStorySlices($: EngineInterface, storyPaths: string[]) {
+  const slices = await Promise.all(
+    storyPaths.map(async storyPath => ({ storyPath, groups: parseTaskGroups(await readProjectFile($, storyPath)) })),
+  )
 
-    if (groups.length > 0) {
-      const started = startStory(storyPath, groups)
+  return slices.filter(slice => slice.groups.length > 0)
+}
+
+// Starts from the first dispatch the prompt names whose stories hold tasks, passing over a skill's
+// placeholder examples; the dispatch's later slices wait their turn.
+async function startStoryFromPrompt($: EngineInterface, text: string) {
+  for (const storyPaths of parseStoryDispatches(text)) {
+    const [first, ...rest] = await readStorySlices($, storyPaths)
+
+    if (first !== undefined) {
+      const started = startStory(first.storyPath, first.groups, undefined, rest.map(slice => slice.storyPath))
       await update($, storyRun, () => started)
       await openStoryPane($, started)
       return
     }
   }
+}
+
+// Moves to the next slice that holds tasks; null when none is left.
+async function startNextSlice($: EngineInterface, run: StoryRun, agentId: string | undefined) {
+  const [next, ...rest] = await readStorySlices($, run.nextSlicePaths ?? [])
+
+  if (next === undefined) return null
+
+  const started = startStory(next.storyPath, next.groups, agentId, rest.map(slice => slice.storyPath))
+  await update($, storyRun, () => started)
+  await openStoryPane($, started)
+
+  return started
 }
 
 async function dispatchTask($: EngineInterface, e: AgentDispatch): Promise<number | undefined> {
@@ -253,8 +275,9 @@ async function dispatchTask($: EngineInterface, e: AgentDispatch): Promise<numbe
   if (number === undefined) return undefined
 
   const current = await read($, storyRun)
+  const nextSlice = current !== null && isSliceOver(current, number) ? await startNextSlice($, current, e.agentId) : null
 
-  if (current === null || current.isDone) {
+  if (nextSlice === null && (current === null || current.isDone)) {
     const started = startStory('', [], e.agentId)
     await update($, storyRun, () => started)
     await openStoryPane($, started)

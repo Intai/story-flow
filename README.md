@@ -66,7 +66,10 @@ This workflow leverages Claude Code to automate and streamline software developm
    - Designs evolve; update the story markdown when implementation diverges.
 
 5. 🤖 **Implement the story** \
-   Prompt: `/implement-story @path/to/story.md` in **auto mode**. \
+   Prompt in **auto mode**: \
+   `/implement-story @path/to/story.md` to implement a story, or \
+   `/implement-story @path/to/feature-1-slice-story.md @path/to/feature-2-slice-story.md` to implement the slices of a split story one after another.
+
    Executes tasks according to the plan in loops until the acceptance criteria are met. Each task is delegated to a subagent running in an isolated context, keeping the orchestrator lightweight so it can handle larger stories without exhausting its context window. Tasks previously analyzed as independent will be implemented in parallel.
 
 6. 🧠 **Review implementation** \
