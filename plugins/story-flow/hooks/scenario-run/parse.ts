@@ -1,8 +1,10 @@
-export type ScenarioDispatch = { ids: string; featurePath: string }
+export type ScenarioDispatch = { ids: string; featurePaths: string[] }
 export type ScenarioHeading = { id: string; title: string }
 export type ScenarioResult = 'passed' | 'failed' | 'unit-tested' | 'unit-test-gap' | 'unknown'
 
-const DISPATCH = /Execute BDD scenario (\S+) (?:in )?@?(\S+?\.feature)\b/
+// One feature file for a subagent's dispatch; as many as the command names for a run.
+const DISPATCH = /Execute BDD scenario (\S+) (?:in )?((?:@?\S+?\.feature\b\s*)+)/
+const FEATURE_PATH = /@?(\S+?\.feature)\b/g
 const HEADING = /^\s*Scenario(?: Outline)?:\s*([A-Za-z][\w]*-\d+):\s*(.+?)\s*$/gm
 const RESULT_LINE = /RESULT:\s*(PASSED|FAILED|UNIT TESTED|UNIT TEST GAP)/gi
 const VERDICTS: Record<string, ScenarioResult> = {
@@ -13,16 +15,19 @@ const VERDICTS: Record<string, ScenarioResult> = {
 }
 
 export function parseScenarioDispatch(text: string): ScenarioDispatch | undefined {
-  const match = DISPATCH.exec(text)
-  const [, ids, featurePath] = match ?? []
+  const [, ids, paths] = DISPATCH.exec(text) ?? []
 
-  return ids && featurePath ? { ids, featurePath } : undefined
+  return ids && paths ? { ids, featurePaths: parseFeaturePaths(paths) } : undefined
+}
+
+export function parseFeaturePaths(text: string): string[] {
+  return [...text.matchAll(FEATURE_PATH)].flatMap(([, path]) => (path ? [path] : []))
 }
 
 // Every dispatch a prompt names, in order: a skill's own examples name placeholder paths too.
 export function parseScenarioDispatches(text: string): ScenarioDispatch[] {
-  return [...text.matchAll(new RegExp(DISPATCH, 'g'))].flatMap(([, ids, featurePath]) =>
-    ids && featurePath ? [{ ids, featurePath }] : [],
+  return [...text.matchAll(new RegExp(DISPATCH, 'g'))].flatMap(([, ids, paths]) =>
+    ids && paths ? [{ ids, featurePaths: parseFeaturePaths(paths) }] : [],
   )
 }
 

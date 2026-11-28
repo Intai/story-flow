@@ -9,6 +9,7 @@ export type ScenarioStatus =
   | 'skipped'
 
 export type Scenario = {
+  featurePath: string
   id: string
   title: string
   status: ScenarioStatus
@@ -16,7 +17,7 @@ export type Scenario = {
 }
 
 export type ScenarioRun = {
-  featurePath: string
+  featurePaths: string[]
   scenarios: Scenario[]
   ownerAgentId?: string
   isDone: boolean
@@ -46,6 +47,7 @@ export type StoryRun = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'story-flow': { scenarioRun: ScenarioRun | null; storyRun: StoryRun | null }
+    // Shaped: a run stored by the single-feature version reads as none after a reload.
+    'story-flow': { scenarioRun: Shaped<ScenarioRun | null>; storyRun: StoryRun | null }
   }
 }

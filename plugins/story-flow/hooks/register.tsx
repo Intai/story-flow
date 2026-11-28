@@ -28,6 +28,7 @@ import {
   skipPending,
   startRun,
 } from './scenario-run/run'
+import type { FeatureRequest } from './scenario-run/run'
 import {
   describeTask,
   parseStoryDispatches,
@@ -60,9 +61,10 @@ import {
 type AgentDispatch = { prompt: string; description: string; agentId?: string }
 type AgentRan = ToolCallResult<'Agent'>
 type SubagentTurn = { agentId?: string; answer: string }
+type ScenarioKey = { featurePath: string; id: string }
 
 const STORY_PANE = 'implement-progress'
-const scenarioRun = atom({ plugin: 'story-flow', key: 'scenarioRun' } as const, null)
+const scenarioRun = atom({ plugin: 'story-flow', key: 'scenarioRun' } as const, null, { shape: 'feature-paths' })
 const storyRun = atom({ plugin: 'story-flow', key: 'storyRun' } as const, null)
 
 // Colors are Claude Code theme keys, so the marks follow the person's theme.
@@ -105,9 +107,9 @@ function backgroundAgentId(ran: AgentRan): string | undefined {
 
 // ---- Scenario run: execute-scenario progress in the status line ----
 
-async function settleScenario($: EngineInterface, id: string, result: ScenarioResult) {
+async function settleScenario($: EngineInterface, featurePath: string, id: string, result: ScenarioResult) {
   const settled = await update($, scenarioRun, current =>
-    current === null ? null : recordResult(current, id, result),
+    current === null ? null : recordResult(current, featurePath, id, result),
   )
 
   if (result === 'failed') $.ui.toast(`✗ ${id} failed`)
@@ -116,53 +118,64 @@ async function settleScenario($: EngineInterface, id: string, result: ScenarioRe
   await refreshStatus($)
 }
 
-// Starts from the first feature file the prompt names that holds scenarios, passing over a skill's
-// placeholder examples.
+async function readFeatureRequests($: EngineInterface, ids: string, featurePaths: string[]): Promise<FeatureRequest[]> {
+  const features: FeatureRequest[] = []
+
+  for (const featurePath of featurePaths) {
+    const headings = parseFeatureScenarios(await readProjectFile($, featurePath))
+    if (headings.length > 0) features.push({ featurePath, requested: parseRequestedIds(ids, headings), headings })
+  }
+
+  return features
+}
+
+// Starts from the first dispatch the prompt names whose feature files hold scenarios, passing over a
+// skill's placeholder examples, and counts the scenarios of every file it names.
 async function startScenarioRunFromPrompt($: EngineInterface, text: string) {
   for (const dispatch of parseScenarioDispatches(text).filter(one => isMultiScenarioRun(one.ids))) {
-    const headings = parseFeatureScenarios(await readProjectFile($, dispatch.featurePath))
+    const features = await readFeatureRequests($, dispatch.ids, dispatch.featurePaths)
 
-    if (headings.length > 0) {
-      const requested = parseRequestedIds(dispatch.ids, headings)
-      await update($, scenarioRun, () => startRun(dispatch.featurePath, requested, headings))
+    if (features.length > 0) {
+      await update($, scenarioRun, () => startRun(features))
       await refreshStatus($)
       return
     }
   }
 }
 
-async function dispatchScenario($: EngineInterface, e: AgentDispatch): Promise<string | undefined> {
+async function dispatchScenario($: EngineInterface, e: AgentDispatch): Promise<ScenarioKey | undefined> {
   const dispatch = parseScenarioDispatch(e.prompt)
+  const [featurePath] = dispatch?.featurePaths ?? []
 
-  if (dispatch === undefined) return undefined
+  if (dispatch === undefined || featurePath === undefined) return undefined
 
   const current = await read($, scenarioRun)
 
-  if (current !== null && canResume(current, dispatch.featurePath)) {
+  if (current !== null && canResume(current, featurePath)) {
     await update($, scenarioRun, active => (active === null ? null : resumeRun(active)))
   } else if (current === null || current.isDone) {
-    const headings = parseFeatureScenarios(await readProjectFile($, dispatch.featurePath))
-    await update($, scenarioRun, () => startRun(dispatch.featurePath, 'all', headings, e.agentId))
+    const features = await readFeatureRequests($, 'all', [featurePath])
+    await update($, scenarioRun, () => startRun(features, e.agentId))
   }
 
   await update($, scenarioRun, active =>
-    active === null ? null : markRunning(claimOwner(active, e.agentId), dispatch.ids),
+    active === null ? null : markRunning(claimOwner(active, e.agentId), featurePath, dispatch.ids),
   )
   await refreshStatus($)
 
-  return dispatch.ids
+  return { featurePath, id: dispatch.ids }
 }
 
-async function finishScenarioDispatch($: EngineInterface, id: string, ran: AgentRan) {
+async function finishScenarioDispatch($: EngineInterface, { featurePath, id }: ScenarioKey, ran: AgentRan) {
   const report = foregroundReport(ran)
   const agentId = backgroundAgentId(ran)
 
   if (ran.deny !== undefined || ran.isError === true) {
-    await settleScenario($, id, 'unknown')
+    await settleScenario($, featurePath, id, 'unknown')
   } else if (report !== undefined) {
-    await settleScenario($, id, parseScenarioResult(report))
+    await settleScenario($, featurePath, id, parseScenarioResult(report))
   } else if (agentId !== undefined) {
-    await update($, scenarioRun, active => (active === null ? null : assignAgent(active, id, agentId)))
+    await update($, scenarioRun, active => (active === null ? null : assignAgent(active, featurePath, id, agentId)))
   }
 }
 
@@ -170,7 +183,7 @@ async function settleScenarioByAgent($: EngineInterface, agentId: string, report
   const current = await read($, scenarioRun)
   const scenario = current === null ? undefined : findByAgent(current, agentId)
 
-  if (scenario !== undefined) await settleScenario($, scenario.id, parseScenarioResult(report))
+  if (scenario !== undefined) await settleScenario($, scenario.featurePath, scenario.id, parseScenarioResult(report))
 }
 
 async function closeScenarioTurn($: EngineInterface, e: SubagentTurn) {
@@ -183,7 +196,7 @@ async function closeScenarioTurn($: EngineInterface, e: SubagentTurn) {
   // A subagent ends a turn each time it waits on agents of its own; only a verdict settles it.
   if (scenario !== undefined) {
     const result = parseScenarioResult(e.answer)
-    if (result !== 'unknown') await settleScenario($, scenario.id, result)
+    if (result !== 'unknown') await settleScenario($, scenario.featurePath, scenario.id, result)
   } else if (e.agentId === current.ownerAgentId && hasStarted(current) && !hasRunning(current)) {
     const settled = await update($, scenarioRun, active => (active === null ? null : skipPending(active)))
     if (settled?.isDone) $.ui.toast(`Scenarios done: ${describeCounts(countResults(settled))}`)
@@ -373,11 +386,11 @@ export const register: Register = on => {
   })
 
   on('tool.call', { tool: 'Agent' }, async ($, e, next) => {
-    const scenarioId = await dispatchScenario($, e)
+    const scenarioKey = await dispatchScenario($, e)
     const taskNumber = await dispatchTask($, e)
     const ran = await next(e)
 
-    if (scenarioId !== undefined) await finishScenarioDispatch($, scenarioId, ran)
+    if (scenarioKey !== undefined) await finishScenarioDispatch($, scenarioKey, ran)
     if (taskNumber !== undefined) await finishTaskDispatch($, taskNumber, ran)
 
     return ran

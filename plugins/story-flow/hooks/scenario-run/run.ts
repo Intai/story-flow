@@ -16,41 +16,81 @@ function isSettledForGood(one: Scenario): boolean {
   return one.status === 'passed' || one.status === 'unit-tested'
 }
 
-export function startRun(
-  featurePath: string,
-  requested: 'all' | string[],
-  headings: ScenarioHeading[],
-  ownerAgentId?: string,
-): ScenarioRun {
-  const chosen =
-    requested === 'all'
-      ? headings
-      : requested.map(id => headings.find(one => one.id === id) ?? { id, title: '' })
+export type FeatureRequest = {
+  featurePath: string
+  requested: 'all' | string[]
+  headings: ScenarioHeading[]
+}
+
+// The scenarios of every feature file, in the order the files were named. A requested id runs from
+// the file that holds it; one no file holds stays with the first file, untitled.
+export function startRun(features: FeatureRequest[], ownerAgentId?: string): ScenarioRun {
+  const heldIds = new Set(features.flatMap(({ headings }) => headings.map(one => one.id)))
+  const scenarios = features.flatMap(({ featurePath, requested, headings }, index) =>
+    chooseScenarios(requested, headings, heldIds, index === 0).map(({ id, title }) => ({
+      featurePath,
+      id,
+      title,
+      status: 'pending' as const,
+    })),
+  )
 
   return {
-    featurePath,
-    scenarios: chosen.map(({ id, title }) => ({ id, title, status: 'pending' })),
+    featurePaths: features.map(one => one.featurePath),
+    scenarios,
     ownerAgentId,
     isDone: false,
   }
 }
 
-export function markRunning(run: ScenarioRun, id: string): ScenarioRun {
-  const isKnown = run.scenarios.some(one => one.id === id)
+function chooseScenarios(
+  requested: 'all' | string[],
+  headings: ScenarioHeading[],
+  heldIds: Set<string>,
+  isFirstFeature: boolean,
+): ScenarioHeading[] {
+  if (requested === 'all') return headings
+
+  return requested.flatMap(id => {
+    const heading = headings.find(one => one.id === id)
+
+    if (heading !== undefined) return [heading]
+
+    return isFirstFeature && !heldIds.has(id) ? [{ id, title: '' }] : []
+  })
+}
+
+// A subagent's prompt may name the file from another folder than the command did.
+export function isSameFeature(one: string, other: string): boolean {
+  return one === other || one.endsWith(`/${other}`) || other.endsWith(`/${one}`)
+}
+
+function isScenario(one: Scenario, featurePath: string, id: string): boolean {
+  return one.id === id && isSameFeature(one.featurePath, featurePath)
+}
+
+function namesFeature(run: ScenarioRun, featurePath: string): boolean {
+  return run.featurePaths.some(one => isSameFeature(one, featurePath))
+}
+
+export function markRunning(run: ScenarioRun, featurePath: string, id: string): ScenarioRun {
+  const isKnown = run.scenarios.some(one => isScenario(one, featurePath, id))
   const scenarios: Scenario[] = isKnown
     ? run.scenarios
-    : [...run.scenarios, { id, title: '', status: 'pending' }]
+    : [...run.scenarios, { featurePath, id, title: '', status: 'pending' }]
+  const featurePaths = namesFeature(run, featurePath) ? run.featurePaths : [...run.featurePaths, featurePath]
 
   return {
     ...run,
-    scenarios: scenarios.map(one => (one.id === id ? { ...one, status: 'running' } : one)),
+    featurePaths,
+    scenarios: scenarios.map(one => (isScenario(one, featurePath, id) ? { ...one, status: 'running' } : one)),
   }
 }
 
-export function assignAgent(run: ScenarioRun, id: string, agentId: string): ScenarioRun {
+export function assignAgent(run: ScenarioRun, featurePath: string, id: string, agentId: string): ScenarioRun {
   return {
     ...run,
-    scenarios: run.scenarios.map(one => (one.id === id ? { ...one, agentId } : one)),
+    scenarios: run.scenarios.map(one => (isScenario(one, featurePath, id) ? { ...one, agentId } : one)),
   }
 }
 
@@ -58,9 +98,14 @@ export function findByAgent(run: ScenarioRun, agentId: string): Scenario | undef
   return run.scenarios.find(one => one.agentId === agentId)
 }
 
-export function recordResult(run: ScenarioRun, id: string, result: ScenarioResult): ScenarioRun {
+export function recordResult(
+  run: ScenarioRun,
+  featurePath: string,
+  id: string,
+  result: ScenarioResult,
+): ScenarioRun {
   const scenarios = run.scenarios.map(one =>
-    one.id === id && (one.status === 'running' || one.status === 'unknown') ? { ...one, status: result } : one,
+    isScenario(one, featurePath, id) && (one.status === 'running' || one.status === 'unknown') ? { ...one, status: result } : one,
   )
   const recorded = { ...run, scenarios }
 
@@ -78,7 +123,7 @@ export function skipPending(run: ScenarioRun): ScenarioRun {
 // A dispatch after the run closed with scenarios left to pass, a retry after a fix or the next of
 // one-at-a-time dispatches, picks the run up from there.
 export function canResume(run: ScenarioRun, featurePath: string): boolean {
-  return run.isDone && run.featurePath === featurePath && !run.scenarios.every(isSettledForGood)
+  return run.isDone && namesFeature(run, featurePath) && !run.scenarios.every(isSettledForGood)
 }
 
 export function resumeRun(run: ScenarioRun): ScenarioRun {
